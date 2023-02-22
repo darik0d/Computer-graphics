@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=c++14 -g -std=c++14 CMakeFiles/engine.dir/easy_image.cc.o CMakeFiles/engine.dir/engine.cc.o CMakeFiles/engine.dir/ini_configuration.cc.o -o engine 

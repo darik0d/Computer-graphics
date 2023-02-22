@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/dasha/Downloads/utils/easy_image.h
+stdint.h
+-
+vector
+-
+iostream
+-
+
+/mnt/c/Users/dasha/Downloads/utils/engine.cc
+easy_image.h
+/mnt/c/Users/dasha/Downloads/utils/easy_image.h
+ini_configuration.h
+/mnt/c/Users/dasha/Downloads/utils/ini_configuration.h
+fstream
+-
+iostream
+-
+stdexcept
+-
+string
+-
+vector
+-
+
+/mnt/c/Users/dasha/Downloads/utils/ini_configuration.h
+iostream
+-
+map
+-
+stdexcept
+-
+string
+-
+vector
+-
+
