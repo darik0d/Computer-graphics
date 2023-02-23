@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/c/Users/dasha/Downloads/utils
+# Install script for directory: /mnt/c/Users/dasha/CLionProjects/Computer-graphics
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -43,25 +43,25 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/mnt/c/Users/dasha/Downloads/utils/engine" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/mnt/c/Users/dasha/Downloads/utils/engine")
+  if(EXISTS "$ENV{DESTDIR}/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/mnt/c/Users/dasha/Downloads/utils/engine"
+         FILE "$ENV{DESTDIR}/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine"
          RPATH "")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/mnt/c/Users/dasha/Downloads/utils/engine")
+   "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/mnt/c/Users/dasha/Downloads/utils" TYPE EXECUTABLE FILES "/mnt/c/Users/dasha/Downloads/utils/cmake-build-debug/engine")
-  if(EXISTS "$ENV{DESTDIR}/mnt/c/Users/dasha/Downloads/utils/engine" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/mnt/c/Users/dasha/Downloads/utils/engine")
+file(INSTALL DESTINATION "/mnt/c/Users/dasha/CLionProjects/Computer-graphics" TYPE EXECUTABLE FILES "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/engine")
+  if(EXISTS "$ENV{DESTDIR}/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/mnt/c/Users/dasha/Downloads/utils/engine")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine")
     endif()
   endif()
 endif()
@@ -74,5 +74,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/c/Users/dasha/Downloads/utils/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

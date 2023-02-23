@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/mnt/c/Users/dasha/Downloads/utils/easy_image.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/easy_image.h
 stdint.h
 -
 vector
@@ -14,11 +14,13 @@ vector
 iostream
 -
 
-/mnt/c/Users/dasha/Downloads/utils/engine.cc
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/engine.cc
 easy_image.h
-/mnt/c/Users/dasha/Downloads/utils/easy_image.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/easy_image.h
 ini_configuration.h
-/mnt/c/Users/dasha/Downloads/utils/ini_configuration.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/ini_configuration.h
+l_parser.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/l_parser.h
 fstream
 -
 iostream
@@ -27,10 +29,12 @@ stdexcept
 -
 string
 -
-vector
+list
+-
+cmath
 -
 
-/mnt/c/Users/dasha/Downloads/utils/ini_configuration.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/ini_configuration.h
 iostream
 -
 map
@@ -40,5 +44,15 @@ stdexcept
 string
 -
 vector
+-
+
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/l_parser.h
+map
+-
+string
+-
+set
+-
+exception
 -
 

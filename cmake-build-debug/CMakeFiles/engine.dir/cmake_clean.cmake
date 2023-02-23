@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/easy_image.cc.o"
   "CMakeFiles/engine.dir/engine.cc.o"
   "CMakeFiles/engine.dir/ini_configuration.cc.o"
+  "CMakeFiles/engine.dir/l_parser.cc.o"
   "engine"
   "engine.pdb"
 )

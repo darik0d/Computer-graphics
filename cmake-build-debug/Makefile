@@ -67,10 +67,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/c/Users/dasha/Downloads/utils
+CMAKE_SOURCE_DIR = /mnt/c/Users/dasha/CLionProjects/Computer-graphics
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/c/Users/dasha/Downloads/utils/cmake-build-debug
+CMAKE_BINARY_DIR = /mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -145,9 +145,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/dasha/Downloads/utils/cmake-build-debug/CMakeFiles /mnt/c/Users/dasha/Downloads/utils/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles /mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/dasha/Downloads/utils/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -269,6 +269,33 @@ ini_configuration.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/ini_configuration.cc.s
 .PHONY : ini_configuration.cc.s
 
+l_parser.o: l_parser.cc.o
+
+.PHONY : l_parser.o
+
+# target to build an object file
+l_parser.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/l_parser.cc.o
+.PHONY : l_parser.cc.o
+
+l_parser.i: l_parser.cc.i
+
+.PHONY : l_parser.i
+
+# target to preprocess a source file
+l_parser.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/l_parser.cc.i
+.PHONY : l_parser.cc.i
+
+l_parser.s: l_parser.cc.s
+
+.PHONY : l_parser.s
+
+# target to generate assembly for a file
+l_parser.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/l_parser.cc.s
+.PHONY : l_parser.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -291,6 +318,9 @@ help:
 	@echo "... ini_configuration.o"
 	@echo "... ini_configuration.i"
 	@echo "... ini_configuration.s"
+	@echo "... l_parser.o"
+	@echo "... l_parser.i"
+	@echo "... l_parser.s"
 .PHONY : help
 
 
