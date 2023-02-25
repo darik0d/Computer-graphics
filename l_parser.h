@@ -182,7 +182,7 @@ namespace LParser
 		        /**
 		         * \brief the replacement rules of the l-system
 		         */
-			std::map<char, std::string> replacementrules;
+			std::multimap<char, std::string> replacementrules;
 
 		        /**
 		         * \brief the number of replacements of the l-system

@@ -174,13 +174,17 @@ Lines2D drawLSystem(const LParser::LSystem2D &l_system){
 }
 img::EasyImage generate_image(const ini::Configuration &configuration)
 {
-    img::EasyImage to_return = img::EasyImage(200, 200, vectorToColor(configuration["General"]["backgroundcolor"]));
-    LParser::LSystem2D l_systeem;
-    std::ifstream input_stream(configuration["2DLSystem"]["inputfile"]);
-    input_stream >> l_systeem;
-    input_stream.close();
-    Lines2D lijst = drawLSystem(l_systeem);
-    to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), vectorToColor(configuration["2DLSystem"]["color"]));
+    img::EasyImage to_return;
+    std::string type = configuration["General"]["type"];
+    if(type == "2DLSystem"){
+        to_return = img::EasyImage(200, 200, vectorToColor(configuration["General"]["backgroundcolor"]));
+        LParser::LSystem2D l_systeem;
+        std::ifstream input_stream(configuration["2DLSystem"]["inputfile"]);
+        input_stream >> l_systeem;
+        input_stream.close();
+        Lines2D lijst = drawLSystem(l_systeem);
+        to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), vectorToColor(configuration["2DLSystem"]["color"]));
+    }
 	return to_return;
 }
 

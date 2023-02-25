@@ -23,7 +23,9 @@
 #include <iomanip>
 #include <cctype>
 #include <sstream>
-
+#include <vector>
+#include <algorithm>
+#include <random>
 
 
 namespace
@@ -342,7 +344,7 @@ namespace
 		}
 		return num_parenthesis == 0;
 	}
-	void parse_rules(std::set<char> const& alphabet, std::map<char, std::string>& rules, stream_parser& parser, bool parse2D)
+	void parse_rules(std::set<char> const& alphabet, std::multimap<char, std::string>& rules, stream_parser& parser, bool parse2D)
 	{
 		parser.skip_comments_and_whitespace();
 		parser.assertChars("Rules");
@@ -359,8 +361,8 @@ namespace
 				throw LParser::ParserException("Invalid Alphabet character", parser.getLine(), parser.getCol());
 			if (alphabet.find(c) == alphabet.end())
 				throw LParser::ParserException(std::string("Replacement rule specified for char '") + c + "' which is not part of the alphabet. ", parser.getLine(), parser.getCol());
-			if (rules.find(c) != rules.end())
-				throw LParser::ParserException(std::string("Double entry '") + c + "' in rules specification ", parser.getLine(), parser.getCol());
+//			if (rules.find(c) != rules.end())
+//				throw LParser::ParserException(std::string("Double entry '") + c + "' in rules specification ", parser.getLine(), parser.getCol());
 			char alphabet_char = c;
 			parser.skip_comments_and_whitespace();
 			parser.assertChars("->");
@@ -368,7 +370,8 @@ namespace
 			std::string rule = parser.readQuotedString();
 			if (!isValidRule(alphabet, rule, parse2D))
 				throw LParser::ParserException(std::string("Invalid rule specification for entry '") + alphabet_char + "' in rule specification", parser.getLine(), parser.getCol());
-			rules[alphabet_char] = rule;
+			rules.insert(std::make_pair(alphabet_char, rule));
+            //rules[alphabet_char] = rule;
 			parser.skip_comments_and_whitespace();
 			c = parser.getChar();
 			if (c == '}')
@@ -486,7 +489,22 @@ bool LParser::LSystem::draw(char c) const
 std::string const& LParser::LSystem::get_replacement(char c) const
 {
 	assert(get_alphabet().find(c) != get_alphabet().end());
-	return replacementrules.find(c)->second;
+    // We have to return a random value with current chat
+    std::vector<std::string> dummy;
+    auto regels = replacementrules.equal_range(c);
+    for(auto i = regels.first; i != regels.second; ++i){
+        dummy.push_back(i->second);
+    }
+
+    std::random_shuffle(dummy.begin(), dummy.end());
+    std::string wow = dummy[0];
+    if (replacementrules.count(c) == 1) return std::next(replacementrules.equal_range(c).first, 0)->second;
+    int size_repl = dummy.size();
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(0,size_repl-1);
+    auto n = dist6(rng);
+    return std::next(replacementrules.equal_range(c).first, n)->second;
 }
 double LParser::LSystem::get_angle() const
 {

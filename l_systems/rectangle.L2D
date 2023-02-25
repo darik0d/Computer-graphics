@@ -11,4 +11,4 @@ Rules = {
 Initiator = "F+FF+F+FF"
 Angle = 90.0
 StartingAngle = 0.0
-Iterations = 0
+Iterations = 5
