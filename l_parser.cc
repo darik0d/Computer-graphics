@@ -489,7 +489,7 @@ bool LParser::LSystem::draw(char c) const
 std::string const& LParser::LSystem::get_replacement(char c) const
 {
 	assert(get_alphabet().find(c) != get_alphabet().end());
-    // We have to return a random value with current chat
+    // We have to return a random value with current char
     std::vector<std::string> dummy;
     auto regels = replacementrules.equal_range(c);
     for(auto i = regels.first; i != regels.second; ++i){

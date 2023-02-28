@@ -9,6 +9,7 @@
 #include <list>
 #include <cmath>
 const double pi = 3.141592653589793238462653589;
+bool test_is_on = true;
 img::Color vectorToColor(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
@@ -170,6 +171,7 @@ Lines2D drawLSystem(const LParser::LSystem2D &l_system){
             // In andere gevallen skip
         }
     }
+    //if(test_is_on) std::cout << begin << std::endl;
     return to_return;
 }
 img::EasyImage generate_image(const ini::Configuration &configuration)
@@ -177,7 +179,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
     img::EasyImage to_return;
     std::string type = configuration["General"]["type"];
     if(type == "2DLSystem"){
-        to_return = img::EasyImage(200, 200, vectorToColor(configuration["General"]["backgroundcolor"]));
         LParser::LSystem2D l_systeem;
         std::ifstream input_stream(configuration["2DLSystem"]["inputfile"]);
         input_stream >> l_systeem;

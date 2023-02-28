@@ -1,0 +1,16 @@
+Alphabet = {F, f}
+
+Draw = {
+        F -> 1,
+		f -> 1
+}
+
+Rules = {
+	F -> "f--f--f",
+	f -> "F+F--F+F--F+F+"
+}
+
+Initiator = "F"
+Angle = 60.0
+StartingAngle = 0.0
+Iterations = 10
