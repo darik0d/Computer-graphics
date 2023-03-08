@@ -1,7 +1,7 @@
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/install/strip.dir
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/install/local.dir
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/install.dir
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/list_install_components.dir
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/engine.dir
+C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/engine.dir
+C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/list_install_components.dir
+C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/install.dir
+C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/install/local.dir
+C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/install/strip.dir

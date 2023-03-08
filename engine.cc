@@ -8,6 +8,9 @@
 #include <string>
 #include <list>
 #include <cmath>
+#include "vector3d.h"
+
+/*Classes, namespaces and typedefs*/
 const double pi = 3.141592653589793238462653589;
 bool test_is_on = true;
 img::Color vectorToColor(std::vector<double> kleur){
@@ -53,6 +56,25 @@ public:
     }
 };
 using Lines2D = std::vector<Line2D>;
+class Face
+{
+public:
+    //De indexen refereren naar
+    //punten in de ‘points’ vector
+    //van de Figure-klasse
+    std::vector<int> point_indexes;
+};
+class Figure
+{
+public:
+    std::vector<Vector3D> points;
+    std::vector<Face> faces;
+    Color color;
+};
+typedef std::list<Figure> Figures3D;
+
+/*Functions*/
+
 std::pair<double,double> getMinimum(const Lines2D &lines){
     double x = lines[0].a.x;
     double y = lines[0].a.y;
@@ -171,12 +193,65 @@ Lines2D drawLSystem(const LParser::LSystem2D &l_system){
             // In andere gevallen skip
         }
     }
-    //if(test_is_on) std::cout << begin << std::endl;
+    if(test_is_on) std::cout << begin << std::endl;
     return to_return;
+}
+Matrix scaleFigure(const double scale){
+    Matrix to_return;
+    for(auto i:{1,2,3}){
+        to_return(i,i) *= scale;
+    }
+    return to_return;
+}
+Matrix rotateX(const double angle){
+    Matrix to_return;
+    to_return(2,2), to_return(3,3) = std::cos(angle);
+    to_return(2,3) = std::sin(angle);
+    to_return(3,2) = -std::sin(angle);
+    return to_return;
+}
+Matrix rotateY(const double angle){
+    Matrix to_return;
+    to_return(1,1) = std::cos(angle);
+    to_return(1,3) = -std::sin(angle);
+    to_return(3,1) = std::sin(angle);
+    to_return(3,3) = std::cos(angle);
+    return to_return;
+}
+Matrix rotateZ(const double angle){
+    Matrix to_return;
+    to_return(1,1) = std::cos(angle);
+    to_return(2,1) = -std::sin(angle);
+    to_return(1,2) = std::sin(angle);
+    to_return(2,2) = std::cos(angle);
+    return to_return;
+}
+Matrix translate(const Vector3D &vector){
+    Matrix to_return;
+    to_return(4,1) = vector.x;
+    to_return(4,2) = vector.y;
+    to_return(4,3) = vector.z;
+    return to_return;
+}
+void toPolar(const Vector3D &point, double &theta, double &phi, double &r){
+    theta = std::atan2(point.y, point.x);
+    r = std::sqrt(std::pow(point.x, 2) * pow(point.y, 2) * pow(point.z, 2));
+    phi = std::acos(point.z/r);
+}
+Matrix eyePointTrans(const Vector3D &eyepoint){
+    double theta, phi, r;
+    toPolar(eyepoint, theta, phi, r);
+    return rotateZ(pi/2 + theta)* rotateX(phi)* translate(Vector3D::point(0, 0, -r));
+}
+void applyTransformation(Figures3D &figs, const Matrix &m){
+    for(auto fig: figs){
+        for(auto point: fig.points) point *= m;
+    }
 }
 img::EasyImage generate_image(const ini::Configuration &configuration)
 {
-    img::EasyImage to_return;
+    int size = configuration["General"]["size"];
+    img::EasyImage to_return(size,size);
     std::string type = configuration["General"]["type"];
     if(type == "2DLSystem"){
         LParser::LSystem2D l_systeem;
@@ -185,6 +260,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         input_stream.close();
         Lines2D lijst = drawLSystem(l_systeem);
         to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), vectorToColor(configuration["2DLSystem"]["color"]));
+    }else if(type == "Wireframe"){
+
     }
 	return to_return;
 }
