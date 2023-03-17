@@ -495,7 +495,7 @@ std::string const& LParser::LSystem::get_replacement(char c) const
     for(auto i = regels.first; i != regels.second; ++i){
         dummy.push_back(i->second);
     }
-
+    std::srand(std::time(0));
     std::random_shuffle(dummy.begin(), dummy.end());
     std::string wow = dummy[0];
     if (replacementrules.count(c) == 1) return std::next(replacementrules.equal_range(c).first, 0)->second;

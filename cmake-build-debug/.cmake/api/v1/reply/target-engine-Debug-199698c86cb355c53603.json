@@ -52,7 +52,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -std=c++14 -g -std=c++14"
+					"fragment" : " -std=c++11 -g -std=c++11"
 				}
 			],
 			"includes" : 
@@ -92,7 +92,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-std=c++14 -g -std=c++14",
+				"fragment" : "-std=c++11 -g -std=c++11",
 				"role" : "flags"
 			},
 			{

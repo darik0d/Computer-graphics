@@ -51,28 +51,28 @@ build cmake_object_order_depends_target_engine: phony || CMakeFiles/engine.dir
 
 build CMakeFiles/engine.dir/easy_image.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/easy_image.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\easy_image.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14
+  FLAGS = -std=c++11 -g -std=c++11
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
 build CMakeFiles/engine.dir/engine.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/engine.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\engine.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14
+  FLAGS = -std=c++11 -g -std=c++11
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
 build CMakeFiles/engine.dir/ini_configuration.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/ini_configuration.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\ini_configuration.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14
+  FLAGS = -std=c++11 -g -std=c++11
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
 build CMakeFiles/engine.dir/l_parser.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/l_parser.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\l_parser.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14
+  FLAGS = -std=c++11 -g -std=c++11
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
@@ -86,7 +86,7 @@ build CMakeFiles/engine.dir/l_parser.cc.obj: CXX_COMPILER__engine_Debug C$:/User
 # Link the executable engine.exe
 
 build engine.exe: CXX_EXECUTABLE_LINKER__engine_Debug CMakeFiles/engine.dir/easy_image.cc.obj CMakeFiles/engine.dir/engine.cc.obj CMakeFiles/engine.dir/ini_configuration.cc.obj CMakeFiles/engine.dir/l_parser.cc.obj
-  FLAGS = -std=c++14 -g -std=c++14
+  FLAGS = -std=c++11 -g -std=c++11
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\engine.dir
   POST_BUILD = cd .

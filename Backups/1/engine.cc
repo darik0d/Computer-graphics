@@ -9,7 +9,7 @@
 #include <list>
 #include <cmath>
 const double pi = 3.141592653589793238462653589;
-bool test_is_on = true;
+bool test_is_on = false;
 img::Color vectorToColor(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;

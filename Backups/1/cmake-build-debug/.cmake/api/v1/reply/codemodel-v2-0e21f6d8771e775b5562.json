@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-3b706403a4cbce0e3b60.json",
+					"jsonFile" : "directory-.-Debug-367476697343dd7a21e3.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.5"
@@ -40,7 +40,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "engine::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-engine-Debug-d974ab4929c290c306b1.json",
+					"jsonFile" : "target-engine-Debug-a63f7efffafe109a6d89.json",
 					"name" : "engine",
 					"projectIndex" : 0
 				}
@@ -50,8 +50,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug",
-		"source" : "C:/Users/dasha/CLionProjects/Computer-graphics"
+		"build" : "C:/Users/dasha/CLionProjects/Computer-graphics/Backups/1/cmake-build-debug",
+		"source" : "C:/Users/dasha/CLionProjects/Computer-graphics/Backups/1"
 	},
 	"version" : 
 	{

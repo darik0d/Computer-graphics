@@ -1,0 +1,8 @@
+# ninja log v5
+35	7902	7005860600960307	CMakeFiles/engine.dir/easy_image.cc.obj	1f82bc99a1771aa9
+18	8953	7005860611715631	CMakeFiles/engine.dir/engine.cc.obj	69a3b4a5ac284554
+58	9916	7005860621500349	CMakeFiles/engine.dir/l_parser.cc.obj	5896999de1bb5052
+46	10075	7005860623076529	CMakeFiles/engine.dir/ini_configuration.cc.obj	eb2378718c735e4c
+10076	13291	7005860653970143	engine.exe	2693292faf06c343
+159	8099	7005861443016648	CMakeFiles/engine.dir/engine.cc.obj	69a3b4a5ac284554
+8101	9226	7005861454244693	engine.exe	2693292faf06c343
