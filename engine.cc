@@ -30,6 +30,9 @@ img::Color vectorToColor(std::vector<double> kleur){
 //    double green;
 //    double blue;
 //};
+double to_radialen(double graden){
+    return graden*pi/180;
+}
 class Point2D{
 public:
     Point2D(){};
@@ -116,8 +119,8 @@ img::EasyImage draw2DLines(const Lines2D &lines, const int size, img::Color back
     double x_max = getMaximum(lines).first;
     double y_max = getMaximum(lines).second;
     // Bereken x_range en y_range
-    int x_range = std::round(x_max - x_min);
-    int y_range = std::round(y_max - y_min);
+    double x_range = x_max - x_min;
+    double y_range = y_max - y_min;
     // Bereken imagex
     int imagex = std::round(size*x_range/std::max(x_range, y_range));
     // Bereken imagey
@@ -137,10 +140,10 @@ img::EasyImage draw2DLines(const Lines2D &lines, const int size, img::Color back
     img::EasyImage to_return(imagex, imagey, background_color);
     for(auto lijn: lines){
         // Vermenigvuldig alle punten met d
-        lijn.a.x = std::round(d*lijn.a.x + dx);
-        lijn.a.y = std::round(d*lijn.a.y + dy);
-        lijn.b.x = std::round(d*lijn.b.x + dx);
-        lijn.b.y = std::round(d*lijn.b.y + dy);
+        lijn.a.x = d*lijn.a.x + dx;
+        lijn.a.y = d*lijn.a.y + dy;
+        lijn.b.x = d*lijn.b.x + dx;
+        lijn.b.y = d*lijn.b.y + dy;
         if(lijn.a.x != lijn.b.x || lijn.a.y != lijn.b.y){
             to_return.draw_line(lijn.a.x, lijn.a.y, lijn.b.x, lijn.b.y, lijn.color);
         }
@@ -218,22 +221,26 @@ Matrix scaleFigure(const double scale){
 }
 Matrix rotateX(const double angle){
     Matrix to_return;
+    double cangle = to_radialen(angle);
     to_return(1,1) = 1;
-    to_return(2,2), to_return(3,3) = std::cos(angle);
-    to_return(2,3) = std::sin(angle);
-    to_return(3,2) = -std::sin(angle);
+    to_return(2,2) = std::cos(cangle);
+    to_return(3,3) = std::cos(cangle);
+    to_return(2,3) = std::sin(cangle);
+    to_return(3,2) = -std::sin(cangle);
     return to_return;
 }
-Matrix rotateY(const double angle){
+Matrix rotateY(const double cangle){
     Matrix to_return;
+    double angle = to_radialen(cangle);
     to_return(1,1) = std::cos(angle);
     to_return(1,3) = -std::sin(angle);
     to_return(3,1) = std::sin(angle);
     to_return(3,3) = std::cos(angle);
     return to_return;
 }
-Matrix rotateZ(const double angle){
+Matrix rotateZ(const double cangle){
     Matrix to_return;
+    double angle = to_radialen(cangle);
     to_return(1,1) = std::cos(angle);
     to_return(2,1) = -std::sin(angle);
     to_return(1,2) = std::sin(angle);
@@ -288,7 +295,7 @@ void applyTransformation(Figures3D &figs, const Matrix &m){
     }
 }
 void applyTransformation(Figure &fig, const Matrix &m){
-        for(auto point: fig.points) {
+        for(Vector3D & point: fig.points) {
             point = point*m;
         }
 }
@@ -332,16 +339,16 @@ Lines2D doProjection(const Figure & figuur){
         for(auto face: figuur.faces){
             int currentIndex = face.point_indexes[0];
             int nextIndex = face.point_indexes[1];
-            to_return.push_back(Line2D(currentPoints[currentIndex],currentPoints[nextIndex], figuur.color));
-//            int iter = 0;
-//            while(iter < face.point_indexes.size()){
-//                to_return.push_back(Line2D(currentPoints[currentIndex],currentPoints[nextIndex], figuur.color));
-//                iter++;
-//                currentIndex = face.point_indexes[iter];
-//                if(iter != face.point_indexes.size()-1){
-//                    nextIndex= face.point_indexes[iter+1];
-//                }
-//            }
+            if(face.point_indexes.size() == 2) to_return.push_back(Line2D(currentPoints[currentIndex],currentPoints[nextIndex], figuur.color));
+            else if (face.point_indexes.size() == 3) {
+                // ??? Change sequence
+                to_return.push_back(Line2D(currentPoints[0],currentPoints[1], figuur.color));
+                to_return.push_back(Line2D(currentPoints[1],currentPoints[2], figuur.color));
+                to_return.push_back(Line2D(currentPoints[2],currentPoints[0], figuur.color));
+            }
+            else{
+                std::cout << "Fout aantal punten in de face \n";
+            }
         }
     return  to_return;
 }
@@ -358,64 +365,97 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         Lines2D lijst = drawLSystem(l_systeem, configuration);
         to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
     }else if(type == "Wireframe"){
-        /*What you have to do, step per step:
-         * First at all you have to transform the figures.
-         * Use 4 following transformations: scale, rotatex, rotate y, rotate z.
-         * Then, use eyePointTrans to get transformation matrix
-         * Next, use applyTransformation for each figure with the corresponded matrix
-         * Do the projection of each figure, and collect them to toDraw Lines2D
-         * Last step: take all your Lines2D and use draw2DLines. Return it.*/
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
         for(int i = 0; i < aantalf; i++){
             auto figConfig = configuration["Figure" + std::to_string(i)];
-            //Get all transformation matrices
-            Matrix scale = scaleFigure(figConfig["scale"]);
-            Matrix X = rotateX(figConfig["rotateX"]);
-            Matrix Y = rotateY(figConfig["rotateY"]);
-            Matrix Z = rotateZ(figConfig["rotateZ"]);
-            std::vector<double> centerv = figConfig["center"];
-            Vector3D center = Vector3D::point(centerv[0], centerv[1], centerv[2]);
-            Matrix T = translate(center);
-            std::vector<double> eyevec = configuration["General"]["eye"];
-            Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
-            Matrix eyeTransf = eyePointTrans(eye);
-            Matrix finalTrans = scale*X*Y*Z*T*eyeTransf;
+            std::string typefig = figConfig["type"];
+            if(typefig == "LineDrawing") {
+                //Get all transformation matrices
+                Matrix scale = scaleFigure(figConfig["scale"]);
+                Matrix X = rotateX(figConfig["rotateX"]);
+                Matrix Y = rotateY(figConfig["rotateY"]);
+                Matrix Z = rotateZ(figConfig["rotateZ"]);
+                std::vector<double> centerv = figConfig["center"];
+                Vector3D center = Vector3D::point(centerv[0], centerv[1], centerv[2]);
+                Matrix T = translate(center);
+                std::vector<double> eyevec = configuration["General"]["eye"];
+                Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
+                Matrix eyeTransf = eyePointTrans(eye);
+                Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
 
-            img::Color kleur = vectorToColor(figConfig["color"]);
-            int aantalp = figConfig["nrPoints"];
-            std::vector<Vector3D> points;
-            // Add all points
-            for(int p = 0; p < aantalp; p++){
-                std::vector<double> vecpoint = figConfig["point" + std::to_string(p)];
-                Vector3D point = Vector3D::point(vecpoint[0], vecpoint[1], vecpoint[2]);
-                points.push_back(point);
+                img::Color kleur = vectorToColor(figConfig["color"]);
+                int aantalp = figConfig["nrPoints"];
+                std::vector<Vector3D> points;
+                // Add all points
+                for (int p = 0; p < aantalp; p++) {
+                    std::vector<double> vecpoint = figConfig["point" + std::to_string(p)];
+                    Vector3D point = Vector3D::point(vecpoint[0], vecpoint[1], vecpoint[2]);
+                    points.push_back(point);
+                }
+                // Add all faces
+                int aantall = figConfig["nrLines"];
+                std::vector<Face> faces;
+                for (int l = 0; l < aantall; l++) {
+                    Face face;
+                    std::vector<int> fp = figConfig["line" + std::to_string(l)];
+                    face.point_indexes = fp;
+                    faces.push_back(face);
+                }
+                // Initialise figure
+                Figure figuur;
+                figuur.points = points;
+                figuur.color = kleur;
+                figuur.faces = faces;
+
+                // Use the finalTrans matrix
+                applyTransformation(figuur, finalTrans);
+
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());}
+            else if(typefig == "Cube"){
+                /*
+                 * Kubus (Cube)
+                • Tetrahedron
+                • Octahedron
+                • Icosahedron
+                • Dodecahedron
+                • Cilinder (Cylinder)
+                • Kegel (Cone)
+                • Bol (Sphere)
+                • Torus*/
             }
-            // Add all faces
-            int aantall = figConfig["nrLines"];
-            std::vector<Face> faces;
-            for(int l = 0; l < aantall; l++){
-                Face face;
-                std::vector<int> fp = figConfig["line" + std::to_string(l)];
-                face.point_indexes = fp;
-                faces.push_back(face);
+            else if(typefig == "Tetrahedron"){
+
             }
+            else if(typefig == "Octahedron"){
 
-            // Initialise figure
-            Figure figuur;
-            figuur.points = points;
-            figuur.color = kleur;
-            figuur.faces = faces;
+            }
+            else if(typefig == "Icosahedron"){
 
-            // Use the finalTrans matrix
-            applyTransformation(figuur, finalTrans);
+            }
+            else if(typefig == "Dodecahedron"){
 
-            // Do projection
-            Lines2D to_add = doProjection(figuur);
-            // Insert getted lines
-            toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
-        }
-        to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
+            }
+            else if(typefig == "Cylinder"){
+
+            }
+            else if(typefig == "Cone"){
+
+            }
+            else if(typefig == "Sphere"){
+
+            }
+            else if(typefig == "Torus"){
+
+            }
+            else if(typefig == "3DLSystem"){
+
+            }
+            }
+            to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
     }
 	return to_return;
 }

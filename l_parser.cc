@@ -27,6 +27,8 @@
 #include <algorithm>
 #include <random>
 
+std::random_device dev;
+std::mt19937 rng(dev());
 
 namespace
 {
@@ -500,10 +502,8 @@ std::string const& LParser::LSystem::get_replacement(char c) const
     std::string wow = dummy[0];
     if (replacementrules.count(c) == 1) return std::next(replacementrules.equal_range(c).first, 0)->second;
     int size_repl = dummy.size();
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> dist6(0,size_repl-1);
-    auto n = dist6(rng);
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0,size_repl-1);
+    auto n = dist(rng);
     return std::next(replacementrules.equal_range(c).first, n)->second;
 }
 double LParser::LSystem::get_angle() const
