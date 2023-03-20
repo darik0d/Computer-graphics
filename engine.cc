@@ -8,6 +8,7 @@
 #include <string>
 #include <list>
 #include <cmath>
+#include <algorithm>
 #include "vector3d.h"
 #include "vector3d.cc"
 
@@ -340,14 +341,13 @@ Lines2D doProjection(const Figure & figuur){
             int currentIndex = face.point_indexes[0];
             int nextIndex = face.point_indexes[1];
             if(face.point_indexes.size() == 2) to_return.push_back(Line2D(currentPoints[currentIndex],currentPoints[nextIndex], figuur.color));
-            else if (face.point_indexes.size() == 3) {
-                // ??? Change sequence
-                to_return.push_back(Line2D(currentPoints[0],currentPoints[1], figuur.color));
-                to_return.push_back(Line2D(currentPoints[1],currentPoints[2], figuur.color));
-                to_return.push_back(Line2D(currentPoints[2],currentPoints[0], figuur.color));
-            }
-            else{
-                std::cout << "Fout aantal punten in de face \n";
+            else {
+                int i = 0;
+                while(i < face.point_indexes.size()-1){
+                    to_return.push_back(Line2D(currentPoints[face.point_indexes[i]],currentPoints[face.point_indexes[i+1]], figuur.color));
+                    i++;
+                }
+                //to_return.push_back(Line2D(currentPoints[face.point_indexes.size()-1],currentPoints[0], figuur.color));
             }
         }
     return  to_return;
@@ -368,23 +368,24 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
         for(int i = 0; i < aantalf; i++){
+
             auto figConfig = configuration["Figure" + std::to_string(i)];
             std::string typefig = figConfig["type"];
-            if(typefig == "LineDrawing") {
-                //Get all transformation matrices
-                Matrix scale = scaleFigure(figConfig["scale"]);
-                Matrix X = rotateX(figConfig["rotateX"]);
-                Matrix Y = rotateY(figConfig["rotateY"]);
-                Matrix Z = rotateZ(figConfig["rotateZ"]);
-                std::vector<double> centerv = figConfig["center"];
-                Vector3D center = Vector3D::point(centerv[0], centerv[1], centerv[2]);
-                Matrix T = translate(center);
-                std::vector<double> eyevec = configuration["General"]["eye"];
-                Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
-                Matrix eyeTransf = eyePointTrans(eye);
-                Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
+            Matrix scale = scaleFigure(figConfig["scale"]);
+            Matrix X = rotateX(figConfig["rotateX"]);
+            Matrix Y = rotateY(figConfig["rotateY"]);
+            Matrix Z = rotateZ(figConfig["rotateZ"]);
+            std::vector<double> centerv = figConfig["center"];
+            Vector3D center = Vector3D::point(centerv[0], centerv[1], centerv[2]);
+            Matrix T = translate(center);
+            //Get all transformation matrices
+            std::vector<double> eyevec = configuration["General"]["eye"];
+            Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
+            Matrix eyeTransf = eyePointTrans(eye);
+            Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
+            img::Color kleur = vectorToColor(figConfig["color"]);
 
-                img::Color kleur = vectorToColor(figConfig["color"]);
+            if(typefig == "LineDrawing") {
                 int aantalp = figConfig["nrPoints"];
                 std::vector<Vector3D> points;
                 // Add all points
@@ -410,34 +411,369 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
                 // Use the finalTrans matrix
                 applyTransformation(figuur, finalTrans);
-
                 // Do projection
                 Lines2D to_add = doProjection(figuur);
                 // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());}
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+            }
             else if(typefig == "Cube"){
-                /*
-                 * Kubus (Cube)
-                • Tetrahedron
-                • Octahedron
-                • Icosahedron
-                • Dodecahedron
-                • Cilinder (Cylinder)
-                • Kegel (Cone)
-                • Bol (Sphere)
-                • Torus*/
+                Figure figuur;
+
+                figuur.points.push_back(Vector3D::point(1,-1,-1));
+                figuur.points.push_back(Vector3D::point(-1,1,-1));
+                figuur.points.push_back(Vector3D::point(1,1,1));
+                figuur.points.push_back(Vector3D::point(-1,-1,1));
+                figuur.points.push_back(Vector3D::point(1,1,-1));
+                figuur.points.push_back(Vector3D::point(-1,-1,-1));
+                figuur.points.push_back(Vector3D::point(1,-1,1));
+                figuur.points.push_back(Vector3D::point(-1,1,1));
+
+                Face f1;
+                f1.point_indexes.push_back(0);
+                f1.point_indexes.push_back(4);
+                f1.point_indexes.push_back(2);
+                f1.point_indexes.push_back(6);
+                Face f2;
+                f2.point_indexes.push_back(4);
+                f2.point_indexes.push_back(1);
+                f2.point_indexes.push_back(7);
+                f2.point_indexes.push_back(2);
+                Face f3;
+                f3.point_indexes.push_back(1);
+                f3.point_indexes.push_back(5);
+                f3.point_indexes.push_back(3);
+                f3.point_indexes.push_back(7);
+                Face f4;
+                f4.point_indexes.push_back(5);
+                f4.point_indexes.push_back(0);
+                f4.point_indexes.push_back(6);
+                f4.point_indexes.push_back(3);
+                Face f5;
+                f5.point_indexes.push_back(6);
+                f5.point_indexes.push_back(2);
+                f5.point_indexes.push_back(7);
+                f5.point_indexes.push_back(3);
+                Face f6;
+                f6.point_indexes.push_back(0);
+                f6.point_indexes.push_back(5);
+                f6.point_indexes.push_back(1);
+                f6.point_indexes.push_back(4);
+
+                figuur.faces.push_back(f1);
+                figuur.faces.push_back(f2);
+                figuur.faces.push_back(f3);
+                figuur.faces.push_back(f4);
+                figuur.faces.push_back(f5);
+                figuur.faces.push_back(f6);
+
+                figuur.color = kleur;
+
+                // Use the finalTrans matrix
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Tetrahedron"){
+                Figure figuur;
+
+                figuur.points.push_back(Vector3D::point(1,-1,-1));
+                figuur.points.push_back(Vector3D::point(-1,1,-1));
+                figuur.points.push_back(Vector3D::point(1,1,1));
+                figuur.points.push_back(Vector3D::point(-1,-1,1));
+
+                Face f1;
+                f1.point_indexes.push_back(0);
+                f1.point_indexes.push_back(1);
+                f1.point_indexes.push_back(2);
+                Face f2;
+                f2.point_indexes.push_back(1);
+                f2.point_indexes.push_back(3);
+                f2.point_indexes.push_back(2);
+                Face f3;
+                f3.point_indexes.push_back(0);
+                f3.point_indexes.push_back(3);
+                f3.point_indexes.push_back(1);
+                Face f4;
+                f4.point_indexes.push_back(0);
+                f4.point_indexes.push_back(2);
+                f4.point_indexes.push_back(3);
+
+                figuur.faces.push_back(f1);
+                figuur.faces.push_back(f2);
+                figuur.faces.push_back(f3);
+                figuur.faces.push_back(f4);
+
+                figuur.color = kleur;
+
+                // Use the finalTrans matrix
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
 
             }
             else if(typefig == "Octahedron"){
+                Figure figuur;
+
+                figuur.points.push_back(Vector3D::point(1,0,0));
+                figuur.points.push_back(Vector3D::point(0,1,0));
+                figuur.points.push_back(Vector3D::point(-1,0,0));
+                figuur.points.push_back(Vector3D::point(0,-1,0));
+                figuur.points.push_back(Vector3D::point(0,0,-1));
+                figuur.points.push_back(Vector3D::point(0,0,1));
+
+                Face f1;
+                f1.point_indexes.push_back(0);
+                f1.point_indexes.push_back(1);
+                f1.point_indexes.push_back(5);
+                Face f2;
+                f2.point_indexes.push_back(1);
+                f2.point_indexes.push_back(2);
+                f2.point_indexes.push_back(5);
+                Face f3;
+                f3.point_indexes.push_back(2);
+                f3.point_indexes.push_back(3);
+                f3.point_indexes.push_back(5);
+                Face f4;
+                f4.point_indexes.push_back(3);
+                f4.point_indexes.push_back(0);
+                f4.point_indexes.push_back(5);
+                Face f5;
+                f5.point_indexes.push_back(1);
+                f5.point_indexes.push_back(0);
+                f5.point_indexes.push_back(4);
+                Face f6;
+                f6.point_indexes.push_back(2);
+                f6.point_indexes.push_back(1);
+                f6.point_indexes.push_back(4);
+                Face f7;
+                f7.point_indexes.push_back(3);
+                f7.point_indexes.push_back(2);
+                f7.point_indexes.push_back(4);
+                Face f8;
+                f8.point_indexes.push_back(0);
+                f8.point_indexes.push_back(3);
+                f8.point_indexes.push_back(4);
+
+                figuur.faces.push_back(f1);
+                figuur.faces.push_back(f2);
+                figuur.faces.push_back(f3);
+                figuur.faces.push_back(f4);
+                figuur.faces.push_back(f5);
+                figuur.faces.push_back(f6);
+                figuur.faces.push_back(f7);
+                figuur.faces.push_back(f8);
+
+                figuur.color = kleur;
+
+                // Use the finalTrans matrix
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
 
             }
             else if(typefig == "Icosahedron"){
+                Figure figuur;
+
+                figuur.points.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
+                for(int l = 2; l < 7; l++){
+                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*(l-2)/5), std::sin(2*pi*(l-2)/5), 0.5));
+                }
+                for(int l = 7; l < 12; l++){
+                    figuur.points.push_back(Vector3D::point(std::cos((pi/5)+((l-7)*2*pi/5)), std::sin((pi/5)+((l-7)*2*pi/5)), -0.5));
+                }
+                figuur.points.push_back(Vector3D::point(0,0, -std::sqrt(5)/2));
+
+                Face f1;
+                f1.point_indexes.push_back(0);
+                f1.point_indexes.push_back(1);
+                f1.point_indexes.push_back(2);
+                Face f2;
+                f2.point_indexes.push_back(0);
+                f2.point_indexes.push_back(2);
+                f2.point_indexes.push_back(3);
+                Face f3;
+                f3.point_indexes.push_back(0);
+                f3.point_indexes.push_back(3);
+                f3.point_indexes.push_back(4);
+                Face f4;
+                f4.point_indexes.push_back(0);
+                f4.point_indexes.push_back(4);
+                f4.point_indexes.push_back(5);
+                Face f5;
+                f5.point_indexes.push_back(0);
+                f5.point_indexes.push_back(5);
+                f5.point_indexes.push_back(1);
+                Face f6;
+                f6.point_indexes.push_back(1);
+                f6.point_indexes.push_back(6);
+                f6.point_indexes.push_back(2);
+                Face f7;
+                f7.point_indexes.push_back(2);
+                f7.point_indexes.push_back(6);
+                f7.point_indexes.push_back(7);
+                Face f8;
+                f8.point_indexes.push_back(2);
+                f8.point_indexes.push_back(7);
+                f8.point_indexes.push_back(3);
+                Face f9;
+                f9.point_indexes.push_back(3);
+                f9.point_indexes.push_back(7);
+                f9.point_indexes.push_back(8);
+                Face f10;
+                f10.point_indexes.push_back(3);
+                f10.point_indexes.push_back(8);
+                f10.point_indexes.push_back(4);
+                Face f11;
+                f11.point_indexes.push_back(4);
+                f11.point_indexes.push_back(8);
+                f11.point_indexes.push_back(9);
+                Face f12;
+                f12.point_indexes.push_back(4);
+                f12.point_indexes.push_back(9);
+                f12.point_indexes.push_back(5);
+                Face f13;
+                f13.point_indexes.push_back(5);
+                f13.point_indexes.push_back(9);
+                f13.point_indexes.push_back(10);
+                Face f14;
+                f14.point_indexes.push_back(5);
+                f14.point_indexes.push_back(10);
+                f14.point_indexes.push_back(1);
+                Face f15;
+                f15.point_indexes.push_back(1);
+                f15.point_indexes.push_back(10);
+                f15.point_indexes.push_back(6);
+                Face f16;
+                f16.point_indexes.push_back(11);
+                f16.point_indexes.push_back(7);
+                f16.point_indexes.push_back(6);
+                Face f17;
+                f17.point_indexes.push_back(11);
+                f17.point_indexes.push_back(8);
+                f17.point_indexes.push_back(7);
+                Face f18;
+                f18.point_indexes.push_back(11);
+                f18.point_indexes.push_back(9);
+                f18.point_indexes.push_back(8);
+                Face f19;
+                f19.point_indexes.push_back(11);
+                f19.point_indexes.push_back(10);
+                f19.point_indexes.push_back(9);
+                Face f20;
+                f20.point_indexes.push_back(11);
+                f20.point_indexes.push_back(6);
+                f20.point_indexes.push_back(10);
+
+                figuur.faces.push_back(f1);
+                figuur.faces.push_back(f2);
+                figuur.faces.push_back(f3);
+                figuur.faces.push_back(f4);
+                figuur.faces.push_back(f5);
+                figuur.faces.push_back(f6);
+                figuur.faces.push_back(f7);
+                figuur.faces.push_back(f8);
+                figuur.faces.push_back(f9);
+                figuur.faces.push_back(f10);
+                figuur.faces.push_back(f11);
+                figuur.faces.push_back(f12);
+                figuur.faces.push_back(f13);
+                figuur.faces.push_back(f14);
+                figuur.faces.push_back(f15);
+                figuur.faces.push_back(f16);
+                figuur.faces.push_back(f17);
+                figuur.faces.push_back(f18);
+                figuur.faces.push_back(f19);
+                figuur.faces.push_back(f20);
+
+                figuur.color = kleur;
+
+                // Use the finalTrans matrix
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
 
             }
             else if(typefig == "Dodecahedron"){
-
+                Face f1;
+                f1.point_indexes.push_back(0);
+                f1.point_indexes.push_back(1);
+                f1.point_indexes.push_back(2);
+                f1.point_indexes.push_back(3);
+                f1.point_indexes.push_back(4);
+                Face f2;
+                f2.point_indexes.push_back(0);
+                f2.point_indexes.push_back(5);
+                f2.point_indexes.push_back(6);
+                f2.point_indexes.push_back(7);
+                f2.point_indexes.push_back(1);
+                Face f3;
+                f3.point_indexes.push_back(1);
+                f3.point_indexes.push_back(7);
+                f3.point_indexes.push_back(8);
+                f3.point_indexes.push_back(9);
+                f3.point_indexes.push_back(2);
+                Face f4;
+                f4.point_indexes.push_back(2);
+                f4.point_indexes.push_back(9);
+                f4.point_indexes.push_back(10);
+                f4.point_indexes.push_back(11);
+                f4.point_indexes.push_back(3);
+                Face f5;
+                f5.point_indexes.push_back(3);
+                f5.point_indexes.push_back(11);
+                f5.point_indexes.push_back(12);
+                f5.point_indexes.push_back(13);
+                f5.point_indexes.push_back(4);
+                Face f6;
+                f6.point_indexes.push_back(4);
+                f6.point_indexes.push_back(13);
+                f6.point_indexes.push_back(14);
+                f6.point_indexes.push_back(5);
+                f6.point_indexes.push_back(0);
+                Face f7;
+                f7.point_indexes.push_back(1000000000000);
+                f7.point_indexes.push_back(1);
+                f7.point_indexes.push_back(2);
+                f7.point_indexes.push_back(3);
+                f7.point_indexes.push_back(4);
+                Face f8;
+                f8.point_indexes.push_back(0);
+                f8.point_indexes.push_back(1);
+                f8.point_indexes.push_back(2);
+                f8.point_indexes.push_back(3);
+                f8.point_indexes.push_back(4);
+                Face f9;
+                f9.point_indexes.push_back(0);
+                f9.point_indexes.push_back(1);
+                f9.point_indexes.push_back(2);
+                f9.point_indexes.push_back(3);
+                f9.point_indexes.push_back(4);
+                Face f10;
+                f10.point_indexes.push_back(0);
+                f10.point_indexes.push_back(1);
+                f10.point_indexes.push_back(2);
+                f10.point_indexes.push_back(3);
+                f10.point_indexes.push_back(4);
+                Face f11;
+                f11.point_indexes.push_back(0);
+                f11.point_indexes.push_back(1);
+                f11.point_indexes.push_back(2);
+                f11.point_indexes.push_back(3);
+                f11.point_indexes.push_back(4);
+                Face f12;
+                f12.point_indexes.push_back(0);
+                f12.point_indexes.push_back(1);
+                f12.point_indexes.push_back(2);
+                f12.point_indexes.push_back(3);
+                f12.point_indexes.push_back(4);
             }
             else if(typefig == "Cylinder"){
 
