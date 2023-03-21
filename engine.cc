@@ -348,7 +348,7 @@ Lines2D doProjection(const Figure & figuur){
     return  to_return;
 }
 
-//template <typename T> int findIndex(std::vector<T> v, T toFind){
+//template <typename T> int findIndex(std::vector<T> v, const T& toFind){
 //    auto it = find(v.begin(), v.end(), toFind);
 //    if (it != v.end())
 //    {
@@ -362,7 +362,6 @@ Lines2D doProjection(const Figure & figuur){
 //}
 Figure createIcosahedron(){
     Figure figuur;
-
     figuur.points.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
     for(int l = 2; l < 7; l++){
         figuur.points.push_back(Vector3D::point(std::cos(2*pi*(l-2)/5), std::sin(2*pi*(l-2)/5), 0.5));
@@ -372,10 +371,7 @@ Figure createIcosahedron(){
     }
     figuur.points.push_back(Vector3D::point(0,0, -std::sqrt(5)/2));
 
-    Face f1;
-    f1.point_indexes.push_back(0);
-    f1.point_indexes.push_back(1);
-    f1.point_indexes.push_back(2);
+    Face f1 = Face({0,1,2});
     Face f2;
     f2.point_indexes.push_back(0);
     f2.point_indexes.push_back(2);
@@ -496,9 +492,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
     }else if(type == "Wireframe"){
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
-        for(int i = 0; i < aantalf; i++){
+        for(int numb = 0; numb < aantalf; numb++){
 
-            auto figConfig = configuration["Figure" + std::to_string(i)];
+            auto figConfig = configuration["Figure" + std::to_string(numb)];
             std::string typefig = figConfig["type"];
             Matrix scale = scaleFigure(figConfig["scale"]);
             Matrix X = rotateX(figConfig["rotateX"]);
@@ -804,10 +800,50 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Cylinder"){
+                Figure figuur;
 
+                figuur.color = kleur;
+                int n = figConfig["n"];
+                int height = figConfig["height"];
+
+                for(int ind = 0; ind < n; ind++){
+                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), 0));
+                    figuur.faces.push_back(Face({ind, (ind+1)%n, n + (ind+1)%(n),  n + ind}));
+                }
+                for(int ind = 0; ind < n; ind++){
+                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), height));
+                }
+//                std::vector<int> intsLastFace;
+//                for(int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
+//                figuur.faces.push_back(Face(intsLastFace));
+
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Cone"){
+                Figure figuur;
 
+                figuur.color = kleur;
+                int n = figConfig["n"];
+                int height = figConfig["height"];
+
+                for(int ind = 0; ind < n; ind++){
+                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), 0));
+                    figuur.faces.push_back(Face({ind, (ind+1)%n, n}));
+                }
+                figuur.points.push_back(Vector3D::point(0,0,height));
+                std::vector<int> intsLastFace;
+                for(int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
+                figuur.faces.push_back(Face(intsLastFace));
+
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Sphere") {
                 Figure figuur = createIcosahedron();
@@ -853,6 +889,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
                 // Herschaal alle punten
                 for(auto &p:figuur.points) herschaalPuntenBal(p);
+
                 applyTransformation(figuur, finalTrans);
                 // Do projection
                 Lines2D to_add = doProjection(figuur);
@@ -860,7 +897,30 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Torus"){
+                Figure figuur;
 
+                figuur.color = kleur;
+                int n = figConfig["n"];
+                int r = figConfig["r"];
+                int R = figConfig["R"];
+                int m = figConfig["m"];
+
+                for(int i = 0; i < n; i++){
+                    for(int j = 0; j < m; j++){
+                        double u = 2*i*pi/n;
+                        double v = 2*j*pi/m;
+                        Vector3D p = Vector3D::point((R+r*std::cos(v))*std::cos(u),(R+r*std::cos(v))*std::sin(u),r*std::sin(v));
+                        figuur.points.push_back(p);
+                        // Ind of the point i,j = i*m + j,
+                        Face f = Face({i*m + j, ((i+1)%n)*m + (j+1)%m, i*m + (j+1)%m});
+                        figuur.faces.push_back(f);
+                    }
+                }
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "3DLSystem"){
 

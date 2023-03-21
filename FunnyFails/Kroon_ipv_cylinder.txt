@@ -1,0 +1,25 @@
+else if(typefig == "Cylinder"){
+                Figure figuur;
+
+                figuur.color = kleur;
+                int n = figConfig["n"];
+                int height = figConfig["height"];
+
+                for(int ind = 0; ind < n; ind++){
+                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), 0));
+                    figuur.faces.push_back(Face({ind, (ind+1)%n, n + ind}));
+                    figuur.faces.push_back(Face({ind, (ind+1)%n, n}));
+                }
+                for(int ind = 0; ind < n; ind++){
+                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), height));
+                }
+//                std::vector<int> intsLastFace;
+//                for(int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
+//                figuur.faces.push_back(Face(intsLastFace));
+
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+            }
