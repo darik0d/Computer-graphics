@@ -475,6 +475,12 @@ Figure createIcosahedron(){
     figuur.faces.push_back(f20);
     return figuur;
 }
+void herschaalPuntenBal(Vector3D& punt){
+    double r = std::sqrt(std::pow(punt.x, 2) + std::pow(punt.y, 2) + std::pow(punt.z, 2));
+    punt.x /= r;
+    punt.y /= r;
+    punt.z /= r;
+}
 img::EasyImage generate_image(const ini::Configuration &configuration)
 {
     int size = configuration["General"]["size"];
@@ -803,42 +809,50 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             else if(typefig == "Cone"){
 
             }
-            else if(typefig == "Sphere"){
+            else if(typefig == "Sphere") {
                 Figure figuur = createIcosahedron();
 
                 figuur.color = kleur;
-                std::vector<Face> newFaces;
-                std::vector<Vector3D> newPoints;
-                // Collect newFaces and newPoints
-                for(auto face: figuur.faces){
-                    Vector3D A = figuur.points[face.point_indexes[0]];
-                    Vector3D B = figuur.points[face.point_indexes[1]];
-                    Vector3D C = figuur.points[face.point_indexes[2]];
-                    Vector3D D = findMiddle(A, B);
-                    // ??? Swap E and F
-                    Vector3D E = findMiddle(B, C);
-                    Vector3D F = findMiddle(C, A);
-                    int indexA = newPoints.size();
-                    int indexB = newPoints.size()+1;
-                    int indexC = newPoints.size()+2;
-                    int indexD = newPoints.size()+3;
-                    int indexE = newPoints.size()+4;
-                    int indexF = newPoints.size()+5;
-                    for(auto letter: {A,B,C,D,E,F}) newPoints.push_back(letter);
-                    std::vector<std::vector<Vector3D>> driehoeken = {{A,D,F}, {B,E,D}, {C, F, E}, {D,E,F}};
-                    Face f1 = Face({indexA,indexD,indexF});
-                    Face f2 = Face({indexB,indexE,indexD});
-                    Face f3 = Face({indexC,indexF,indexE});
-                    Face f4 = Face({indexD,indexE,indexF});
-                    for(auto f: {f1,f2,f3,f4}){
-                        newFaces.push_back(f);
-                    }
+                int n = figConfig["n"];
+                while (n > 0) {
+                    std::vector<Face> newFaces;
+                    std::vector<Vector3D> newPoints;
+                    // Collect newFaces and newPoints
+                    for (auto face: figuur.faces) {
+                        Vector3D A = figuur.points[face.point_indexes[0]];
+                        Vector3D B = figuur.points[face.point_indexes[1]];
+                        Vector3D C = figuur.points[face.point_indexes[2]];
+                        Vector3D D = findMiddle(A, B);
+                        // ??? Swap E and F
+                        Vector3D E = findMiddle(B, C);
+                        Vector3D F = findMiddle(C, A);
+                        int indexA = newPoints.size();
+                        int indexB = newPoints.size() + 1;
+                        int indexC = newPoints.size() + 2;
+                        int indexD = newPoints.size() + 3;
+                        int indexE = newPoints.size() + 4;
+                        int indexF = newPoints.size() + 5;
+                        for (auto letter: {A, B, C, D, E, F}) newPoints.push_back(letter);
+                        std::vector<std::vector<Vector3D>> driehoeken = {{A, D, F},
+                                                                         {B, E, D},
+                                                                         {C, F, E},
+                                                                         {D, E, F}};
+                        Face f1 = Face({indexA, indexD, indexF});
+                        Face f2 = Face({indexB, indexE, indexD});
+                        Face f3 = Face({indexC, indexF, indexE});
+                        Face f4 = Face({indexD, indexE, indexF});
+                        for (auto f: {f1, f2, f3, f4}) {
+                            newFaces.push_back(f);
+                        }
                 }
                 // Use the finalTrans matrix
 
                 figuur.faces = newFaces;
                 figuur.points = newPoints;
-
+                n--;
+            }
+                // Herschaal alle punten
+                for(auto &p:figuur.points) herschaalPuntenBal(p);
                 applyTransformation(figuur, finalTrans);
                 // Do projection
                 Lines2D to_add = doProjection(figuur);
