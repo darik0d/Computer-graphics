@@ -104,7 +104,16 @@ std::pair<double,double> getMaximum(const Lines2D &lines){
     std::pair<double,double> to_return = std::make_pair(x,y);
     return to_return;
 }
-
+//template <typename T>
+//unsigned long findINdex(const std::vector<T> &vec, const T &toFind) {
+//    unsigned long i;
+//    for (auto e : vec) {
+//        if (e == toFind) { return i; }
+//        i++;
+//    }
+//    std::cerr << "Element not found" << std::endl;
+//    return 0;
+//}
 img::EasyImage draw2DLines(const Lines2D &lines, const int size, img::Color background_color, const ini::Configuration &configuration){
     // Bereken x_min, x_max, y_min, y_max;
     double x_min = getMinimum(lines).first;
@@ -198,6 +207,96 @@ Lines2D drawLSystem(const LParser::LSystem2D &l_system, const ini::Configuration
                 huidige_hoek = hoek_stack[hoek_stack.size()-1];
                 positie_stack.pop_back();
                 hoek_stack.pop_back();
+            }
+            // In andere gevallen skip
+        }
+    }
+    if(test_is_on) std::cout << begin << std::endl;
+    return to_return;
+}
+Figure draw3DLSystem(const LParser::LSystem3D &l_system, const ini::Configuration &figConfig){
+    std::vector<Vector3D> positie_stack;
+    std::vector<Vector3D> H_stack;
+    std::vector<Vector3D> L_stack;
+    std::vector<Vector3D> U_stack;
+    std::set<char> alfabet = l_system.get_alphabet();
+    double hoek = to_radialen(l_system.get_angle());
+    // Gehardcoded grootte van de stap
+    double stap_grootte = 1;
+    Figure to_return;
+    // Get oorspronkelijke string
+    std::string begin = l_system.get_initiator();
+    /////////////////
+    Vector3D H = Vector3D::vector(1, 0, 0);
+    Vector3D L = Vector3D::vector(0, 1, 0);
+    Vector3D U = Vector3D::vector(0, 0, 1);
+    Vector3D positie = Vector3D::point(0,0,0);
+    std::string res = "";
+    int iterations = l_system.get_nr_iterations();
+    while (iterations > 0){
+        for(char sym: begin){
+            if(alfabet.find(sym) != alfabet.end()) res += l_system.get_replacement(sym);
+            else res += sym;
+        }
+        begin = res;
+        res = "";
+        iterations--;
+    }
+
+    for(char sym:begin){
+        // Als symbool in alfabet zit:
+        if(alfabet.find(sym) != alfabet.end()){
+            // Voor elke stap voeg een nieuwe lijn toe aan de Lines 2D
+            Vector3D co1 = positie;
+            Vector3D co2 = Vector3D::point(positie.x + H.x, positie.y + H.y, positie.z + H.z);
+            // Voeg de lijn als dat nodig is:
+            if (l_system.draw(sym)) {
+                to_return.points.push_back(co1);
+                to_return.points.push_back(co2);
+                to_return.faces.push_back(Face({static_cast<int>(to_return.points.size()-2), static_cast<int>(to_return.points.size()-1)}));
+            }
+            // Update positie
+            positie = co2;
+        }
+            // Als niet:
+        else{
+            if(sym == '+' ||sym == '-') {
+                double delta = hoek;
+                if(sym == '-') delta *= -1;
+                H = H*std::cos(delta) + L*std::sin(delta);
+                L = -H*std::sin(delta) + L*std::cos(delta);
+            }
+            else if(sym == '^' || sym == '&'){
+                double delta = hoek;
+                if(sym == '&') delta *= -1;
+                H = H*std::cos(delta) + U*std::sin(delta);
+                U = -H*std::sin(delta) + U*std::cos(delta);
+            }
+            else if(sym == '\\' || sym == '/'){
+                double delta = hoek;
+                if(sym == '&') delta *= -1;
+                L = L*std::cos(delta) - U*std::sin(delta);
+                U = L*std::sin(delta) + U*std::cos(delta);
+            }
+            else if(sym == '|'){
+                H = -H;
+                L = -L;
+            }
+            else if(sym == '(') {
+                positie_stack.push_back(positie);
+                H_stack.push_back(H);
+                L_stack.push_back(L);
+                U_stack.push_back(U);
+            }
+            else if(sym == ')') {
+                positie = positie_stack[positie_stack.size()-1];
+                H = H_stack[H_stack.size()-1];
+                L = L_stack[L_stack.size()-1];
+                U = U_stack[U_stack.size()-1];
+                positie_stack.pop_back();
+                H_stack.pop_back();
+                L_stack.pop_back();
+                U_stack.pop_back();
             }
             // In andere gevallen skip
         }
@@ -348,18 +447,6 @@ Lines2D doProjection(const Figure & figuur){
     return  to_return;
 }
 
-//template <typename T> int findIndex(std::vector<T> v, const T& toFind){
-//    auto it = find(v.begin(), v.end(), toFind);
-//    if (it != v.end())
-//    {
-//        int index = it - v.begin();
-//        return index;
-//    }
-//    else {
-//        std::cerr << "Element is not found! (Line 360, if haven't changed my code)" << std::endl;
-//        return 0;
-//    }
-//}
 Figure createIcosahedron(){
     Figure figuur;
     figuur.points.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
@@ -804,7 +891,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
-                int height = figConfig["height"];
+                double height = figConfig["height"];
 
                 for(int ind = 0; ind < n; ind++){
                     figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), 0));
@@ -828,7 +915,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
-                int height = figConfig["height"];
+                double height = figConfig["height"];
 
                 for(int ind = 0; ind < n; ind++){
                     figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), 0));
@@ -901,12 +988,13 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
-                int r = figConfig["r"];
-                int R = figConfig["R"];
+                double r = figConfig["r"];
+                double R = figConfig["R"];
                 int m = figConfig["m"];
 
                 for(int i = 0; i < n; i++){
                     for(int j = 0; j < m; j++){
+                        // Is dat juiste volgorde???
                         double u = 2*i*pi/n;
                         double v = 2*j*pi/m;
                         Vector3D p = Vector3D::point((R+r*std::cos(v))*std::cos(u),(R+r*std::cos(v))*std::sin(u),r*std::sin(v));
@@ -923,7 +1011,19 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "3DLSystem"){
-
+                // Read l_system
+                // drawLSystem new function, that gives lines back
+                LParser::LSystem3D l_systeem;
+                std::ifstream input_stream(figConfig["inputfile"]);
+                input_stream >> l_systeem;
+                input_stream.close();
+                Figure figuur = draw3DLSystem(l_systeem, configuration);
+                figuur.color = kleur;
+                applyTransformation(figuur, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(figuur);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             }
             to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
