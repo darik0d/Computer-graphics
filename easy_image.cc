@@ -152,7 +152,7 @@ img::EasyImage::EasyImage() :
 }
 
 img::EasyImage::EasyImage(unsigned int _width, unsigned int _height, Color color) :
-	width(_width), height(_height), bitmap(width * height, color)
+	width(_width), height(_height), bitmap(width * height, color), buf(_width, _height)
 {
 }
 
@@ -262,7 +262,7 @@ void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1
 		}
 	}
 }
-/*void img::EasyImage::draw_zbuf_line(ZBuffer &, img::EasyImage &, const unsigned int x0, const unsigned int y0, const double z0, const unsigned int x1, const unsigned int y1, const double z1, const img::Color &color)
+void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, img::Color &color)
 {
     if (x0 >= this->width || y0 >= this->height || x1 >= this->width || y1 > this->height) {
         std::stringstream ss;
@@ -270,12 +270,18 @@ void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1
            << this->width << " and height " << this->height;
         throw std::runtime_error(ss.str());
     }
+    if(z0 == 0 || z1 == 0) std::cerr << "What I have to do if z0 pr z1 = 0?... Line: " << __LINE__ << std::endl;
     if (x0 == x1)
     {
         //special case for x0 == x1
+        // Vert lijn
         for (unsigned int i = std::min(y0, y1); i <= std::max(y0, y1); i++)
         {
-            (*this)(x0, i) = color;
+            int a = std::sqrt(std::pow(x0, 2) + std::pow(i, 2));
+            if(buf[i][x0] > ((i/a)/z0) + ((1 - (i/a)/z1))){
+                buf[i][x0] = ((i/a)/z0) + ((1 - (i/a)/z1));
+                (*this)(x0, i) = color;
+            }
         }
     }
     else if (y0 == y1)
@@ -283,41 +289,66 @@ void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1
         //special case for y0 == y1
         for (unsigned int i = std::min(x0, x1); i <= std::max(x0, x1); i++)
         {
-            (*this)(i, y0) = color;
+            int a = std::sqrt(std::pow(y0, 2) + std::pow(i, 2));
+            if(buf[y0][i] > ((i/a)/z0) + ((1 - (i/a)/z1))){
+                buf[y0][i] = ((i/a)/z0) + ((1 - (i/a)/z1));
+                (*this)(i, y0) = color;
+            }
         }
     }
     else
     {
+        // Let's go from left to right!
         if (x0 > x1)
         {
             //flip points if x1>x0: we want x0 to have the lowest value
             std::swap(x0, x1);
             std::swap(y0, y1);
+            std::swap(z0, z1);
         }
+        // Calc rico
         double m = ((double) y1 - (double) y0) / ((double) x1 - (double) x0);
         if (-1.0 <= m && m <= 1.0)
         {
             for (unsigned int i = 0; i <= (x1 - x0); i++)
             {
-                (*this)(x0 + i, (unsigned int) round(y0 + m * i)) = color;
+                int k = (unsigned int) round(y0 + m * i);
+                int r = x0+i;
+                int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
+                if(buf[r][k] > ((i/a)/z0) + ((1 - (i/a)/z1))){
+                    buf[r][k] = ((i/a)/z0) + ((1 - (i/a)/z1));
+                    (*this)(k, r) = color;
+                }
             }
         }
         else if (m > 1.0)
         {
             for (unsigned int i = 0; i <= (y1 - y0); i++)
             {
-                (*this)((unsigned int) round(x0 + (i / m)), y0 + i) = color;
+                int k = (unsigned int) round(x0 + (i / m));
+                int r = y0 + i;
+                int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
+                if(buf[r][k] > ((i/a)/z0) + ((1 - (i/a)/z1))) {
+                    buf[r][k] = ((i / a) / z0) + ((1 - (i / a) / z1));
+                    (*this)(k, r) = color;
+                }
             }
         }
         else if (m < -1.0)
         {
             for (unsigned int i = 0; i <= (y0 - y1); i++)
             {
-                (*this)((unsigned int) round(x0 - (i / m)), y0 - i) = color;
+                int k = (unsigned int) round(x0 - (i / m));
+                int r = y0 - i;
+                int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
+                if(buf[r][k] > ((i/a)/z0) + ((1 - (i/a)/z1))) {
+                    buf[r][k] = ((i / a) / z0) + ((1 - (i / a) / z1));
+                    (*this)((unsigned int) round(x0 - (i / m)), y0 - i) = color;
+                }
             }
         }
     }
-}*/
+}
 std::ostream& img::operator<<(std::ostream& out, EasyImage const& image)
 {
 

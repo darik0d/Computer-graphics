@@ -7,12 +7,16 @@
 
 #include "vector"
 
-class ZBuffer: public std::vector<std::vector<double> >
+class ZBuffer: public std::vector<std::vector<double>>
 {
 public:
 //Constructor: maakt een Z-Buffer van de correcte
 //grootte aan en initialiseert alle velden op +inf
-ZBuffer(const int width, const int height);
+    //std::vector<std::vector<double>> z_waarden;
+
+    ZBuffer();
+
+    ZBuffer(const int width, const int height);
 };
 
 

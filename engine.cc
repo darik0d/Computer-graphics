@@ -17,12 +17,6 @@
 /*Classes, namespaces and typedefs*/
 const double pi = 3.141592653589793238462653589;
 bool test_is_on = false;
-double posInf = std::numeric_limits<double>::infinity();
-double negInf = -std::numeric_limits<double>::infinity();
-
-void draw_zbuf_line(ZBuffer &, img::EasyImage &, const unsigned int x0, const unsigned int y0, const double z0, const unsigned int x1, const unsigned int y1, const double z1, const img::Color &color){
-
-}
 
 img::Color vectorToColor(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
@@ -42,22 +36,35 @@ public:
         x = co.first;
         y = co.second;
     }
+    Point2D(double co1, double co2, double co3){
+        x = co1;
+        y = co2;
+        z = co3;
+    }
     double x;
     double y;
+    double z;
 };
 class Line2D{
 public:
     Point2D a;
     Point2D b;
     img::Color color;
+    double z1;
+    double z2;
     Line2D(){};
     Line2D(Point2D ap, Point2D bp, img::Color kleur){
         a=ap;
         b=bp;
         color = kleur;
     }
-    double z1;
-    double z2;
+    Line2D(Point2D ap, Point2D bp, img::Color kleur, double z_1, double z_2){
+        a=ap;
+        b=bp;
+        color = kleur;
+        z1 = z_1;
+        z2 = z_2;
+    }
 
 };
 using Lines2D = std::vector<Line2D>;
@@ -417,27 +424,8 @@ Point2D doProjection(const Vector3D &point, const double d){
         to_return.x = 0;
         to_return.y = 0;
     }
+    to_return.z = point.z;
     return to_return;
-}
-Lines2D doProjection(const Figures3D & figuren){
-    Lines2D to_return;
-    for(auto figuur: figuren){
-        std::vector<Point2D> currentPoints;
-        for(auto point: figuur.points){
-            currentPoints.push_back(doProjection(point, 1));
-        }
-        // Now we have to work with faces. We add a new line with color of the figure (line goes from prev to current point)
-        for(auto face: figuur.faces){
-            int currentIndex = face.point_indexes[0];
-            int nextIndex = face.point_indexes[1];
-            while(nextIndex < face.point_indexes.size()){
-                to_return.push_back(Line2D(currentPoints[currentIndex],currentPoints[nextIndex], figuur.color));
-                currentIndex++;
-                nextIndex++;
-            }
-        }
-    }
-    return  to_return;
 }
 Vector3D findMiddle(Vector3D a, Vector3D b){
     return Vector3D::point((a.x+b.x)/2, (a.y+b.y)/2, (a.z+b.z)/2);
@@ -452,17 +440,17 @@ Lines2D doProjection(const Figure & figuur){
         for(auto face: figuur.faces){
             int currentIndex = face.point_indexes[0];
             int nextIndex = face.point_indexes[1];
-            if(face.point_indexes.size() == 2) to_return.push_back(Line2D(currentPoints[currentIndex],currentPoints[nextIndex], figuur.color));
+            if(face.point_indexes.size() == 2) to_return.push_back(Line2D(currentPoints[currentIndex],currentPoints[nextIndex], figuur.color, currentPoints[currentIndex].z, currentPoints[nextIndex].z));
             else {
                 int i = 0;
                 while(i < face.point_indexes.size()-1){
-                    to_return.push_back(Line2D(currentPoints[face.point_indexes[i]],currentPoints[face.point_indexes[i+1]], figuur.color));
+                    to_return.push_back(Line2D(currentPoints[face.point_indexes[i]],currentPoints[face.point_indexes[i+1]], figuur.color, currentPoints[face.point_indexes[i]].z,currentPoints[face.point_indexes[i+1]].z));
                     i++;
                 }
-                to_return.push_back(Line2D(currentPoints[face.point_indexes[face.point_indexes.size()-1]],currentPoints[face.point_indexes[0]], figuur.color));
+                to_return.push_back(Line2D(currentPoints[face.point_indexes[face.point_indexes.size()-1]],currentPoints[face.point_indexes[0]], figuur.color, currentPoints[face.point_indexes[face.point_indexes.size()-1]].z,currentPoints[face.point_indexes[0]].z));
             }
         }
-    return  to_return;
+    return to_return;
 }
 
 Figure createIcosahedron(){
@@ -594,7 +582,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         input_stream.close();
         Lines2D lijst = drawLSystem(l_systeem, configuration);
         to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
-    }else if(type == "Wireframe"){
+    }
+    else if(type == "Wireframe" || type == "ZBufferedWireframe"){
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
         for(int numb = 0; numb < aantalf; numb++){
@@ -1044,9 +1033,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             }
-            to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
-    }
-    else if(type == "ZBufferedWireframe"){
+        if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
+        else to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
 
     }
 	return to_return;

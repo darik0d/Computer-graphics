@@ -127,6 +127,8 @@ namespace img
 	class EasyImage
 	{
 		public:
+
+            ZBuffer buf;
 			/**
 			 * \brief Default Constructor. Creates a zero-pixel image
 			 */
@@ -220,7 +222,7 @@ namespace img
 			 * 	assert(y1 < getHeight())
 			 */
 			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color);
-            void draw_zbuf_line(ZBuffer &, img::EasyImage &, const unsigned int x0, const unsigned int y0, const double z0, const unsigned int x1, const unsigned int y1, const double z1, const img::Color &color);
+            void draw_zbuf_line(unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, img::Color &color);
 
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);

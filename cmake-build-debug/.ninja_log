@@ -10,3 +10,7 @@
 3	3584	7011945932980653	CMakeFiles/engine.dir/engine.cc.obj	5e77fd69ff3ce425
 4	734	7011946770130861	CMakeFiles/engine.dir/easy_image.cc.obj	da7f8bf5aee28e68
 735	1977	7011946782409243	engine.exe	2ee54642b9ac8a84
+14	390	7012004934303457	CMakeFiles/engine.dir/ZBuffer.cpp.obj	f093bf4a814a9f4d
+4	610	7012004936510440	CMakeFiles/engine.dir/easy_image.cc.obj	da7f8bf5aee28e68
+9	1573	7012004946093893	CMakeFiles/engine.dir/engine.cc.obj	5e77fd69ff3ce425
+1573	2381	7012004954169509	engine.exe	2ee54642b9ac8a84
