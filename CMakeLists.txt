@@ -19,7 +19,7 @@ set(engine_sources
 	easy_image.cc
 	engine.cc
 	ini_configuration.cc l_parser.cc
-)
+        ZBuffer.cpp ZBuffer.h)
 
 ############################################################
 # Create an executable

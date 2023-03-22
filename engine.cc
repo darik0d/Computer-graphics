@@ -11,10 +11,19 @@
 #include <algorithm>
 #include "vector3d.h"
 #include "vector3d.cc"
+#include <limits>
+#include "ZBuffer.h"
 
 /*Classes, namespaces and typedefs*/
 const double pi = 3.141592653589793238462653589;
 bool test_is_on = false;
+double posInf = std::numeric_limits<double>::infinity();
+double negInf = -std::numeric_limits<double>::infinity();
+
+void draw_zbuf_line(ZBuffer &, img::EasyImage &, const unsigned int x0, const unsigned int y0, const double z0, const unsigned int x1, const unsigned int y1, const double z1, const img::Color &color){
+
+}
+
 img::Color vectorToColor(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
@@ -47,6 +56,9 @@ public:
         b=bp;
         color = kleur;
     }
+    double z1;
+    double z2;
+
 };
 using Lines2D = std::vector<Line2D>;
 class Face
@@ -265,18 +277,24 @@ Figure draw3DLSystem(const LParser::LSystem3D &l_system, const ini::Configuratio
                 if(sym == '-') delta *= -1;
                 H = H*std::cos(delta) + L*std::sin(delta);
                 L = -H*std::sin(delta) + L*std::cos(delta);
+                H.normalise();
+                L.normalise();
             }
             else if(sym == '^' || sym == '&'){
                 double delta = hoek;
                 if(sym == '&') delta *= -1;
                 H = H*std::cos(delta) + U*std::sin(delta);
                 U = -H*std::sin(delta) + U*std::cos(delta);
+                H.normalise();
+                U.normalise();
             }
             else if(sym == '\\' || sym == '/'){
                 double delta = hoek;
-                if(sym == '&') delta *= -1;
+                if(sym == '/') delta *= -1;
                 L = L*std::cos(delta) - U*std::sin(delta);
                 U = L*std::sin(delta) + U*std::cos(delta);
+                U.normalise();
+                L.normalise();
             }
             else if(sym == '|'){
                 H = -H;
@@ -1027,6 +1045,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             }
             to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
+    }
+    else if(type == "ZBufferedWireframe"){
+
     }
 	return to_return;
 }

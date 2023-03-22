@@ -79,7 +79,8 @@
 				0,
 				1,
 				2,
-				3
+				3,
+				4
 			]
 		}
 	],
@@ -133,7 +134,15 @@
 				0,
 				1,
 				2,
-				3
+				3,
+				4
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				5
 			]
 		}
 	],
@@ -162,6 +171,17 @@
 			"compileGroupIndex" : 0,
 			"path" : "l_parser.cc",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ZBuffer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ZBuffer.h",
+			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "EXECUTABLE"
