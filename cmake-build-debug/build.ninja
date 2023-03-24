@@ -51,35 +51,35 @@ build cmake_object_order_depends_target_engine: phony || CMakeFiles/engine.dir
 
 build CMakeFiles/engine.dir/easy_image.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/easy_image.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\easy_image.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++14
+  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++17
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
 build CMakeFiles/engine.dir/engine.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/engine.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\engine.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++14
+  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++17
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
 build CMakeFiles/engine.dir/ini_configuration.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/ini_configuration.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\ini_configuration.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++14
+  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++17
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
 build CMakeFiles/engine.dir/l_parser.cc.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/l_parser.cc || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\l_parser.cc.obj.d
-  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++14
+  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++17
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
 build CMakeFiles/engine.dir/ZBuffer.cpp.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/ZBuffer.cpp || cmake_object_order_depends_target_engine
   DEP_FILE = CMakeFiles\engine.dir\ZBuffer.cpp.obj.d
-  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++14
+  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++17
   INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir

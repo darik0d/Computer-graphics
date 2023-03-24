@@ -26,6 +26,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include<cstdlib>
 
 std::random_device dev;
 std::mt19937 rng(dev());
@@ -504,6 +505,7 @@ std::string const& LParser::LSystem::get_replacement(char c) const
     int size_repl = dummy.size();
     std::uniform_int_distribution<std::mt19937::result_type> dist(0,size_repl-1);
     auto n = dist(rng);
+    n = rand() % size_repl;
     return std::next(replacementrules.equal_range(c).first, n)->second;
 }
 double LParser::LSystem::get_angle() const
