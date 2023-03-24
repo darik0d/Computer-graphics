@@ -1044,7 +1044,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         Vector3D p = Vector3D::point((R+r*std::cos(v))*std::cos(u),(R+r*std::cos(v))*std::sin(u),r*std::sin(v));
                         figuur.points.push_back(p);
                         // Ind of the point i,j = i*m + j,
-                        Face f = Face({i*m + j, ((i+1)%n)*m + (j+1)%m, i*m + (j+1)%m});
+                        Face f = Face({i*m + j, ((i+1)%n)*m + j, ((i+1)%n)*m + (j+1)%m, i*m + (j+1)%m});
                         figuur.faces.push_back(f);
                     }
                 }
