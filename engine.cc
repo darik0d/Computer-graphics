@@ -15,7 +15,7 @@
 #include "ZBuffer.h"
 
 /*Classes, namespaces and typedefs*/
-const double pi = 3.141592653589793238462653589;
+const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
 bool test_is_on = false;
 
 img::Color vectorToColor(std::vector<double> kleur){
@@ -319,24 +319,27 @@ Figure draw3DLSystem(const LParser::LSystem3D &l_system, const ini::Configuratio
             if(sym == '+' ||sym == '-') {
                 double delta = hoek;
                 if(sym == '-') delta *= -1;
+                Vector3D Ht = H;
                 H = H*std::cos(delta) + L*std::sin(delta);
-                L = -H*std::sin(delta) + L*std::cos(delta);
+                L = -Ht*std::sin(delta) + L*std::cos(delta);
                 H.normalise();
                 L.normalise();
             }
             else if(sym == '^' || sym == '&'){
                 double delta = hoek;
                 if(sym == '&') delta *= -1;
+                Vector3D Ht = H;
                 H = H*std::cos(delta) + U*std::sin(delta);
-                U = -H*std::sin(delta) + U*std::cos(delta);
+                U = -Ht*std::sin(delta) + U*std::cos(delta);
                 H.normalise();
                 U.normalise();
             }
             else if(sym == '\\' || sym == '/'){
                 double delta = hoek;
                 if(sym == '/') delta *= -1;
+                Vector3D Lt = L;
                 L = L*std::cos(delta) - U*std::sin(delta);
-                U = L*std::sin(delta) + U*std::cos(delta);
+                U = Lt*std::sin(delta) + U*std::cos(delta);
                 U.normalise();
                 L.normalise();
             }
@@ -363,7 +366,9 @@ Figure draw3DLSystem(const LParser::LSystem3D &l_system, const ini::Configuratio
             // In andere gevallen skip
         }
     }
-    if(test_is_on) std::cout << begin << std::endl;
+    if(test_is_on) {
+        std::cout << begin << std::endl;
+    }
     return to_return;
 }
 Matrix scaleFigure(const double scale){
