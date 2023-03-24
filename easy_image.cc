@@ -278,8 +278,8 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
         for (unsigned int i = std::min(y0, y1); i <= std::max(y0, y1); i++)
         {
             int a = std::sqrt(std::pow(x0, 2) + std::pow(i, 2));
-            if(buf[i][x0] > ((i/a)/z0) + ((1 - (i/a)/z1))){
-                buf[i][x0] = ((i/a)/z0) + ((1 - (i/a)/z1));
+            if(buf[i][x0] > ((i/a)/z0) + ((1 - (i/a))/z1)){
+                buf[i][x0] = ((i/a)/z0) + (((1 - (i/a))/z1));
                 (*this)(x0, i) = color;
             }
         }
@@ -290,8 +290,8 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
         for (unsigned int i = std::min(x0, x1); i <= std::max(x0, x1); i++)
         {
             int a = std::sqrt(std::pow(y0, 2) + std::pow(i, 2));
-            if(buf[y0][i] > ((i/a)/z0) + ((1 - (i/a)/z1))){
-                buf[y0][i] = ((i/a)/z0) + ((1 - (i/a)/z1));
+            if(buf[y0][i] > ((i/a)/z0) + (((1 - (i/a))/z1))){
+                buf[y0][i] = ((i/a)/z0) + (((1 - (i/a))/z1));
                 (*this)(i, y0) = color;
             }
         }
@@ -312,11 +312,11 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
         {
             for (unsigned int i = 0; i <= (x1 - x0); i++)
             {
-                int k = (unsigned int) round(y0 + m * i);
-                int r = x0+i;
+                int r = (unsigned int) round(y0 + m * i);
+                int k = x0+i;
                 int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
-                if(buf[r][k] > ((i/a)/z0) + ((1 - (i/a)/z1))){
-                    buf[r][k] = ((i/a)/z0) + ((1 - (i/a)/z1));
+                if(buf[r][k] > ((i/a)/z0) + (((1 - (i/a))/z1))){
+                    buf[r][k] = ((i/a)/z0) + (((1 - (i/a))/z1));
                     (*this)(k, r) = color;
                 }
             }
@@ -328,8 +328,8 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
                 int k = (unsigned int) round(x0 + (i / m));
                 int r = y0 + i;
                 int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
-                if(buf[r][k] > ((i/a)/z0) + ((1 - (i/a)/z1))) {
-                    buf[r][k] = ((i / a) / z0) + ((1 - (i / a) / z1));
+                if(buf[r][k] > ((i/a)/z0) + (((1 - (i/a))/z1))){
+                    buf[r][k] = ((i/a)/z0) + (((1 - (i/a))/z1));
                     (*this)(k, r) = color;
                 }
             }
@@ -341,9 +341,9 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
                 int k = (unsigned int) round(x0 - (i / m));
                 int r = y0 - i;
                 int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
-                if(buf[r][k] > ((i/a)/z0) + ((1 - (i/a)/z1))) {
-                    buf[r][k] = ((i / a) / z0) + ((1 - (i / a) / z1));
-                    (*this)((unsigned int) round(x0 - (i / m)), y0 - i) = color;
+                if(buf[r][k] > ((i/a)/z0) + (((1 - (i/a))/z1))){
+                    buf[r][k] = ((i/a)/z0) + (((1 - (i/a))/z1));
+                    (*this)(k, r) = color;
                 }
             }
         }

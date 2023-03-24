@@ -133,6 +133,43 @@ std::pair<double,double> getMaximum(const Lines2D &lines){
 //    std::cerr << "Element not found" << std::endl;
 //    return 0;
 //}
+img::EasyImage draw3DLines(const Lines2D &lines, const int size, img::Color background_color, const ini::Configuration &configuration){
+    double x_min = getMinimum(lines).first;
+    double y_min = getMinimum(lines).second;
+    double x_max = getMaximum(lines).first;
+    double y_max = getMaximum(lines).second;
+    // Bereken x_range en y_range
+    double x_range = x_max - x_min;
+    double y_range = y_max - y_min;
+    // Bereken imagex
+    int imagex = std::round(size*x_range/std::max(x_range, y_range));
+    // Bereken imagey
+    int imagey = std::round(size*y_range/std::max(x_range, y_range));
+    // Bereken d
+    double d = 0.95*imagex/x_range;
+    // Bereken DCx
+    double dcx = d*(x_min+x_max)/2;
+    // Bereken DCy
+    double dcy = d*(y_min+y_max)/2;
+    //dx
+    double dx = imagex/2 - dcx;
+    //dy
+    double dy = imagey/2 - dcy;
+    if(imagey < 1) imagey = 1;
+    if(imagex < 1) imagex = 1;
+    img::EasyImage to_return(imagex, imagey, background_color);
+    for(auto lijn: lines){
+        // Vermenigvuldig alle punten met d
+        lijn.a.x = d*lijn.a.x + dx;
+        lijn.a.y = d*lijn.a.y + dy;
+        lijn.b.x = d*lijn.b.x + dx;
+        lijn.b.y = d*lijn.b.y + dy;
+        if(lijn.a.x != lijn.b.x || lijn.a.y != lijn.b.y){
+            to_return.draw_zbuf_line(lijn.a.x, lijn.a.y, lijn.a.z, lijn.b.x, lijn.b.y, lijn.b.z, lijn.color);
+        }
+    }
+    return to_return;
+}
 img::EasyImage draw2DLines(const Lines2D &lines, const int size, img::Color background_color, const ini::Configuration &configuration){
     // Bereken x_min, x_max, y_min, y_max;
     double x_min = getMinimum(lines).first;
