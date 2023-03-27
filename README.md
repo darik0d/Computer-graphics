@@ -8,18 +8,18 @@ X: Niet werkend of niet geïmplementeerd
 
 |   | Functionaliteit      | Status |
 |---|---------------------------|---|
-| 1 | 2D L-systemen             |   |
-|   | Met haakjes               |   |
-|   | Stochastisch              |   |
-| 2 | Transformaties            |   |
-|   | Eye-point                 |   |
-|   | Projectie                 |   |
-| 3 | Platonische Lichamen      |   |
-|   | Kegel en cylinder         |   |
-|   | Bol                       |   |
-|   | Torus                     |   |
-|   | 3D L-systemen             |   |
-| 4 | Z-buffering (lijnen)      |   |
+| 1 | 2D L-systemen             | X |
+|   | Met haakjes               | X |
+|   | Stochastisch              | X |
+| 2 | Transformaties            | X |
+|   | Eye-point                 | X |
+|   | Projectie                 | X |
+| 3 | Platonische Lichamen      | X |
+|   | Kegel en cylinder         | X |
+|   | Bol                       | X |
+|   | Torus                     | X |
+|   | 3D L-systemen             | X |
+| 4 | Z-buffering (lijnen)      | X |
 | 5 | Triangulatie              |   |
 |   | Z-buffering (driehoeken)  |   |
 | 6 | 3D fractalen              |   |

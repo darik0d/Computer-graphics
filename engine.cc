@@ -123,6 +123,15 @@ std::pair<double,double> getMaximum(const Lines2D &lines){
     std::pair<double,double> to_return = std::make_pair(x,y);
     return to_return;
 }
+
+std::vector<Face> triangulate(const Face& face){
+    std::vector<Face> to_return;
+    int n = face.point_indexes.size();
+    for(int i = 1; i < n - 1; i++){
+        to_return.push_back(Face({0, i, i + 1}));
+    }
+    return to_return;
+}
 //template <typename T>
 //unsigned long findINdex(const std::vector<T> &vec, const T &toFind) {
 //    unsigned long i;
@@ -133,6 +142,7 @@ std::pair<double,double> getMaximum(const Lines2D &lines){
 //    std::cerr << "Element not found" << std::endl;
 //    return 0;
 //}
+
 img::EasyImage draw3DLines(const Lines2D &lines, const int size, img::Color background_color, const ini::Configuration &configuration){
     double x_min = getMinimum(lines).first;
     double y_min = getMinimum(lines).second;
@@ -625,7 +635,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         Lines2D lijst = drawLSystem(l_systeem, configuration);
         to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
     }
-    else if(type == "Wireframe" || type == "ZBufferedWireframe"){
+    else if(type == "Wireframe" || type == "ZBufferedWireframe" || type == "ZBuffering"){
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
         for(int numb = 0; numb < aantalf; numb++){
@@ -646,6 +656,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
             img::Color kleur = vectorToColor(figConfig["color"]);
 
+            Figure figuur;
+            std::vector<Figure> alleFiguren;
+
             if(typefig == "LineDrawing") {
                 int aantalp = figConfig["nrPoints"];
                 std::vector<Vector3D> points;
@@ -665,7 +678,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     faces.push_back(face);
                 }
                 // Initialise figure
-                Figure figuur;
                 figuur.points = points;
                 figuur.color = kleur;
                 figuur.faces = faces;
@@ -678,7 +690,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Cube"){
-                Figure figuur;
 
                 figuur.points.push_back(Vector3D::point(1,-1,-1));
                 figuur.points.push_back(Vector3D::point(-1,1,-1));
@@ -737,7 +748,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Tetrahedron"){
-                Figure figuur;
 
                 figuur.points.push_back(Vector3D::point(1,-1,-1));
                 figuur.points.push_back(Vector3D::point(-1,1,-1));
@@ -777,7 +787,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
             }
             else if(typefig == "Octahedron"){
-                Figure figuur;
 
                 figuur.points.push_back(Vector3D::point(1,0,0));
                 figuur.points.push_back(Vector3D::point(0,1,0));
@@ -839,7 +848,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
             }
             else if(typefig == "Icosahedron"){
-                Figure figuur = createIcosahedron();
+                figuur = createIcosahedron();
 
                 figuur.color = kleur;
 
@@ -853,7 +862,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             else if(typefig == "Dodecahedron"){
                 std::vector<Vector3D> icoPoints;
-                Figure figuur;
                 icoPoints.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
                 for(int l = 2; l < 7; l++){
                     icoPoints.push_back(Vector3D::point(std::cos(2*pi*(l-2)/5), std::sin(2*pi*(l-2)/5), 0.5));
@@ -936,7 +944,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Cylinder"){
-                Figure figuur;
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
@@ -960,7 +967,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Cone"){
-                Figure figuur;
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
@@ -982,7 +988,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Sphere") {
-                Figure figuur = createIcosahedron();
+                figuur = createIcosahedron();
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
@@ -1033,7 +1039,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if(typefig == "Torus"){
-                Figure figuur;
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
@@ -1066,7 +1071,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 std::ifstream input_stream(figConfig["inputfile"]);
                 input_stream >> l_systeem;
                 input_stream.close();
-                Figure figuur = draw3DLSystem(l_systeem, configuration);
+                figuur = draw3DLSystem(l_systeem, configuration);
                 figuur.color = kleur;
                 applyTransformation(figuur, finalTrans);
                 // Do projection
@@ -1074,10 +1079,24 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 // Insert getted lines
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
+
+            if (type == "ZBuffering") {
+                std::vector<Face> faces;
+                // Triangulate all faces of figure
+                for(auto f: figuur.faces){
+                    std::vector<Face> to_add = triangulate(f);
+                    faces.insert(faces.end(), to_add.begin(), to_add.end());
+                }
+                figuur.faces = faces;
+                alleFiguren.push_back(figuur);
+            }
             }
         if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
-        else to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
+        else if (type == "Wireframe") to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
+        else if (type == "ZBuffering") {
+            // Bereken all shit waarden
 
+        }
     }
 	return to_return;
 }

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "easy_image.h"
+#include "vector3d.h"
 #include <algorithm>
 #include <assert.h>
 #include <math.h>
@@ -348,6 +349,9 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
             }
         }
     }
+}
+void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, Color color){
+
 }
 std::ostream& img::operator<<(std::ostream& out, EasyImage const& image)
 {
