@@ -366,7 +366,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
 //    int y_max = std::ceil(std::max(a.y, std::max(b.y, c.y)));
 //    int y_min = std::floor(std::min(a.y, std::max(b.y, c.y)));
     double y_max = std::max(a.y, std::max(b.y, c.y));
-    double y_min = std::min(a.y, std::max(b.y, c.y));
+    double y_min = std::min(a.y, std::min(b.y, c.y));
     for(int y_i = roundToInt(y_min+0.5); y_i <= roundToInt(y_max-0.5); y_i++){
         //double y_i = static_cast<double> (y_ik);
         double x_lab = std::numeric_limits<double>::infinity();
