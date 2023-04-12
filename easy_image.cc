@@ -350,8 +350,57 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
         }
     }
 }
+double projecteerCo(double x, double z, double d, double dx){
+    return ((d*x)/(-z)) + dx;
+}
+inline int roundToInt(double d)
+{
+    return static_cast<int>(std::round(d));
+}
 void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, Color color){
-
+    // Bereken points
+    Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
+    Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
+    Point2D c = Point2D(projecteerCo(C.x, C.z, d, dx), projecteerCo(C.y, C.z, d, dy));
+    // Pixels tot driehoek
+//    int y_max = std::ceil(std::max(a.y, std::max(b.y, c.y)));
+//    int y_min = std::floor(std::min(a.y, std::max(b.y, c.y)));
+    double y_max = std::max(a.y, std::max(b.y, c.y));
+    double y_min = std::min(a.y, std::max(b.y, c.y));
+    for(int y_i = roundToInt(y_min+0.5); y_i <= roundToInt(y_max-0.5); y_i++){
+        //double y_i = static_cast<double> (y_ik);
+        double x_lab = std::numeric_limits<double>::infinity();
+        double x_lac = std::numeric_limits<double>::infinity();
+        double x_lbc = std::numeric_limits<double>::infinity();
+        double x_rab = -std::numeric_limits<double>::infinity();
+        double x_rac = -std::numeric_limits<double>::infinity();
+        double x_rbc = -std::numeric_limits<double>::infinity();
+        // Splits in 3 gevallen
+        // ab
+        if((y_i - a.y)*(y_i - b.y) <= 0 && a.y != b.y){
+            double x_i = b.x + ((a.x - b.x)*(y_i - b.y)/(a.y - b.y));
+            x_lab = x_i;
+            x_rab = x_i;
+        }
+        // bc
+        if((y_i - b.y)*(y_i - c.y) <= 0 && b.y != c.y){
+            double x_i = c.x + ((b.x - c.x)*(y_i - c.y)/(b.y - c.y));
+            x_lbc = x_i;
+            x_rbc = x_i;
+        }
+        // ac
+        if((y_i - a.y)*(y_i - c.y) <= 0 && a.y != c.y){
+            double x_i = c.x + ((a.x - c.x)*(y_i - c.y)/(a.y - c.y));
+            x_lac = x_i;
+            x_rac = x_i;
+        }
+        if(std::round(std::min(x_lab, std::min(x_lac, x_lbc))) != std::numeric_limits<double>::infinity() &&
+                    std::round(std::max(x_rab, std::max(x_rac, x_rbc))) != -std::numeric_limits<double>::infinity()) {
+            int x_r = roundToInt(std::min(x_lab, std::min(x_lac, x_lbc)) + 0.5);
+            int x_l = roundToInt(std::max(x_rab, std::max(x_rac, x_rbc)) - 0.5);
+            draw_line(x_l, y_i, x_r, y_i, color);
+        }
+    }
 }
 std::ostream& img::operator<<(std::ostream& out, EasyImage const& image)
 {

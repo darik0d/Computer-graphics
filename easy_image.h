@@ -21,6 +21,7 @@
 #include <vector>
 #include <iostream>
 #include "ZBuffer.h"
+#include "Point2D.h"
 
 class Vector3D;
 /**

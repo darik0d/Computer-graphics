@@ -13,6 +13,7 @@
 #include "vector3d.cc"
 #include <limits>
 #include "ZBuffer.h"
+#include "Point2D.h"
 
 /*Classes, namespaces and typedefs*/
 const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
@@ -25,26 +26,6 @@ img::Color vectorToColor(std::vector<double> kleur){
 double to_radialen(double graden){
     return graden*pi/180;
 }
-class Point2D{
-public:
-    Point2D(){};
-    Point2D(double xy, double yy){
-        x=xy;
-        y=yy;
-    }
-    Point2D(std::pair<double,double> co){
-        x = co.first;
-        y = co.second;
-    }
-    Point2D(double co1, double co2, double co3){
-        x = co1;
-        y = co2;
-        z = co3;
-    }
-    double x;
-    double y;
-    double z;
-};
 class Line2D{
 public:
     Point2D a;
@@ -128,7 +109,7 @@ std::vector<Face> triangulate(const Face& face){
     std::vector<Face> to_return;
     int n = face.point_indexes.size();
     for(int i = 1; i < n - 1; i++){
-        to_return.push_back(Face({0, i, i + 1}));
+        to_return.push_back(Face({face.point_indexes[0], face.point_indexes[i], face.point_indexes[i + 1]}));
     }
     return to_return;
 }
@@ -625,7 +606,9 @@ void herschaalPuntenBal(Vector3D& punt){
 img::EasyImage generate_image(const ini::Configuration &configuration)
 {
     int size = configuration["General"]["size"];
-    img::EasyImage to_return(size,size);
+    std::vector<double> vecback = configuration["General"]["backgroundcolor"];
+    img::Color backgroundcolor = vectorToColor(vecback);
+    img::EasyImage to_return(size,size, backgroundcolor);
     std::string type = configuration["General"]["type"];
     if(type == "2DLSystem"){
         LParser::LSystem2D l_systeem;
@@ -638,6 +621,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
     else if(type == "Wireframe" || type == "ZBufferedWireframe" || type == "ZBuffering"){
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
+        std::vector<Figure> alle_figuren;
         for(int numb = 0; numb < aantalf; numb++){
 
             auto figConfig = configuration["Figure" + std::to_string(numb)];
@@ -657,7 +641,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             img::Color kleur = vectorToColor(figConfig["color"]);
 
             Figure figuur;
-            std::vector<Figure> alleFiguren;
 
             if(typefig == "LineDrawing") {
                 int aantalp = figConfig["nrPoints"];
@@ -1083,19 +1066,50 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             if (type == "ZBuffering") {
                 std::vector<Face> faces;
                 // Triangulate all faces of figure
-                for(auto f: figuur.faces){
+                for(const auto& f: figuur.faces){
                     std::vector<Face> to_add = triangulate(f);
                     faces.insert(faces.end(), to_add.begin(), to_add.end());
                 }
                 figuur.faces = faces;
-                alleFiguren.push_back(figuur);
+                alle_figuren.push_back(figuur);
             }
             }
         if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
         else if (type == "Wireframe") to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
         else if (type == "ZBuffering") {
             // Bereken all shit waarden
-
+            double x_min = getMinimum(toDraw).first;
+            double y_min = getMinimum(toDraw).second;
+            double x_max = getMaximum(toDraw).first;
+            double y_max = getMaximum(toDraw).second;
+            // Bereken x_range en y_range
+            double x_range = x_max - x_min;
+            double y_range = y_max - y_min;
+            // Bereken imagex
+            double imagex = size*x_range/std::max(x_range, y_range);
+            // Bereken imagey
+            double imagey = size*y_range/std::max(x_range, y_range);
+            to_return = img::EasyImage(static_cast<int>(std::round(imagex)), static_cast<int>(std::round(imagey)), backgroundcolor);
+            double d = 0.95*imagex/x_range;
+            // Bereken DCx
+            double dcx = d*(x_min+x_max)/2.0;
+            // Bereken DCy
+            double dcy = d*(y_min+y_max)/2.0;
+            //dx
+            double dx = imagex/2.0 - dcx;
+            //dy
+            double dy = imagey/2.0 - dcy;
+            if(imagey < 1) imagey = 1;
+            if(imagex < 1) imagex = 1;
+            for(auto fig:alle_figuren){
+                for(auto fac: fig.faces){
+                    int A = fac.point_indexes[0];
+                    int B = fac.point_indexes[1];
+                    int C = fac.point_indexes[2];
+                    to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
+                                              d, dx, dy, fig.color);
+                }
+            }
         }
     }
 	return to_return;
