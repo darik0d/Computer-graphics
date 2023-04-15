@@ -943,6 +943,18 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 //                for(int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
 //                figuur.faces.push_back(Face(intsLastFace));
 
+                // Voeg bovenvlak toe
+                Face bovenvlak;
+                for(int ind = 0; ind < n; ind++){
+                    bovenvlak.point_indexes.push_back(ind+n);
+                }
+                // Voeg ondervlak toe
+                Face ondervlak;
+                for(int ind = n - 1; ind >= 0; ind--){
+                    ondervlak.point_indexes.push_back(ind);
+                }
+                figuur.faces.push_back(bovenvlak);
+                figuur.faces.push_back(ondervlak);
                 applyTransformation(figuur, finalTrans);
                 // Do projection
                 Lines2D to_add = doProjection(figuur);
