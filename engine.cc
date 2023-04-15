@@ -1074,43 +1074,43 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 alle_figuren.push_back(figuur);
             }
             }
-        if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
+        if(type == "ZBufferedWireframe" || type == "ZBuffering") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
         else if (type == "Wireframe") to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
-        else if (type == "ZBuffering") {
-            // Bereken all shit waarden
-            double x_min = getMinimum(toDraw).first;
-            double y_min = getMinimum(toDraw).second;
-            double x_max = getMaximum(toDraw).first;
-            double y_max = getMaximum(toDraw).second;
-            // Bereken x_range en y_range
-            double x_range = x_max - x_min;
-            double y_range = y_max - y_min;
-            // Bereken imagex
-            double imagex = size*x_range/std::max(x_range, y_range);
-            // Bereken imagey
-            double imagey = size*y_range/std::max(x_range, y_range);
-            to_return = img::EasyImage(static_cast<int>(std::round(imagex)), static_cast<int>(std::round(imagey)), backgroundcolor);
-            double d = 0.95*imagex/x_range;
-            // Bereken DCx
-            double dcx = d*(x_min+x_max)/2.0;
-            // Bereken DCy
-            double dcy = d*(y_min+y_max)/2.0;
-            //dx
-            double dx = imagex/2.0 - dcx;
-            //dy
-            double dy = imagey/2.0 - dcy;
-            if(imagey < 1) imagey = 1;
-            if(imagex < 1) imagex = 1;
-            for(auto fig:alle_figuren){
-                for(auto fac: fig.faces){
-                    int A = fac.point_indexes[0];
-                    int B = fac.point_indexes[1];
-                    int C = fac.point_indexes[2];
-                    to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.color);
-                }
-            }
-        }
+//        else if (type == "ZBuffering") {
+//            // Bereken all shit waarden
+//            double x_min = getMinimum(toDraw).first;
+//            double y_min = getMinimum(toDraw).second;
+//            double x_max = getMaximum(toDraw).first;
+//            double y_max = getMaximum(toDraw).second;
+//            // Bereken x_range en y_range
+//            double x_range = x_max - x_min;
+//            double y_range = y_max - y_min;
+//            // Bereken imagex
+//            double imagex = size*x_range/std::max(x_range, y_range);
+//            // Bereken imagey
+//            double imagey = size*y_range/std::max(x_range, y_range);
+//            to_return = img::EasyImage(static_cast<int>(std::round(imagex)), static_cast<int>(std::round(imagey)), backgroundcolor);
+//            double d = 0.95*imagex/x_range;
+//            // Bereken DCx
+//            double dcx = d*(x_min+x_max)/2.0;
+//            // Bereken DCy
+//            double dcy = d*(y_min+y_max)/2.0;
+//            //dx
+//            double dx = imagex/2.0 - dcx;
+//            //dy
+//            double dy = imagey/2.0 - dcy;
+//            if(imagey < 1) imagey = 1;
+//            if(imagex < 1) imagex = 1;
+//            for(auto fig:alle_figuren){
+//                for(auto fac: fig.faces){
+//                    int A = fac.point_indexes[0];
+//                    int B = fac.point_indexes[1];
+//                    int C = fac.point_indexes[2];
+//                    to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
+//                                              d, dx, dy, fig.color);
+//                }
+//            }
+//        }
     }
 	return to_return;
 }

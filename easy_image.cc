@@ -357,16 +357,94 @@ inline int roundToInt(double d)
 {
     return static_cast<int>(std::round(d));
 }
+bool img::EasyImage::berekenZEnSteekInBuffer(unsigned int x, unsigned int y, double xg, double yg, double zg, double dzdx, double dzdy){
+    /*
+     * Geeft true terug als het punt getekend moet worden
+     */
+    double een_op_z = 1.0001*(1/zg) + (x - xg)*dzdx + (y - yg)*dzdy;
+    if(buf[y][x] > -een_op_z){
+        buf[y][x] = -een_op_z;
+        return true;
+    }
+    return false;
+}
+void img::EasyImage::draw_zbuf_triag_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, img::Color &color, double xg, double yg, double zg, double dzdx, double dzdy){
+    if (x0 >= this->width || y0 >= this->height || x1 >= this->width || y1 > this->height) {
+        std::stringstream ss;
+        ss << "Drawing line from (" << x0 << "," << y0 << ") to (" << x1 << "," << y1 << ") in image of width "
+           << this->width << " and height " << this->height;
+        throw std::runtime_error(ss.str());
+    }
+    if (x0 == x1)
+    {
+        //special case for x0 == x1
+        for (unsigned int i = std::min(y0, y1); i <= std::max(y0, y1); i++)
+        {
+            if(berekenZEnSteekInBuffer(x0, i, xg, yg, zg, dzdx, dzdy)){
+                (*this)(x0, i) = color;
+            }
+        }
+    }
+    else if (y0 == y1)
+    {
+        //special case for y0 == y1
+        for (unsigned int i = std::min(x0, x1); i <= std::max(x0, x1); i++)
+        {
+            if(berekenZEnSteekInBuffer(i, y0, xg, yg, zg, dzdx, dzdy)) {
+                (*this)(i, y0) = color;
+            }
+        }
+    }
+    else
+    {
+        if (x0 > x1)
+        {
+            //flip points if x1>x0: we want x0 to have the lowest value
+            std::swap(x0, x1);
+            std::swap(y0, y1);
+        }
+        double m = ((double) y1 - (double) y0) / ((double) x1 - (double) x0);
+        if (-1.0 <= m && m <= 1.0)
+        {
+            for (unsigned int i = 0; i <= (x1 - x0); i++)
+            {
+                if(berekenZEnSteekInBuffer(x0 + i, (unsigned int) round(y0 + m * i), xg, yg, zg, dzdx, dzdy)) {
+                    (*this)(x0 + i, (unsigned int) round(y0 + m * i)) = color;
+                }
+            }
+        }
+        else if (m > 1.0)
+        {
+            for (unsigned int i = 0; i <= (y1 - y0); i++)
+            {
+                if(berekenZEnSteekInBuffer((unsigned int) round(x0 + (i / m)), y0 + i, xg, yg, zg, dzdx, dzdy)) {
+                    (*this)((unsigned int) round(x0 + (i / m)), y0 + i) = color;
+                }
+            }
+        }
+        else if (m < -1.0)
+        {
+            for (unsigned int i = 0; i <= (y0 - y1); i++)
+            {
+                if(berekenZEnSteekInBuffer((unsigned int) round(x0 - (i / m)), y0 - i, xg, yg, zg, dzdx, dzdy)) {
+                    (*this)((unsigned int) round(x0 - (i / m)), y0 - i) = color;
+                }
+            }
+        }
+    }
+}
 void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, Color color){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
     Point2D c = Point2D(projecteerCo(C.x, C.z, d, dx), projecteerCo(C.y, C.z, d, dy));
     // Pixels tot driehoek
-//    int y_max = std::ceil(std::max(a.y, std::max(b.y, c.y)));
-//    int y_min = std::floor(std::min(a.y, std::max(b.y, c.y)));
     double y_max = std::max(a.y, std::max(b.y, c.y));
     double y_min = std::min(a.y, std::min(b.y, c.y));
+    // Bereken xg, yg, zg
+    double xg = (a.x + b.x, c.x)/3;
+    double yg = (a.y + b.y, c.y)/3;
+    double zg = (1/(3*A.z)) + (1/(3*B.z)) + (1/(3*C.z));
     for(int y_i = roundToInt(y_min+0.5); y_i <= roundToInt(y_max-0.5); y_i++){
         //double y_i = static_cast<double> (y_ik);
         double x_lab = std::numeric_limits<double>::infinity();
@@ -376,29 +454,43 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
         double x_rac = -std::numeric_limits<double>::infinity();
         double x_rbc = -std::numeric_limits<double>::infinity();
         // Splits in 3 gevallen
-        // ab
+        // AB
         if((y_i - a.y)*(y_i - b.y) <= 0 && a.y != b.y){
             double x_i = b.x + ((a.x - b.x)*(y_i - b.y)/(a.y - b.y));
             x_lab = x_i;
             x_rab = x_i;
         }
-        // bc
+        // BC
         if((y_i - b.y)*(y_i - c.y) <= 0 && b.y != c.y){
             double x_i = c.x + ((b.x - c.x)*(y_i - c.y)/(b.y - c.y));
             x_lbc = x_i;
             x_rbc = x_i;
         }
-        // ac
+        // AC
         if((y_i - a.y)*(y_i - c.y) <= 0 && a.y != c.y){
             double x_i = c.x + ((a.x - c.x)*(y_i - c.y)/(a.y - c.y));
             x_lac = x_i;
             x_rac = x_i;
         }
+        // Bereken u-vector
+        Vector3D u = B - A;
+        // Bereken v-vector
+        Vector3D v = C - A;
+        // Bereken w-vector
+        Vector3D w = Vector3D::vector(u.y*v.z - u.z*v.y, u.z*v.x - u.x*v.z, u.x*v.y-u.y*v.x);
+        // Bereken k
+        double k = w.x*A.x + w.y*A.y + w.z*A.z;
+        // Bereken dzdx
+        double dzdx = w.x/(-d*k);
+        // Bereken dzdy
+        double dzdy = w.y/(-d*k);
+        // Draw everything line per line
         if(std::round(std::min(x_lab, std::min(x_lac, x_lbc))) != std::numeric_limits<double>::infinity() &&
                     std::round(std::max(x_rab, std::max(x_rac, x_rbc))) != -std::numeric_limits<double>::infinity()) {
             int x_r = roundToInt(std::min(x_lab, std::min(x_lac, x_lbc)) + 0.5);
             int x_l = roundToInt(std::max(x_rab, std::max(x_rac, x_rbc)) - 0.5);
-            draw_line(x_l, y_i, x_r, y_i, color);
+            // Geef ook dzdx en dzdy mee
+            draw_zbuf_triag_line(x_l, y_i, x_r, y_i, color, xg, yg, zg, dzdx, dzdy);
         }
     }
 }

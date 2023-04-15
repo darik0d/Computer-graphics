@@ -227,7 +227,8 @@ namespace img
 			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color);
             void draw_zbuf_line(unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, img::Color &color);
             void draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, Color color);
-
+            void draw_zbuf_triag_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, img::Color &color, double xg, double yg, double zg, double dzdx, double dzdy);
+            bool berekenZEnSteekInBuffer(unsigned int x, unsigned int y, double xg, double yg, double zg, double dzdx, double dzdy);
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);
 			/**
