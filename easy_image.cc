@@ -278,7 +278,7 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
         // Vert lijn
         for (unsigned int i = std::min(y0, y1); i <= std::max(y0, y1); i++)
         {
-            int a = std::sqrt(std::pow(x0, 2) + std::pow(i, 2));
+            int a = static_cast<int>(std::round(std::sqrt(std::pow(x0, 2) + std::pow(i, 2))));
             if(buf[i][x0] > ((i/a)/z0) + ((1 - (i/a))/z1)){
                 buf[i][x0] = ((i/a)/z0) + (((1 - (i/a))/z1));
                 (*this)(x0, i) = color;
@@ -290,7 +290,7 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
         //special case for y0 == y1
         for (unsigned int i = std::min(x0, x1); i <= std::max(x0, x1); i++)
         {
-            int a = std::sqrt(std::pow(y0, 2) + std::pow(i, 2));
+            int a = static_cast<int>(std::round(std::sqrt(std::pow(y0, 2) + std::pow(i, 2))));
             if(buf[y0][i] > ((i/a)/z0) + (((1 - (i/a))/z1))){
                 buf[y0][i] = ((i/a)/z0) + (((1 - (i/a))/z1));
                 (*this)(i, y0) = color;
@@ -328,7 +328,7 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
             {
                 int k = (unsigned int) round(x0 + (i / m));
                 int r = y0 + i;
-                int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
+                int a = static_cast<int>(std::round(std::sqrt(std::pow(k, 2) + std::pow(r, 2))));
                 if(buf[r][k] > ((i/a)/z0) + (((1 - (i/a))/z1))){
                     buf[r][k] = ((i/a)/z0) + (((1 - (i/a))/z1));
                     (*this)(k, r) = color;
@@ -341,7 +341,7 @@ void img::EasyImage::draw_zbuf_line(unsigned int x0, unsigned int y0, double z0,
             {
                 int k = (unsigned int) round(x0 - (i / m));
                 int r = y0 - i;
-                int a = std::sqrt(std::pow(k, 2) + std::pow(r, 2));
+                int a = static_cast<int>(std::round(std::sqrt(std::pow(k, 2) + std::pow(r, 2))));
                 if(buf[r][k] > ((i/a)/z0) + (((1 - (i/a))/z1))){
                     buf[r][k] = ((i/a)/z0) + (((1 - (i/a))/z1));
                     (*this)(k, r) = color;
@@ -442,8 +442,8 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
     double y_max = std::max(a.y, std::max(b.y, c.y));
     double y_min = std::min(a.y, std::min(b.y, c.y));
     // Bereken xg, yg, zg
-    double xg = (a.x + b.x, c.x)/3;
-    double yg = (a.y + b.y, c.y)/3;
+    double xg = (a.x + b.x + c.x)/3;
+    double yg = (a.y + b.y + c.y)/3;
     double zg = (1/(3*A.z)) + (1/(3*B.z)) + (1/(3*C.z));
     for(int y_i = roundToInt(y_min+0.5); y_i <= roundToInt(y_max-0.5); y_i++){
         //double y_i = static_cast<double> (y_ik);
@@ -480,6 +480,8 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
         Vector3D w = Vector3D::vector(u.y*v.z - u.z*v.y, u.z*v.x - u.x*v.z, u.x*v.y-u.y*v.x);
         // Bereken k
         double k = w.x*A.x + w.y*A.y + w.z*A.z;
+        // if (k <= 0) return; // Backface culling; 34 sec ipv 43
+        if (k == 0) return;
         // Bereken dzdx
         double dzdx = w.x/(-d*k);
         // Bereken dzdy
