@@ -20,8 +20,8 @@ X: Niet werkend of niet geïmplementeerd
 |   | Torus                     | X |
 |   | 3D L-systemen             | X |
 | 4 | Z-buffering (lijnen)      | X |
-| 5 | Triangulatie              |   |
-|   | Z-buffering (driehoeken)  |   |
+| 5 | Triangulatie              | X |
+|   | Z-buffering (driehoeken)  | X |
 | 6 | 3D fractalen              |   |
 |   | BuckyBall                 |   |
 |   | Mengerspons               |   |
@@ -39,7 +39,7 @@ X: Niet werkend of niet geïmplementeerd
 Geïmplementeerde vorm van texture mapping: ...
 
 ## Gekende problemen 
-...
+Z-buffering werkt niet altijd; om een of andere reden moet ik bij z-buffering -1/z waarde vergelijken ipv gewoon 1/z
 ## Niet-gequoteerde functionaliteit
 ...
 

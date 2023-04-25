@@ -361,9 +361,9 @@ bool img::EasyImage::berekenZEnSteekInBuffer(unsigned int x, unsigned int y, dou
     /*
      * Geeft true terug als het punt getekend moet worden
      */
-    double een_op_z = 1.0001*(1/zg) + (x - xg)*dzdx + (y - yg)*dzdy;
-    if(buf[y][x] > -een_op_z){
-        buf[y][x] = -een_op_z;
+    double een_op_z = zg + (x - xg)*dzdx + (y - yg)*dzdy;
+    if(buf[y][x] > een_op_z){
+        buf[y][x] = een_op_z;
         return true;
     }
     return false;
@@ -442,9 +442,9 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
     double y_max = std::max(a.y, std::max(b.y, c.y));
     double y_min = std::min(a.y, std::min(b.y, c.y));
     // Bereken xg, yg, zg
-    double xg = (a.x + b.x + c.x)/3;
-    double yg = (a.y + b.y + c.y)/3;
-    double zg = (1/(3*A.z)) + (1/(3*B.z)) + (1/(3*C.z));
+    double xg = (a.x + b.x + c.x)/3.0;
+    double yg = (a.y + b.y + c.y)/3.0;
+    double zg = (1.0/(3.0*A.z)) + (1.0/(3.0*B.z)) + (1.0/(3.0*C.z));
     for(int y_i = roundToInt(y_min+0.5); y_i <= roundToInt(y_max-0.5); y_i++){
         //double y_i = static_cast<double> (y_ik);
         double x_lab = std::numeric_limits<double>::infinity();
@@ -482,6 +482,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
         double k = w.x*A.x + w.y*A.y + w.z*A.z;
         // if (k <= 0) return; // Backface culling; 34 sec ipv 43
         if (k == 0) return;
+        // TODO: check formules hieronder
         // Bereken dzdx
         double dzdx = w.x/(-d*k);
         // Bereken dzdy
@@ -492,7 +493,18 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
             int x_r = roundToInt(std::min(x_lab, std::min(x_lac, x_lbc)) + 0.5);
             int x_l = roundToInt(std::max(x_rab, std::max(x_rac, x_rbc)) - 0.5);
             // Geef ook dzdx en dzdy mee
-            draw_zbuf_triag_line(x_l, y_i, x_r, y_i, color, xg, yg, zg, dzdx, dzdy);
+            double Z = zg + (x_r-xg)*dzdx + (y_i-yg)*dzdy;
+
+            for (int x = x_r; x <= x_l; x++) {
+                if(buf[y_i][x] > Z){
+                    bitmap[x*height + y_i] = color;
+                    buf[y_i][x] = Z;
+                }else{
+                    //std::cout << "";
+                }
+                Z += dzdx;
+            }
+
         }
     }
 }
