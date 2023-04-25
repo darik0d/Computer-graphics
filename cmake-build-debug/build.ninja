@@ -84,6 +84,20 @@ build CMakeFiles/engine.dir/ZBuffer.cpp.obj: CXX_COMPILER__engine_Debug C$:/User
   OBJECT_DIR = CMakeFiles\engine.dir
   OBJECT_FILE_DIR = CMakeFiles\engine.dir
 
+build CMakeFiles/engine.dir/Figure.cpp.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/Figure.cpp || cmake_object_order_depends_target_engine
+  DEP_FILE = CMakeFiles\engine.dir\Figure.cpp.obj.d
+  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++17
+  INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
+  OBJECT_DIR = CMakeFiles\engine.dir
+  OBJECT_FILE_DIR = CMakeFiles\engine.dir
+
+build CMakeFiles/engine.dir/Face.cpp.obj: CXX_COMPILER__engine_Debug C$:/Users/dasha/CLionProjects/Computer-graphics/Face.cpp || cmake_object_order_depends_target_engine
+  DEP_FILE = CMakeFiles\engine.dir\Face.cpp.obj.d
+  FLAGS = -std=c++14 -g -std=c++14 -std=gnu++17
+  INCLUDES = -IC:/Users/dasha/CLionProjects/Computer-graphics/vector
+  OBJECT_DIR = CMakeFiles\engine.dir
+  OBJECT_FILE_DIR = CMakeFiles\engine.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target engine
@@ -92,7 +106,7 @@ build CMakeFiles/engine.dir/ZBuffer.cpp.obj: CXX_COMPILER__engine_Debug C$:/User
 #############################################
 # Link the executable engine.exe
 
-build engine.exe: CXX_EXECUTABLE_LINKER__engine_Debug CMakeFiles/engine.dir/easy_image.cc.obj CMakeFiles/engine.dir/engine.cc.obj CMakeFiles/engine.dir/ini_configuration.cc.obj CMakeFiles/engine.dir/l_parser.cc.obj CMakeFiles/engine.dir/ZBuffer.cpp.obj
+build engine.exe: CXX_EXECUTABLE_LINKER__engine_Debug CMakeFiles/engine.dir/easy_image.cc.obj CMakeFiles/engine.dir/engine.cc.obj CMakeFiles/engine.dir/ini_configuration.cc.obj CMakeFiles/engine.dir/l_parser.cc.obj CMakeFiles/engine.dir/ZBuffer.cpp.obj CMakeFiles/engine.dir/Figure.cpp.obj CMakeFiles/engine.dir/Face.cpp.obj
   FLAGS = -std=c++14 -g -std=c++14
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\engine.dir

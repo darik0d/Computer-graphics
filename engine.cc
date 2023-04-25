@@ -14,6 +14,8 @@
 #include <limits>
 #include "ZBuffer.h"
 #include "Point2D.h"
+#include "Figure.h"
+#include "Face.h"
 
 /*Classes, namespaces and typedefs*/
 const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
@@ -53,25 +55,7 @@ public:
 
 };
 using Lines2D = std::vector<Line2D>;
-class Face
-{
-public:
-    Face(){};
-    Face(std::vector<int> inds){
-        point_indexes = inds;
-    }
-    //De indexen refereren naar
-    //punten in de ‘points’ vector
-    //van de Figure-klasse
-    std::vector<int> point_indexes;
-};
-class Figure
-{
-public:
-    std::vector<Vector3D> points;
-    std::vector<Face> faces;
-    img::Color color;
-};
+
 typedef std::list<Figure> Figures3D;
 
 /*Functions*/
@@ -679,53 +663,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             else if(typefig == "Cube"){
 
-                figuur.points.push_back(Vector3D::point(1,-1,-1));
-                figuur.points.push_back(Vector3D::point(-1,1,-1));
-                figuur.points.push_back(Vector3D::point(1,1,1));
-                figuur.points.push_back(Vector3D::point(-1,-1,1));
-                figuur.points.push_back(Vector3D::point(1,1,-1));
-                figuur.points.push_back(Vector3D::point(-1,-1,-1));
-                figuur.points.push_back(Vector3D::point(1,-1,1));
-                figuur.points.push_back(Vector3D::point(-1,1,1));
-
-                Face f1;
-                f1.point_indexes.push_back(0);
-                f1.point_indexes.push_back(4);
-                f1.point_indexes.push_back(2);
-                f1.point_indexes.push_back(6);
-                Face f2;
-                f2.point_indexes.push_back(4);
-                f2.point_indexes.push_back(1);
-                f2.point_indexes.push_back(7);
-                f2.point_indexes.push_back(2);
-                Face f3;
-                f3.point_indexes.push_back(1);
-                f3.point_indexes.push_back(5);
-                f3.point_indexes.push_back(3);
-                f3.point_indexes.push_back(7);
-                Face f4;
-                f4.point_indexes.push_back(5);
-                f4.point_indexes.push_back(0);
-                f4.point_indexes.push_back(6);
-                f4.point_indexes.push_back(3);
-                Face f5;
-                f5.point_indexes.push_back(6);
-                f5.point_indexes.push_back(2);
-                f5.point_indexes.push_back(7);
-                f5.point_indexes.push_back(3);
-                Face f6;
-                f6.point_indexes.push_back(0);
-                f6.point_indexes.push_back(5);
-                f6.point_indexes.push_back(1);
-                f6.point_indexes.push_back(4);
-
-                figuur.faces.push_back(f1);
-                figuur.faces.push_back(f2);
-                figuur.faces.push_back(f3);
-                figuur.faces.push_back(f4);
-                figuur.faces.push_back(f5);
-                figuur.faces.push_back(f6);
-
+                figuur.cube();
                 figuur.color = kleur;
 
                 // Use the finalTrans matrix
@@ -737,33 +675,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             else if(typefig == "Tetrahedron"){
 
-                figuur.points.push_back(Vector3D::point(1,-1,-1));
-                figuur.points.push_back(Vector3D::point(-1,1,-1));
-                figuur.points.push_back(Vector3D::point(1,1,1));
-                figuur.points.push_back(Vector3D::point(-1,-1,1));
-
-                Face f1;
-                f1.point_indexes.push_back(0);
-                f1.point_indexes.push_back(1);
-                f1.point_indexes.push_back(2);
-                Face f2;
-                f2.point_indexes.push_back(1);
-                f2.point_indexes.push_back(3);
-                f2.point_indexes.push_back(2);
-                Face f3;
-                f3.point_indexes.push_back(0);
-                f3.point_indexes.push_back(3);
-                f3.point_indexes.push_back(1);
-                Face f4;
-                f4.point_indexes.push_back(0);
-                f4.point_indexes.push_back(2);
-                f4.point_indexes.push_back(3);
-
-                figuur.faces.push_back(f1);
-                figuur.faces.push_back(f2);
-                figuur.faces.push_back(f3);
-                figuur.faces.push_back(f4);
-
+                figuur.tetrahedron();
                 figuur.color = kleur;
 
                 // Use the finalTrans matrix
@@ -776,55 +688,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             else if(typefig == "Octahedron"){
 
-                figuur.points.push_back(Vector3D::point(1,0,0));
-                figuur.points.push_back(Vector3D::point(0,1,0));
-                figuur.points.push_back(Vector3D::point(-1,0,0));
-                figuur.points.push_back(Vector3D::point(0,-1,0));
-                figuur.points.push_back(Vector3D::point(0,0,-1));
-                figuur.points.push_back(Vector3D::point(0,0,1));
-
-                Face f1;
-                f1.point_indexes.push_back(0);
-                f1.point_indexes.push_back(1);
-                f1.point_indexes.push_back(5);
-                Face f2;
-                f2.point_indexes.push_back(1);
-                f2.point_indexes.push_back(2);
-                f2.point_indexes.push_back(5);
-                Face f3;
-                f3.point_indexes.push_back(2);
-                f3.point_indexes.push_back(3);
-                f3.point_indexes.push_back(5);
-                Face f4;
-                f4.point_indexes.push_back(3);
-                f4.point_indexes.push_back(0);
-                f4.point_indexes.push_back(5);
-                Face f5;
-                f5.point_indexes.push_back(1);
-                f5.point_indexes.push_back(0);
-                f5.point_indexes.push_back(4);
-                Face f6;
-                f6.point_indexes.push_back(2);
-                f6.point_indexes.push_back(1);
-                f6.point_indexes.push_back(4);
-                Face f7;
-                f7.point_indexes.push_back(3);
-                f7.point_indexes.push_back(2);
-                f7.point_indexes.push_back(4);
-                Face f8;
-                f8.point_indexes.push_back(0);
-                f8.point_indexes.push_back(3);
-                f8.point_indexes.push_back(4);
-
-                figuur.faces.push_back(f1);
-                figuur.faces.push_back(f2);
-                figuur.faces.push_back(f3);
-                figuur.faces.push_back(f4);
-                figuur.faces.push_back(f5);
-                figuur.faces.push_back(f6);
-                figuur.faces.push_back(f7);
-                figuur.faces.push_back(f8);
-
+                figuur.octahedron();
                 figuur.color = kleur;
 
                 // Use the finalTrans matrix
@@ -849,79 +713,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
             }
             else if(typefig == "Dodecahedron"){
-                std::vector<Vector3D> icoPoints;
-                icoPoints.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
-                for(int l = 2; l < 7; l++){
-                    icoPoints.push_back(Vector3D::point(std::cos(2*pi*(l-2)/5), std::sin(2*pi*(l-2)/5), 0.5));
-                }
-                for(int l = 7; l < 12; l++){
-                    icoPoints.push_back(Vector3D::point(std::cos((pi/5)+((l-7)*2*pi/5)), std::sin((pi/5)+((l-7)*2*pi/5)), -0.5));
-                }
-                icoPoints.push_back(Vector3D::point(0,0, -std::sqrt(5)/2));
-                // Here i'd like to give a point from old faces
-                std::vector<std::vector<int>> icoInd = {{0,1,2}, {0,2,3}, {0,3,4},
-                                                        {0,4,5}, {0,5,1}, {1,6,2},
-                                                        {2,6,7}, {2,7,3}, {3,7,8},
-                                                        {3,8,4}, {4,8,9}, {4,9,5},
-                                                        {5,9,10}, {5,10,1}, {1,10,6},
-                                                        {11,7,6}, {11,8,7}, {11,9,8},
-                                                        {11,10,9}, {11,6,10}};
-                for(auto point: icoInd){
-                    figuur.points.push_back(Vector3D::point((icoPoints[point[0]].x + icoPoints[point[1]].x + icoPoints[point[2]].x)/3,
-                                    (icoPoints[point[0]].y + icoPoints[point[1]].y + icoPoints[point[2]].y)/3,
-                                    (icoPoints[point[0]].z + icoPoints[point[1]].z + icoPoints[point[2]].z)/3));
-                }
-                Face f1 = Face({0,1,2,3,4});
-                Face f2 = Face({0,5,6,7,1});
-                Face f3 = Face({1,7,8,9,2});
-                Face f4 = Face({2,9,10,11,3});
-                Face f5 = Face({3,11,12,13,4});
-                Face f6 = Face({4,13,14,5,0});
-                Face f7 = Face({19,18,17,16,15});
-                Face f8;
-                f8.point_indexes.push_back(19);
-                f8.point_indexes.push_back(14);
-                f8.point_indexes.push_back(13);
-                f8.point_indexes.push_back(12);
-                f8.point_indexes.push_back(18);
-                Face f9;
-                f9.point_indexes.push_back(18);
-                f9.point_indexes.push_back(12);
-                f9.point_indexes.push_back(11);
-                f9.point_indexes.push_back(10);
-                f9.point_indexes.push_back(17);
-                Face f10;
-                f10.point_indexes.push_back(17);
-                f10.point_indexes.push_back(10);
-                f10.point_indexes.push_back(9);
-                f10.point_indexes.push_back(8);
-                f10.point_indexes.push_back(16);
-                Face f11;
-                f11.point_indexes.push_back(16);
-                f11.point_indexes.push_back(8);
-                f11.point_indexes.push_back(7);
-                f11.point_indexes.push_back(6);
-                f11.point_indexes.push_back(15);
-                Face f12;
-                f12.point_indexes.push_back(15);
-                f12.point_indexes.push_back(6);
-                f12.point_indexes.push_back(5);
-                f12.point_indexes.push_back(14);
-                f12.point_indexes.push_back(19);
-
-                figuur.faces.push_back(f1);
-                figuur.faces.push_back(f2);
-                figuur.faces.push_back(f3);
-                figuur.faces.push_back(f4);
-                figuur.faces.push_back(f5);
-                figuur.faces.push_back(f6);
-                figuur.faces.push_back(f7);
-                figuur.faces.push_back(f8);
-                figuur.faces.push_back(f9);
-                figuur.faces.push_back(f10);
-                figuur.faces.push_back(f11);
-                figuur.faces.push_back(f12);
-
+                figuur.dodecahedron();
                 figuur.color = kleur;
 
                 // Use the finalTrans matrix
