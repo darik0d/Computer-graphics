@@ -8,6 +8,59 @@
 #include <cmath>
 #define _USE_MATH_DEFINES
 
+Figure::Figure() {}
+//Figure::Figure(Figure& fig){
+//    points = std::vector<Vector3D> (fig.points);
+//    faces = std::vector<Face> (fig.faces);
+//    color = fig.color;
+//}
+Matrix scaleFigure(const double scale){
+    Matrix to_return;
+    for(auto i:{1,2,3}){
+        to_return(i,i) = to_return(i,i)*scale;
+    }
+    return to_return;
+}
+void Figure::scaleFigure(const double scale){
+    Matrix m;
+    for(auto i:{1,2,3}){
+        m(i,i) = m(i,i)*scale;
+    }
+    // Apply scale
+    for(Vector3D & point: points) {
+        point = point*m;
+    }
+}
+void Figure::translate(const Vector3D &vector){
+    Matrix to_return;
+    to_return(4,1) = vector.x;
+    to_return(4,2) = vector.y;
+    to_return(4,3) = vector.z;
+    // Apply scale
+    for(Vector3D & point: points) {
+        point = point*to_return;
+    }
+}
+void Figure::generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale, const int power) const{
+    if(nr_iterations < 1) return;
+    for(int i = 0; i < points.size(); i++){
+        Figure figure;
+        // Copy constructor
+        figure.color = color;
+        figure.faces = std::vector<Face>(faces);
+        figure.points = std::vector<Vector3D>(points);
+        // Scale figure
+        figure.scaleFigure(1/std::pow(scale, power));
+        // Calculate vector
+        Vector3D to_move = points[i] - figure.points[i];
+        // Move
+        figure.translate(to_move);
+        // Add figure to fractal
+        fractal.push_back(figure);
+        // Do it for more iterations
+        figure.generateFractal(fractal, nr_iterations -1, scale, power+1);
+    }
+}
 void Figure::cube(){
     points.push_back(Vector3D::point(1,-1,-1));
     points.push_back(Vector3D::point(-1,1,-1));

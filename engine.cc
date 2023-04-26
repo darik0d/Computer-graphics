@@ -611,6 +611,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
         std::vector<Figure> alle_figuren;
+        // Iterate over all figures
         for(int numb = 0; numb < aantalf; numb++){
 
             auto figConfig = configuration["Figure" + std::to_string(numb)];
@@ -685,6 +686,15 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 // Insert getted lines
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
 
+            }
+            else if(typefig == "FractalTetrahedron"){
+                figuur.tetrahedron();
+                figuur.color = kleur;
+                // Use the finalTrans matrix
+                applyTransformation(figuur, finalTrans);
+                // Now we have our 0 iteration
+                int nrIteration = figConfig["nrIterations"];
+                double fractalScale = figConfig["fractalScale"];
             }
             else if(typefig == "Octahedron"){
 
@@ -882,7 +892,19 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.faces = faces;
                 alle_figuren.push_back(figuur);
             }
+            // Fractalen
+            if(type.find("Fractal") != type.back()){
+                int nrIteration = figConfig["nrIterations"];
+                double fractalScale = figConfig["fractalScale"];
+                std::vector<Figure> fractals;
+                figuur.generateFractal(fractals, nrIteration, fractalScale, 1);
+                // Save all fractals
+                for(auto fig:fractals){
+                    alle_figuren.push_back(fig);
+                }
+                // Project all
             }
+        }
         if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
         else if (type == "Wireframe") to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
         else if (type == "ZBuffering") {

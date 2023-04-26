@@ -15,6 +15,8 @@ class Face;
 class Figure
 {
 public:
+    Figure();
+
     std::vector<Vector3D> points;
     std::vector<Face> faces;
     img::Color color;
@@ -22,6 +24,10 @@ public:
     void tetrahedron();
     void octahedron();
     void dodecahedron();
+    void generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale, const int power) const;
+    void scaleFigure(const double scale);
+    void translate(const Vector3D &vector);
+//    Figure(Figure& fig);
 };
 
 
