@@ -14,13 +14,6 @@ Figure::Figure() {}
 //    faces = std::vector<Face> (fig.faces);
 //    color = fig.color;
 //}
-Matrix scaleFigure(const double scale){
-    Matrix to_return;
-    for(auto i:{1,2,3}){
-        to_return(i,i) = to_return(i,i)*scale;
-    }
-    return to_return;
-}
 void Figure::scaleFigure(const double scale){
     Matrix m;
     for(auto i:{1,2,3}){

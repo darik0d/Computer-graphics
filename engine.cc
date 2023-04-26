@@ -612,7 +612,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         Lines2D toDraw;
         std::vector<Figure> alle_figuren;
         // Iterate over all figures
-        for(int numb = 0; numb < aantalf; numb++){
+        for(int numb = 0; numb < aantalf; numb++) {
 
             auto figConfig = configuration["Figure" + std::to_string(numb)];
             std::string typefig = figConfig["type"];
@@ -631,8 +631,10 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             img::Color kleur = vectorToColor(figConfig["color"]);
 
             Figure figuur;
-
-            if(typefig == "LineDrawing") {
+            if(typefig.find("Fractal") != typefig.back()){
+                typefig = typefig.substr(typefig.find("Fractal") + 7, typefig.size()-7);
+            }
+            if (typefig == "LineDrawing") {
                 int aantalp = figConfig["nrPoints"];
                 std::vector<Vector3D> points;
                 // Add all points
@@ -655,96 +657,88 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.color = kleur;
                 figuur.faces = faces;
 
-                // Use the finalTrans matrix
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                // Use the finalTrans matrix
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            else if(typefig == "Cube"){
+            else if (typefig == "Cube") {
 
                 figuur.cube();
                 figuur.color = kleur;
 
-                // Use the finalTrans matrix
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                // Use the finalTrans matrix
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            else if(typefig == "Tetrahedron"){
+            else if (typefig == "Tetrahedron") {
 
                 figuur.tetrahedron();
                 figuur.color = kleur;
 
-                // Use the finalTrans matrix
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                // Use the finalTrans matrix
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
 
             }
-            else if(typefig == "FractalTetrahedron"){
-                figuur.tetrahedron();
-                figuur.color = kleur;
-                // Use the finalTrans matrix
-                applyTransformation(figuur, finalTrans);
-                // Now we have our 0 iteration
-                int nrIteration = figConfig["nrIterations"];
-                double fractalScale = figConfig["fractalScale"];
-            }
-            else if(typefig == "Octahedron"){
+            else if (typefig == "Octahedron") {
 
                 figuur.octahedron();
                 figuur.color = kleur;
 
-                // Use the finalTrans matrix
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                // Use the finalTrans matrix
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
 
             }
-            else if(typefig == "Icosahedron"){
+            else if (typefig == "Icosahedron") {
                 figuur = createIcosahedron();
 
                 figuur.color = kleur;
 
-                // Use the finalTrans matrix
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                // Use the finalTrans matrix
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
 
             }
-            else if(typefig == "Dodecahedron"){
+            else if (typefig == "Dodecahedron") {
                 figuur.dodecahedron();
                 figuur.color = kleur;
 
-                // Use the finalTrans matrix
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                // Use the finalTrans matrix
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            else if(typefig == "Cylinder"){
+            else if (typefig == "Cylinder") {
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
                 double height = figConfig["height"];
 
-                for(int ind = 0; ind < n; ind++){
-                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), 0));
-                    figuur.faces.push_back(Face({ind, (ind+1)%n, n + (ind+1)%(n),  n + ind}));
+                for (int ind = 0; ind < n; ind++) {
+                    figuur.points.push_back(Vector3D::point(std::cos(2 * pi * ind / n), std::sin(2 * pi * ind / n), 0));
+                    figuur.faces.push_back(Face({ind, (ind + 1) % n, n + (ind + 1) % (n), n + ind}));
                 }
-                for(int ind = 0; ind < n; ind++){
-                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), height));
+                for (int ind = 0; ind < n; ind++) {
+                    figuur.points.push_back(
+                            Vector3D::point(std::cos(2 * pi * ind / n), std::sin(2 * pi * ind / n), height));
                 }
 //                std::vector<int> intsLastFace;
 //                for(int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
@@ -752,44 +746,44 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
                 // Voeg bovenvlak toe
                 Face bovenvlak;
-                for(int ind = 0; ind < n; ind++){
-                    bovenvlak.point_indexes.push_back(ind+n);
+                for (int ind = 0; ind < n; ind++) {
+                    bovenvlak.point_indexes.push_back(ind + n);
                 }
                 // Voeg ondervlak toe
                 Face ondervlak;
-                for(int ind = n - 1; ind >= 0; ind--){
+                for (int ind = n - 1; ind >= 0; ind--) {
                     ondervlak.point_indexes.push_back(ind);
                 }
                 figuur.faces.push_back(bovenvlak);
                 figuur.faces.push_back(ondervlak);
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            else if(typefig == "Cone"){
+            else if (typefig == "Cone") {
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
                 double height = figConfig["height"];
 
-                for(int ind = 0; ind < n; ind++){
-                    figuur.points.push_back(Vector3D::point(std::cos(2*pi*ind/n), std::sin(2*pi*ind/n), 0));
-                    figuur.faces.push_back(Face({ind, (ind+1)%n, n}));
+                for (int ind = 0; ind < n; ind++) {
+                    figuur.points.push_back(Vector3D::point(std::cos(2 * pi * ind / n), std::sin(2 * pi * ind / n), 0));
+                    figuur.faces.push_back(Face({ind, (ind + 1) % n, n}));
                 }
-                figuur.points.push_back(Vector3D::point(0,0,height));
+                figuur.points.push_back(Vector3D::point(0, 0, height));
                 std::vector<int> intsLastFace;
-                for(int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
+                for (int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
                 figuur.faces.push_back(Face(intsLastFace));
 
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            else if(typefig == "Sphere") {
+            else if (typefig == "Sphere") {
                 figuur = createIcosahedron();
 
                 figuur.color = kleur;
@@ -824,23 +818,23 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         for (auto f: {f1, f2, f3, f4}) {
                             newFaces.push_back(f);
                         }
+                    }
+                    // Use the finalTrans matrix
+
+                    figuur.faces = newFaces;
+                    figuur.points = newPoints;
+                    n--;
                 }
-                // Use the finalTrans matrix
-
-                figuur.faces = newFaces;
-                figuur.points = newPoints;
-                n--;
-            }
                 // Herschaal alle punten
-                for(auto &p:figuur.points) herschaalPuntenBal(p);
+                for (auto &p: figuur.points) herschaalPuntenBal(p);
 
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            else if(typefig == "Torus"){
+            else if (typefig == "Torus") {
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
@@ -848,25 +842,27 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 double R = figConfig["R"];
                 int m = figConfig["m"];
 
-                for(int i = 0; i < n; i++){
-                    for(int j = 0; j < m; j++){
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < m; j++) {
                         // Is dat juiste volgorde???
-                        double u = 2*i*pi/n;
-                        double v = 2*j*pi/m;
-                        Vector3D p = Vector3D::point((R+r*std::cos(v))*std::cos(u),(R+r*std::cos(v))*std::sin(u),r*std::sin(v));
+                        double u = 2 * i * pi / n;
+                        double v = 2 * j * pi / m;
+                        Vector3D p = Vector3D::point((R + r * std::cos(v)) * std::cos(u),
+                                                     (R + r * std::cos(v)) * std::sin(u), r * std::sin(v));
                         figuur.points.push_back(p);
                         // Ind of the point i,j = i*m + j,
-                        Face f = Face({i*m + j, ((i+1)%n)*m + j, ((i+1)%n)*m + (j+1)%m, i*m + (j+1)%m});
+                        Face f = Face({i * m + j, ((i + 1) % n) * m + j, ((i + 1) % n) * m + (j + 1) % m,
+                                       i * m + (j + 1) % m});
                         figuur.faces.push_back(f);
                     }
                 }
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            else if(typefig == "3DLSystem"){
+            else if (typefig == "3DLSystem") {
                 // Read l_system
                 // drawLSystem new function, that gives lines back
                 LParser::LSystem3D l_systeem;
@@ -875,34 +871,47 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 input_stream.close();
                 figuur = draw3DLSystem(l_systeem, configuration);
                 figuur.color = kleur;
-                applyTransformation(figuur, finalTrans);
-                // Do projection
-                Lines2D to_add = doProjection(figuur);
-                // Insert getted lines
-                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
+//                applyTransformation(figuur, finalTrans);
+//                // Do projection
+//                Lines2D to_add = doProjection(figuur);
+//                // Insert getted lines
+//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-
             if (type == "ZBuffering") {
                 std::vector<Face> faces;
                 // Triangulate all faces of figure
-                for(const auto& f: figuur.faces){
+                for (const auto &f: figuur.faces) {
                     std::vector<Face> to_add = triangulate(f);
                     faces.insert(faces.end(), to_add.begin(), to_add.end());
                 }
                 figuur.faces = faces;
-                alle_figuren.push_back(figuur);
+                //alle_figuren.push_back(figuur);
             }
+            std::string typefig_full = figConfig["type"];
             // Fractalen
-            if(type.find("Fractal") != type.back()){
+            if (typefig_full.find("Fractal") != typefig_full.back()) {
                 int nrIteration = figConfig["nrIterations"];
                 double fractalScale = figConfig["fractalScale"];
                 std::vector<Figure> fractals;
                 figuur.generateFractal(fractals, nrIteration, fractalScale, 1);
                 // Save all fractals
-                for(auto fig:fractals){
+                for (const auto& fig: fractals) {
                     alle_figuren.push_back(fig);
                 }
-                // Project all
+                if(nrIteration == 0){
+                    alle_figuren.push_back(figuur);
+                }
+            }
+            else{
+                alle_figuren.push_back(figuur);
+            }
+            for (auto &fi: alle_figuren) {
+                // Use the finalTrans matrix
+                applyTransformation(fi, finalTrans);
+                // Do projection
+                Lines2D to_add = doProjection(fi);
+                // Insert getted lines
+                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
         }
         if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
