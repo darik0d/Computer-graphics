@@ -34,25 +34,37 @@ void Figure::translate(const Vector3D &vector){
         point = point*to_return;
     }
 }
-void Figure::generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale, const int power) const{
-    if(nr_iterations < 1) return;
-    for(int i = 0; i < points.size(); i++){
-        Figure figure;
-        // Copy constructor
-        figure.color = color;
-        figure.faces = std::vector<Face>(faces);
-        figure.points = std::vector<Vector3D>(points);
-        // Scale figure
-        figure.scaleFigure(1/std::pow(scale, power));
-        // Calculate vector
-        Vector3D to_move = points[i] - figure.points[i];
-        // Move
-        figure.translate(to_move);
-        // Add figure to fractal
-        fractal.push_back(figure);
-        // Do it for more iterations
-        figure.generateFractal(fractal, nr_iterations -1, scale, power+1);
+void Figure::generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale) const{
+    std::vector<Figure> figures_to_fractalise;
+    // Copy constructor
+    Figure figure;
+    figure.color = color;
+    figure.faces = std::vector<Face>(faces);
+    figure.points = std::vector<Vector3D>(points);
+    figures_to_fractalise.push_back(figure);
+    for(int n = 0; n < nr_iterations; n++) {
+        for(const auto& fig:figures_to_fractalise) {
+            for (int i = 0; i < fig.points.size(); i++) {
+                Figure fract_fig;
+                // Copy constructor
+                fract_fig.color = fig.color;
+                fract_fig.faces = std::vector<Face>(fig.faces);
+                fract_fig.points = std::vector<Vector3D>(fig.points);
+                // Scale figure
+                fract_fig.scaleFigure(1 / scale);
+                // Calculate vector
+                Vector3D to_move = fig.points[i] - fract_fig.points[i];
+                // Move
+                fract_fig.translate(to_move);
+                // Add figure to fractal
+                fractal.push_back(fract_fig);
+                // Do it for more iterations
+            }
+        }
+        figures_to_fractalise = fractal;
+        fractal.clear();
     }
+    fractal = figures_to_fractalise;
 }
 void Figure::cube(){
     points.push_back(Vector3D::point(1,-1,-1));

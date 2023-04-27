@@ -2,7 +2,7 @@ TODO:
 + Verzamel alle gevallen van fractalen
 - Copy constructor voor figuren
 + Generate fractaal: functie opstellen (recursie!)
-+ Copy figuur per punt
+- Copy figuur per punt
 - Schaal figuur per punt
 - Vershuif figuur (the boss of the task)
 - Recursie

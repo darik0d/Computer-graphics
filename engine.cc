@@ -893,7 +893,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 int nrIteration = figConfig["nrIterations"];
                 double fractalScale = figConfig["fractalScale"];
                 std::vector<Figure> fractals;
-                figuur.generateFractal(fractals, nrIteration, fractalScale, 1);
+                figuur.generateFractal(fractals, nrIteration, fractalScale);
                 // Save all fractals
                 for (const auto& fig: fractals) {
                     alle_figuren.push_back(fig);
