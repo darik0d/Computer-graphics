@@ -611,9 +611,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
     else if(type == "Wireframe" || type == "ZBufferedWireframe" || type == "ZBuffering" || type == "LightedZBuffering"){
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
-        std::vector<Figure> alle_figuren;
         std::vector<Light> lights; // Licht voor ZBuffering
-
+        std::vector<Figure> all_projected_figures;
         // Get all lights
         if(type == "ZBuffering"){
             Light to_add;
@@ -635,6 +634,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
         // Iterate over all figures
         for(int numb = 0; numb < aantalf; numb++) {
+
+            std::vector<Figure> alle_figuren;
 
             auto figConfig = configuration["Figure" + std::to_string(numb)];
             std::string typefig = figConfig["type"];
@@ -874,6 +875,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             for (auto &fi: alle_figuren) {
                 // Use the finalTrans matrix
                 applyTransformation(fi, finalTrans);
+                // Add to all_projected_figures to reuse them for fractals
+                all_projected_figures.push_back(fi);
                 // Do projection
                 Lines2D to_add = doProjection(fi);
                 // Insert getted lines
@@ -908,7 +911,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             double dy = imagey/2.0 - dcy;
             if(imagey < 1) imagey = 1;
             if(imagex < 1) imagex = 1;
-            for(auto fig:alle_figuren){
+            for(auto fig:all_projected_figures){
                 for(auto fac: fig.faces){
                     int A = fac.point_indexes[0];
                     int B = fac.point_indexes[1];
