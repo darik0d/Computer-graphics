@@ -22,7 +22,7 @@ X: Niet werkend of niet geïmplementeerd
 | 4 | Z-buffering (lijnen)      | X |
 | 5 | Triangulatie              | X |
 |   | Z-buffering (driehoeken)  | X |
-| 6 | 3D fractalen              |   |
+| 6 | 3D fractalen              | X |
 |   | BuckyBall                 |   |
 |   | Mengerspons               |   |
 |   | View Frustum              |   |
@@ -39,7 +39,7 @@ X: Niet werkend of niet geïmplementeerd
 Geïmplementeerde vorm van texture mapping: ...
 
 ## Gekende problemen 
-Z-buffering werkt niet altijd; om een of andere reden moet ik bij z-buffering -1/z waarde vergelijken ipv gewoon 1/z
+Er is iets mis met z-buffering met lijnen
 ## Niet-gequoteerde functionaliteit
 ...
 

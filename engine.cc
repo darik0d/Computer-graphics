@@ -16,6 +16,7 @@
 #include "Point2D.h"
 #include "Figure.h"
 #include "Face.h"
+#include "Light.h"
 
 /*Classes, namespaces and typedefs*/
 const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
@@ -607,10 +608,31 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         Lines2D lijst = drawLSystem(l_systeem, configuration);
         to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
     }
-    else if(type == "Wireframe" || type == "ZBufferedWireframe" || type == "ZBuffering"){
+    else if(type == "Wireframe" || type == "ZBufferedWireframe" || type == "ZBuffering" || type == "LightedZBuffering"){
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
         std::vector<Figure> alle_figuren;
+        std::vector<Light> lights; // Licht voor ZBuffering
+
+        // Get all lights
+        if(type == "ZBuffering"){
+            Light to_add;
+            to_add.ambientLight = img::Color(1.0,1.0,1.0);
+            to_add.diffuseLight = img::Color(0.0,0.0,0.0);
+            to_add.specularLight = img::Color(0.0,0.0,0.0);
+            lights.push_back(to_add);
+        }else if(type == "LightedZBuffering"){
+            int aantall = configuration["General"]["nrLights"];
+            for(int numb = 0; numb < aantall; numb++){
+                auto lightConfig = configuration["Light" + std::to_string(numb)];
+                std::vector<double> ambientLight = lightConfig["ambientLight"];
+                Light to_add;
+                // TODO: andere types van belichting
+                to_add.ambientLight = img::Color(ambientLight[0], ambientLight[1], ambientLight[2]);
+                lights.push_back(to_add);
+            }
+        }
+
         // Iterate over all figures
         for(int numb = 0; numb < aantalf; numb++) {
 
@@ -628,10 +650,27 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
             Matrix eyeTransf = eyePointTrans(eye);
             Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
-            img::Color kleur = vectorToColor(figConfig["color"]);
+            img::Color kleur;
+            // TODO: andere lichttypes
+            if(type == "LightedZBuffering"){
+                std::vector<double> ambientReflection = figConfig["ambientReflection"];
+                std::vector<double> resultaat = {0,0,0};
+                for(Light light:lights){
+                    resultaat[0] += light.ambientLight.red * ambientReflection[0];
+                    resultaat[1] += light.ambientLight.green * ambientReflection[1];
+                    resultaat[2] += light.ambientLight.blue * ambientReflection[2];
+                }
+                // if bigger than 1, remove overflow
+                resultaat[0] = std::fmod(resultaat[0], 1.0);
+                resultaat[1] = std::fmod(resultaat[1], 1.0);
+                resultaat[2] = std::fmod(resultaat[2], 1.0);
+                kleur = vectorToColor(resultaat);
+            }else{
+                kleur = vectorToColor(figConfig["color"]);
+            }
 
             Figure figuur;
-            if(typefig.find("Fractal") != typefig.back()){
+            if(typefig.find("Fractal") != std::string::npos){
                 typefig = typefig.substr(typefig.find("Fractal") + 7, typefig.size()-7);
             }
             if (typefig == "LineDrawing") {
@@ -657,74 +696,26 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.color = kleur;
                 figuur.faces = faces;
 
-//                // Use the finalTrans matrix
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if (typefig == "Cube") {
-
                 figuur.cube();
                 figuur.color = kleur;
-
-//                // Use the finalTrans matrix
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if (typefig == "Tetrahedron") {
-
                 figuur.tetrahedron();
                 figuur.color = kleur;
-
-//                // Use the finalTrans matrix
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
-
             }
             else if (typefig == "Octahedron") {
-
                 figuur.octahedron();
                 figuur.color = kleur;
-
-//                // Use the finalTrans matrix
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
-
             }
             else if (typefig == "Icosahedron") {
                 figuur = createIcosahedron();
-
                 figuur.color = kleur;
-
-//                // Use the finalTrans matrix
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
-
             }
             else if (typefig == "Dodecahedron") {
                 figuur.dodecahedron();
                 figuur.color = kleur;
-
-//                // Use the finalTrans matrix
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if (typefig == "Cylinder") {
 
@@ -756,11 +747,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 }
                 figuur.faces.push_back(bovenvlak);
                 figuur.faces.push_back(ondervlak);
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if (typefig == "Cone") {
 
@@ -777,11 +763,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 for (int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
                 figuur.faces.push_back(Face(intsLastFace));
 
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if (typefig == "Sphere") {
                 figuur = createIcosahedron();
@@ -815,7 +796,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         Face f2 = Face({indexB, indexE, indexD});
                         Face f3 = Face({indexC, indexF, indexE});
                         Face f4 = Face({indexD, indexE, indexF});
-                        for (auto f: {f1, f2, f3, f4}) {
+                        for (const auto& f: {f1, f2, f3, f4}) {
                             newFaces.push_back(f);
                         }
                     }
@@ -828,11 +809,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 // Herschaal alle punten
                 for (auto &p: figuur.points) herschaalPuntenBal(p);
 
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if (typefig == "Torus") {
 
@@ -856,11 +832,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         figuur.faces.push_back(f);
                     }
                 }
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
             else if (typefig == "3DLSystem") {
                 // Read l_system
@@ -871,13 +842,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 input_stream.close();
                 figuur = draw3DLSystem(l_systeem, configuration);
                 figuur.color = kleur;
-//                applyTransformation(figuur, finalTrans);
-//                // Do projection
-//                Lines2D to_add = doProjection(figuur);
-//                // Insert getted lines
-//                toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
-            if (type == "ZBuffering") {
+            if (type == "ZBuffering" || type == "LightedZBuffering") {
                 std::vector<Face> faces;
                 // Triangulate all faces of figure
                 for (const auto &f: figuur.faces) {
@@ -889,7 +855,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             std::string typefig_full = figConfig["type"];
             // Fractalen
-            if (typefig_full.find("Fractal") != typefig_full.back()) {
+            if (typefig_full.find("Fractal") != std::string::npos) {
                 int nrIteration = figConfig["nrIterations"];
                 double fractalScale = figConfig["fractalScale"];
                 std::vector<Figure> fractals;
@@ -914,10 +880,11 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
         }
+        // Nu moeten we alle figuren tekenen
         if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
         else if (type == "Wireframe") to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
-        else if (type == "ZBuffering") {
-            // Bereken all shit waarden
+        else if (type == "ZBuffering" || type == "LightedZBuffering") {
+            // Bereken alle waarden
             double x_min = getMinimum(toDraw).first;
             double y_min = getMinimum(toDraw).second;
             double x_max = getMaximum(toDraw).first;
