@@ -670,11 +670,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 if(resultaat[0] > 1) resultaat[0] = 1;
                 if(resultaat[1] > 1) resultaat[1] = 1;
                 if(resultaat[2] > 1) resultaat[2] = 1;
-                figuur.fullAmbientReflection = vectorToColor(resultaat);
+                figuur.fullAmbientReflection = resultaat;
             } else if(type == "ZBuffering") {
-                std::vector<double> tusVec = figConfig["color"];
-                figuur.fullAmbientReflection = img::Color(tusVec[0], tusVec[1], tusVec[2]);
-                figuur.fullAmbientReflection = vectorToColor(tusVec);
+                figuur.fullAmbientReflection = figConfig["color"];
             }
             else{
                 kleur = vectorToColor(figConfig["color"]);

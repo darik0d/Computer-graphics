@@ -20,9 +20,9 @@ public:
     std::vector<Vector3D> points;
     std::vector<Face> faces;
     img::Color color;
-    img::Color fullAmbientReflection;
-    img::Color diffuseReflection;
-    img::Color specularReflection;
+    std::vector<double> fullAmbientReflection;
+    std::vector<double> diffuseReflection;
+    std::vector<double> specularReflection;
     double reflectionCoefficient;
     void cube();
     void tetrahedron();

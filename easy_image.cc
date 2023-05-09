@@ -433,11 +433,11 @@ void img::EasyImage::draw_zbuf_triag_line(unsigned int x0, unsigned int y0, unsi
         }
     }
 }
-img::Color scaleColor(img::Color kleur){
-    img::Color to_return = img::Color(kleur.red*255, kleur.green*255, kleur.blue*255);
+img::Color vectorToColor2(std::vector<double> kleur){
+    img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, const Color& fullAmbientRef, const Color& diffuseRef, const Color& specularRef, double refCoeff, std::vector<Light> lights){
+void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light>& lights){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -502,7 +502,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
             for (int x = x_r; x <= x_l; x++) {
                 if(buf[y_i][x] > Z){
                     // TODO: andere belichtingen
-                    bitmap[x*height + y_i] = fullAmbientRef;
+                    bitmap[x*height + y_i] = vectorToColor2(fullAmbientRef);
                     buf[y_i][x] = Z;
                 }else{
                     //std::cout << "";
