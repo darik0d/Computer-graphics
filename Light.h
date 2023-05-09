@@ -19,15 +19,10 @@ public:
     // Infinitive?
     bool inf;
     //de richting waarin het
-    //licht schijnt
+    //licht schijnt (of location als puntbron)
     Vector3D ldVector = Vector3D::vector(0,0,0);
-};
-
-class PointLight: public Light
-{
-public:
-    //de locatie van de puntbron
-    Vector3D location;
+//    //de locatie van de puntbron
+//    Vector3D location;
     //de hoek van een spotlicht
     double spotAngle;
 };

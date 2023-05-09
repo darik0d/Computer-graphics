@@ -491,7 +491,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
         std::vector<double> fullDifCo = {0,0,0};
         for(Light light:lights){
             // Go further if some components are not zero
-            if(light.ldVector.length() != 0){
+            if(light.ldVector.length() != 0 && light.inf){
                 // Bereken l
                 Vector3D l = -light.ldVector / light.ldVector.length();
                 l.normalise();
@@ -502,10 +502,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                 fullDifCo[2] += diffuseRef[2]*light.diffuseLight[2]*cos_alpha;
             }
         }
-        std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0], fullAmbientRef[1] + fullDifCo[1], fullAmbientRef[2] + fullDifCo[2]};
-        if(resulted_color[0] > 1) resulted_color[0] = 1;
-        if(resulted_color[1] > 1) resulted_color[1] = 1;
-        if(resulted_color[2] > 1) resulted_color[2] = 1;
+
         // Bereken k
         double k = w.x*A.x + w.y*A.y + w.z*A.z;
         // if (k <= 0) return; // Backface culling; 34 sec ipv 43
@@ -524,7 +521,29 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
 
             for (int x = x_r; x <= x_l; x++) {
                 if(buf[y_i][x] > Z){
+                    std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0], fullAmbientRef[1] + fullDifCo[1], fullAmbientRef[2] + fullDifCo[2]};
                     // TODO: andere belichtingen
+                    for(Light light:lights){
+                        // Go further if some components are not zero
+                        if(light.ldVector.length() != 0 && !light.inf){
+                            // Bepaal positie in eye co
+                            Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
+                            // Bereken l
+                            Vector3D l = light.ldVector - eyeCo;
+                            //Vector3D l = -ld / ld.length();
+                            l.normalise();
+                            double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
+                            if(cos_alpha < 0) continue;
+                            resulted_color[0] += diffuseRef[0]*light.diffuseLight[0]*cos_alpha;
+                            resulted_color[1] += diffuseRef[1]*light.diffuseLight[1]*cos_alpha;
+                            resulted_color[2] += diffuseRef[2]*light.diffuseLight[2]*cos_alpha;
+                        }
+                    }
+
+                    if(resulted_color[0] > 1) resulted_color[0] = 1;
+                    if(resulted_color[1] > 1) resulted_color[1] = 1;
+                    if(resulted_color[2] > 1) resulted_color[2] = 1;
+
                     bitmap[x*height + y_i] = vectorToColor2(resulted_color);
                     buf[y_i][x] = Z;
                 }else{
