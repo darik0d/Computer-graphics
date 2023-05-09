@@ -36,11 +36,17 @@ void Figure::translate(const Vector3D &vector){
 }
 void Figure::generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale) const{
     std::vector<Figure> figures_to_fractalise;
+
     // Copy constructor
     Figure figure;
     figure.color = color;
     figure.faces = std::vector<Face>(faces);
     figure.points = std::vector<Vector3D>(points);
+    figure.diffuseReflection = std::vector<double>(diffuseReflection);
+    figure.fullAmbientReflection = std::vector<double>(fullAmbientReflection);
+    figure.specularReflection = std::vector<double>(specularReflection);
+    figure.reflectionCoefficient = reflectionCoefficient;
+
     figures_to_fractalise.push_back(figure);
     for(int n = 0; n < nr_iterations; n++) {
         for(const auto& fig:figures_to_fractalise) {
@@ -50,6 +56,11 @@ void Figure::generateFractal(std::vector<Figure> & fractal, const int nr_iterati
                 fract_fig.color = fig.color;
                 fract_fig.faces = std::vector<Face>(fig.faces);
                 fract_fig.points = std::vector<Vector3D>(fig.points);
+                fract_fig.diffuseReflection = std::vector<double>(fig.diffuseReflection);
+                fract_fig.fullAmbientReflection = std::vector<double>(fig.fullAmbientReflection);
+                fract_fig.specularReflection = std::vector<double>(fig.specularReflection);
+                fract_fig.reflectionCoefficient = fig.reflectionCoefficient;
+
                 // Scale figure
                 fract_fig.scaleFigure(1 / scale);
                 // Calculate vector
@@ -265,4 +276,113 @@ void Figure::dodecahedron() {
     faces.push_back(f10);
     faces.push_back(f11);
     faces.push_back(f12);
+}
+void Figure::icosahedron(){
+    points.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
+    for(int l = 2; l < 7; l++){
+        points.push_back(Vector3D::point(std::cos(2*pi*(l-2)/5), std::sin(2*pi*(l-2)/5), 0.5));
+    }
+    for(int l = 7; l < 12; l++){
+        points.push_back(Vector3D::point(std::cos((pi/5)+((l-7)*2*pi/5)), std::sin((pi/5)+((l-7)*2*pi/5)), -0.5));
+    }
+    points.push_back(Vector3D::point(0,0, -std::sqrt(5)/2));
+
+    Face f1 = Face({0,1,2});
+    Face f2;
+    f2.point_indexes.push_back(0);
+    f2.point_indexes.push_back(2);
+    f2.point_indexes.push_back(3);
+    Face f3;
+    f3.point_indexes.push_back(0);
+    f3.point_indexes.push_back(3);
+    f3.point_indexes.push_back(4);
+    Face f4;
+    f4.point_indexes.push_back(0);
+    f4.point_indexes.push_back(4);
+    f4.point_indexes.push_back(5);
+    Face f5;
+    f5.point_indexes.push_back(0);
+    f5.point_indexes.push_back(5);
+    f5.point_indexes.push_back(1);
+    Face f6;
+    f6.point_indexes.push_back(1);
+    f6.point_indexes.push_back(6);
+    f6.point_indexes.push_back(2);
+    Face f7;
+    f7.point_indexes.push_back(2);
+    f7.point_indexes.push_back(6);
+    f7.point_indexes.push_back(7);
+    Face f8;
+    f8.point_indexes.push_back(2);
+    f8.point_indexes.push_back(7);
+    f8.point_indexes.push_back(3);
+    Face f9;
+    f9.point_indexes.push_back(3);
+    f9.point_indexes.push_back(7);
+    f9.point_indexes.push_back(8);
+    Face f10;
+    f10.point_indexes.push_back(3);
+    f10.point_indexes.push_back(8);
+    f10.point_indexes.push_back(4);
+    Face f11;
+    f11.point_indexes.push_back(4);
+    f11.point_indexes.push_back(8);
+    f11.point_indexes.push_back(9);
+    Face f12;
+    f12.point_indexes.push_back(4);
+    f12.point_indexes.push_back(9);
+    f12.point_indexes.push_back(5);
+    Face f13;
+    f13.point_indexes.push_back(5);
+    f13.point_indexes.push_back(9);
+    f13.point_indexes.push_back(10);
+    Face f14;
+    f14.point_indexes.push_back(5);
+    f14.point_indexes.push_back(10);
+    f14.point_indexes.push_back(1);
+    Face f15;
+    f15.point_indexes.push_back(1);
+    f15.point_indexes.push_back(10);
+    f15.point_indexes.push_back(6);
+    Face f16;
+    f16.point_indexes.push_back(11);
+    f16.point_indexes.push_back(7);
+    f16.point_indexes.push_back(6);
+    Face f17;
+    f17.point_indexes.push_back(11);
+    f17.point_indexes.push_back(8);
+    f17.point_indexes.push_back(7);
+    Face f18;
+    f18.point_indexes.push_back(11);
+    f18.point_indexes.push_back(9);
+    f18.point_indexes.push_back(8);
+    Face f19;
+    f19.point_indexes.push_back(11);
+    f19.point_indexes.push_back(10);
+    f19.point_indexes.push_back(9);
+    Face f20;
+    f20.point_indexes.push_back(11);
+    f20.point_indexes.push_back(6);
+    f20.point_indexes.push_back(10);
+
+    faces.push_back(f1);
+    faces.push_back(f2);
+    faces.push_back(f3);
+    faces.push_back(f4);
+    faces.push_back(f5);
+    faces.push_back(f6);
+    faces.push_back(f7);
+    faces.push_back(f8);
+    faces.push_back(f9);
+    faces.push_back(f10);
+    faces.push_back(f11);
+    faces.push_back(f12);
+    faces.push_back(f13);
+    faces.push_back(f14);
+    faces.push_back(f15);
+    faces.push_back(f16);
+    faces.push_back(f17);
+    faces.push_back(f18);
+    faces.push_back(f19);
+    faces.push_back(f20);
 }

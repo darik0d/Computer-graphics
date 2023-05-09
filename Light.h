@@ -11,19 +11,16 @@ class Light
 {
 public:
     //de ambiente licht component
-    img::Color ambientLight;
+    std::vector<double> ambientLight;
     //de diffuse licht component
-    img::Color diffuseLight;
+    std::vector<double> diffuseLight;
     //de diffuse licht component
-    img::Color specularLight;
-};
-
-class InfLight: public Light
-{
-public:
+    std::vector<double> specularLight;
+    // Infinitive?
+    bool inf;
     //de richting waarin het
     //licht schijnt
-    Vector3D ldVector;
+    Vector3D ldVector = Vector3D::vector(0,0,0);
 };
 
 class PointLight: public Light

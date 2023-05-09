@@ -19,6 +19,7 @@
 #include "vector3d.h"
 #include <algorithm>
 #include <assert.h>
+#include "Light.h"
 #include <math.h>
 #include <iostream>
 #include <sstream>
@@ -480,13 +481,35 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
         Vector3D u = B - A;
         // Bereken v-vector
         Vector3D v = C - A;
-        // Bereken w-vector
+        // Bereken w-vector (Vector3D::cross is voor watjes)
         Vector3D w = Vector3D::vector(u.y*v.z - u.z*v.y, u.z*v.x - u.x*v.z, u.x*v.y-u.y*v.x);
+
+        // Bereken n
+        Vector3D n = w/w.length();
+        n.normalise();
+        // Bereken totale diffuse component van alle lichten
+        std::vector<double> fullDifCo = {0,0,0};
+        for(Light light:lights){
+            // Go further if some components are not zero
+            if(light.ldVector.length() != 0){
+                // Bereken l
+                Vector3D l = -light.ldVector / light.ldVector.length();
+                l.normalise();
+                double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
+                if(cos_alpha < 0) continue;
+                fullDifCo[0] += diffuseRef[0]*light.diffuseLight[0]*cos_alpha;
+                fullDifCo[1] += diffuseRef[1]*light.diffuseLight[1]*cos_alpha;
+                fullDifCo[2] += diffuseRef[2]*light.diffuseLight[2]*cos_alpha;
+            }
+        }
+        std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0], fullAmbientRef[1] + fullDifCo[1], fullAmbientRef[2] + fullDifCo[2]};
+        if(resulted_color[0] > 1) resulted_color[0] = 1;
+        if(resulted_color[1] > 1) resulted_color[1] = 1;
+        if(resulted_color[2] > 1) resulted_color[2] = 1;
         // Bereken k
         double k = w.x*A.x + w.y*A.y + w.z*A.z;
         // if (k <= 0) return; // Backface culling; 34 sec ipv 43
         if (k == 0) return;
-        // TODO: check formules hieronder
         // Bereken dzdx
         double dzdx = w.x/(-d*k);
         // Bereken dzdy
@@ -502,7 +525,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
             for (int x = x_r; x <= x_l; x++) {
                 if(buf[y_i][x] > Z){
                     // TODO: andere belichtingen
-                    bitmap[x*height + y_i] = vectorToColor2(fullAmbientRef);
+                    bitmap[x*height + y_i] = vectorToColor2(resulted_color);
                     buf[y_i][x] = Z;
                 }else{
                     //std::cout << "";

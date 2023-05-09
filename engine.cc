@@ -19,7 +19,6 @@
 #include "Light.h"
 
 /*Classes, namespaces and typedefs*/
-const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
 bool test_is_on = false;
 
 img::Color vectorToColor(std::vector<double> kleur){
@@ -476,117 +475,6 @@ Lines2D doProjection(const Figure & figuur){
     return to_return;
 }
 
-Figure createIcosahedron(){
-    Figure figuur;
-    figuur.points.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
-    for(int l = 2; l < 7; l++){
-        figuur.points.push_back(Vector3D::point(std::cos(2*pi*(l-2)/5), std::sin(2*pi*(l-2)/5), 0.5));
-    }
-    for(int l = 7; l < 12; l++){
-        figuur.points.push_back(Vector3D::point(std::cos((pi/5)+((l-7)*2*pi/5)), std::sin((pi/5)+((l-7)*2*pi/5)), -0.5));
-    }
-    figuur.points.push_back(Vector3D::point(0,0, -std::sqrt(5)/2));
-
-    Face f1 = Face({0,1,2});
-    Face f2;
-    f2.point_indexes.push_back(0);
-    f2.point_indexes.push_back(2);
-    f2.point_indexes.push_back(3);
-    Face f3;
-    f3.point_indexes.push_back(0);
-    f3.point_indexes.push_back(3);
-    f3.point_indexes.push_back(4);
-    Face f4;
-    f4.point_indexes.push_back(0);
-    f4.point_indexes.push_back(4);
-    f4.point_indexes.push_back(5);
-    Face f5;
-    f5.point_indexes.push_back(0);
-    f5.point_indexes.push_back(5);
-    f5.point_indexes.push_back(1);
-    Face f6;
-    f6.point_indexes.push_back(1);
-    f6.point_indexes.push_back(6);
-    f6.point_indexes.push_back(2);
-    Face f7;
-    f7.point_indexes.push_back(2);
-    f7.point_indexes.push_back(6);
-    f7.point_indexes.push_back(7);
-    Face f8;
-    f8.point_indexes.push_back(2);
-    f8.point_indexes.push_back(7);
-    f8.point_indexes.push_back(3);
-    Face f9;
-    f9.point_indexes.push_back(3);
-    f9.point_indexes.push_back(7);
-    f9.point_indexes.push_back(8);
-    Face f10;
-    f10.point_indexes.push_back(3);
-    f10.point_indexes.push_back(8);
-    f10.point_indexes.push_back(4);
-    Face f11;
-    f11.point_indexes.push_back(4);
-    f11.point_indexes.push_back(8);
-    f11.point_indexes.push_back(9);
-    Face f12;
-    f12.point_indexes.push_back(4);
-    f12.point_indexes.push_back(9);
-    f12.point_indexes.push_back(5);
-    Face f13;
-    f13.point_indexes.push_back(5);
-    f13.point_indexes.push_back(9);
-    f13.point_indexes.push_back(10);
-    Face f14;
-    f14.point_indexes.push_back(5);
-    f14.point_indexes.push_back(10);
-    f14.point_indexes.push_back(1);
-    Face f15;
-    f15.point_indexes.push_back(1);
-    f15.point_indexes.push_back(10);
-    f15.point_indexes.push_back(6);
-    Face f16;
-    f16.point_indexes.push_back(11);
-    f16.point_indexes.push_back(7);
-    f16.point_indexes.push_back(6);
-    Face f17;
-    f17.point_indexes.push_back(11);
-    f17.point_indexes.push_back(8);
-    f17.point_indexes.push_back(7);
-    Face f18;
-    f18.point_indexes.push_back(11);
-    f18.point_indexes.push_back(9);
-    f18.point_indexes.push_back(8);
-    Face f19;
-    f19.point_indexes.push_back(11);
-    f19.point_indexes.push_back(10);
-    f19.point_indexes.push_back(9);
-    Face f20;
-    f20.point_indexes.push_back(11);
-    f20.point_indexes.push_back(6);
-    f20.point_indexes.push_back(10);
-
-    figuur.faces.push_back(f1);
-    figuur.faces.push_back(f2);
-    figuur.faces.push_back(f3);
-    figuur.faces.push_back(f4);
-    figuur.faces.push_back(f5);
-    figuur.faces.push_back(f6);
-    figuur.faces.push_back(f7);
-    figuur.faces.push_back(f8);
-    figuur.faces.push_back(f9);
-    figuur.faces.push_back(f10);
-    figuur.faces.push_back(f11);
-    figuur.faces.push_back(f12);
-    figuur.faces.push_back(f13);
-    figuur.faces.push_back(f14);
-    figuur.faces.push_back(f15);
-    figuur.faces.push_back(f16);
-    figuur.faces.push_back(f17);
-    figuur.faces.push_back(f18);
-    figuur.faces.push_back(f19);
-    figuur.faces.push_back(f20);
-    return figuur;
-}
 void herschaalPuntenBal(Vector3D& punt){
     double r = std::sqrt(std::pow(punt.x, 2) + std::pow(punt.y, 2) + std::pow(punt.z, 2));
     punt.x /= r;
@@ -613,21 +501,28 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         Lines2D toDraw;
         std::vector<Light> lights; // Licht voor ZBuffering
         std::vector<Figure> all_projected_figures;
+        // Eye transformation
+        std::vector<double> eyevec = configuration["General"]["eye"];
+        Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
+        Matrix eyeTransf = eyePointTrans(eye);
         // Get all lights
         if(type == "ZBuffering"){
             Light to_add;
-            to_add.ambientLight = img::Color(1.0,1.0,1.0);
-            to_add.diffuseLight = img::Color(0.0,0.0,0.0);
-            to_add.specularLight = img::Color(0.0,0.0,0.0);
+            to_add.ambientLight = {1.0,1.0,1.0};
+            to_add.diffuseLight = {0.0,0.0,0.0};
+            to_add.specularLight = {0.0,0.0,0.0};
             lights.push_back(to_add);
         }else if(type == "LightedZBuffering"){
             int aantall = configuration["General"]["nrLights"];
             for(int numb = 0; numb < aantall; numb++){
                 auto lightConfig = configuration["Light" + std::to_string(numb)];
-                std::vector<double> ambientLight = lightConfig["ambientLight"];
                 Light to_add;
-                // TODO: andere types van belichting
-                to_add.ambientLight = img::Color(ambientLight[0], ambientLight[1], ambientLight[2]);
+                to_add.ambientLight = lightConfig["ambientLight"];
+                to_add.diffuseLight = lightConfig["diffuseLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
+                to_add.specularLight = lightConfig["specularLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
+                std::vector<double> tusLd = lightConfig["direction"].as_double_tuple_or_default({0.0, 0.0, 0.0});
+                to_add.ldVector = Vector3D::vector(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
+                to_add.inf = lightConfig["infinity"].as_bool_or_default(true);
                 lights.push_back(to_add);
             }
         }
@@ -647,9 +542,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             Vector3D center = Vector3D::point(centerv[0], centerv[1], centerv[2]);
             Matrix T = translate(center);
             //Get all transformation matrices
-            std::vector<double> eyevec = configuration["General"]["eye"];
-            Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
-            Matrix eyeTransf = eyePointTrans(eye);
             Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
             Figure figuur;
             img::Color kleur;
@@ -657,20 +549,22 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             img::Color difRef = img::Color(0,0,0);
             img::Color specRef = img::Color(0,0,0);
             double refCoef;
-            // TODO: andere lichttypes
+            // TODO: attributen van andere lichttypes
             if(type == "LightedZBuffering"){
                 std::vector<double> ambientReflection = figConfig["ambientReflection"];
                 std::vector<double> resultaat = {0,0,0};
                 for(const Light& light:lights){
-                    resultaat[0] += light.ambientLight.red * ambientReflection[0];
-                    resultaat[1] += light.ambientLight.green * ambientReflection[1];
-                    resultaat[2] += light.ambientLight.blue * ambientReflection[2];
+                    resultaat[0] += light.ambientLight[0] * ambientReflection[0];
+                    resultaat[1] += light.ambientLight[1] * ambientReflection[1];
+                    resultaat[2] += light.ambientLight[2] * ambientReflection[2];
                 }
                 // if bigger than 1, set to 1
                 if(resultaat[0] > 1) resultaat[0] = 1;
                 if(resultaat[1] > 1) resultaat[1] = 1;
                 if(resultaat[2] > 1) resultaat[2] = 1;
                 figuur.fullAmbientReflection = resultaat;
+                figuur.diffuseReflection = figConfig["diffuseReflection"].as_double_tuple_or_default({0,0,0});
+                figuur.specularReflection = figConfig["specularReflection"].as_double_tuple_or_default({0,0,0});
             } else if(type == "ZBuffering") {
                 figuur.fullAmbientReflection = figConfig["color"];
             }
@@ -718,7 +612,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.color = kleur;
             }
             else if (typefig == "Icosahedron") {
-                figuur = createIcosahedron();
+                figuur.icosahedron();
                 figuur.color = kleur;
             }
             else if (typefig == "Dodecahedron") {
@@ -773,7 +667,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
             }
             else if (typefig == "Sphere") {
-                figuur = createIcosahedron();
+                figuur.icosahedron();
 
                 figuur.color = kleur;
                 int n = figConfig["n"];
