@@ -651,26 +651,35 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
             Matrix eyeTransf = eyePointTrans(eye);
             Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
+            Figure figuur;
             img::Color kleur;
+            img::Color fullAmbRef;
+            img::Color difRef = img::Color(0,0,0);
+            img::Color specRef = img::Color(0,0,0);
+            double refCoef;
             // TODO: andere lichttypes
             if(type == "LightedZBuffering"){
                 std::vector<double> ambientReflection = figConfig["ambientReflection"];
                 std::vector<double> resultaat = {0,0,0};
-                for(Light light:lights){
+                for(const Light& light:lights){
                     resultaat[0] += light.ambientLight.red * ambientReflection[0];
                     resultaat[1] += light.ambientLight.green * ambientReflection[1];
                     resultaat[2] += light.ambientLight.blue * ambientReflection[2];
                 }
-                // if bigger than 1, remove overflow
-                resultaat[0] = std::fmod(resultaat[0], 1.0);
-                resultaat[1] = std::fmod(resultaat[1], 1.0);
-                resultaat[2] = std::fmod(resultaat[2], 1.0);
-                kleur = vectorToColor(resultaat);
-            }else{
+                // if bigger than 1, set to 1
+                if(resultaat[0] > 1) resultaat[0] = 1;
+                if(resultaat[1] > 1) resultaat[1] = 1;
+                if(resultaat[2] > 1) resultaat[2] = 1;
+                figuur.fullAmbientReflection = vectorToColor(resultaat);
+            } else if(type == "ZBuffering") {
+                std::vector<double> tusVec = figConfig["color"];
+                figuur.fullAmbientReflection = img::Color(tusVec[0], tusVec[1], tusVec[2]);
+                figuur.fullAmbientReflection = vectorToColor(tusVec);
+            }
+            else{
                 kleur = vectorToColor(figConfig["color"]);
             }
 
-            Figure figuur;
             if(typefig.find("Fractal") != std::string::npos){
                 typefig = typefig.substr(typefig.find("Fractal") + 7, typefig.size()-7);
             }
@@ -917,7 +926,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     int B = fac.point_indexes[1];
                     int C = fac.point_indexes[2];
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.color);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights);
                 }
             }
         }
