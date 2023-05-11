@@ -14,12 +14,12 @@ public:
     std::vector<double> ambientLight;
     //de diffuse licht component
     std::vector<double> diffuseLight;
-    //de diffuse licht component
+    //de specular licht component
     std::vector<double> specularLight;
     // Infinitive?
     bool inf;
     //de richting waarin het
-    //licht schijnt (of location als puntbron)
+    //licht schijnt
     Vector3D ldVector = Vector3D::vector(0,0,0);
     //de locatie van de puntbron
     Vector3D location;

@@ -26,7 +26,7 @@ img::Color vectorToColor(std::vector<double> kleur){
     return to_return;
 }
 double to_radialen(double graden){
-    return graden*pi/180;
+    return graden*M_PI/180;
 }
 inline int roundToInt(double d)
 {
@@ -213,8 +213,8 @@ Lines2D drawLSystem(const LParser::LSystem2D &l_system, const ini::Configuration
         iterations--;
     }
     // Set oorspronkelijke parameters
-    double huidige_hoek = l_system.get_starting_angle()*pi/180;
-    double hoek = l_system.get_angle()*pi/180;
+    double huidige_hoek = l_system.get_starting_angle()*M_PI/180;
+    double hoek = l_system.get_angle()*M_PI/180;
     std::pair<double,double> positie = std::make_pair(0,0);
     for(char sym:begin){
         // Als symbool in alfabet zit:
@@ -526,7 +526,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 to_add.location = Vector3D::point(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
                 to_add.inf = lightConfig["infinity"].as_bool_or_default(true);
                 double spotAngle = lightConfig["spotAngle"].as_double_or_default(90);
-                to_add.spotAngle = spotAngle*pi/180;
+                to_add.spotAngle = spotAngle*M_PI/180;
                 lights.push_back(to_add);
             }
         }
@@ -569,6 +569,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.fullAmbientReflection = resultaat;
                 figuur.diffuseReflection = figConfig["diffuseReflection"].as_double_tuple_or_default({0,0,0});
                 figuur.specularReflection = figConfig["specularReflection"].as_double_tuple_or_default({0,0,0});
+                figuur.reflectionCoefficient = figConfig["reflectionCoefficient"].as_double_or_default(0);
             } else if(type == "ZBuffering") {
                 figuur.fullAmbientReflection = figConfig["color"];
             }
@@ -630,12 +631,12 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 double height = figConfig["height"];
 
                 for (int ind = 0; ind < n; ind++) {
-                    figuur.points.push_back(Vector3D::point(std::cos(2 * pi * ind / n), std::sin(2 * pi * ind / n), 0));
+                    figuur.points.push_back(Vector3D::point(std::cos(2 * M_PI * ind / n), std::sin(2 * M_PI * ind / n), 0));
                     figuur.faces.push_back(Face({ind, (ind + 1) % n, n + (ind + 1) % (n), n + ind}));
                 }
                 for (int ind = 0; ind < n; ind++) {
                     figuur.points.push_back(
-                            Vector3D::point(std::cos(2 * pi * ind / n), std::sin(2 * pi * ind / n), height));
+                            Vector3D::point(std::cos(2 * M_PI * ind / n), std::sin(2 * M_PI * ind / n), height));
                 }
 //                std::vector<int> intsLastFace;
 //                for(int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
@@ -661,7 +662,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 double height = figConfig["height"];
 
                 for (int ind = 0; ind < n; ind++) {
-                    figuur.points.push_back(Vector3D::point(std::cos(2 * pi * ind / n), std::sin(2 * pi * ind / n), 0));
+                    figuur.points.push_back(Vector3D::point(std::cos(2 * M_PI * ind / n), std::sin(2 * M_PI * ind / n), 0));
                     figuur.faces.push_back(Face({ind, (ind + 1) % n, n}));
                 }
                 figuur.points.push_back(Vector3D::point(0, 0, height));
@@ -727,8 +728,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < m; j++) {
                         // Is dat juiste volgorde???
-                        double u = 2 * i * pi / n;
-                        double v = 2 * j * pi / m;
+                        double u = 2 * i * M_PI / n;
+                        double v = 2 * j * M_PI / m;
                         Vector3D p = Vector3D::point((R + r * std::cos(v)) * std::cos(u),
                                                      (R + r * std::cos(v)) * std::sin(u), r * std::sin(v));
                         figuur.points.push_back(p);
@@ -822,7 +823,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     int B = fac.point_indexes[1];
                     int C = fac.point_indexes[2];
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf);
                 }
             }
         }

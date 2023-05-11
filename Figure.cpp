@@ -34,33 +34,29 @@ void Figure::translate(const Vector3D &vector){
         point = point*to_return;
     }
 }
+Figure Figure::copyFigure(const Figure& fig){
+    Figure fract_fig;
+    // Copy constructor
+    fract_fig.color = fig.color;
+    fract_fig.faces = std::vector<Face>(fig.faces);
+    fract_fig.points = std::vector<Vector3D>(fig.points);
+    fract_fig.diffuseReflection = std::vector<double>(fig.diffuseReflection);
+    fract_fig.fullAmbientReflection = std::vector<double>(fig.fullAmbientReflection);
+    fract_fig.specularReflection = std::vector<double>(fig.specularReflection);
+    fract_fig.reflectionCoefficient = fig.reflectionCoefficient;
+    return fract_fig;
+}
 void Figure::generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale) const{
     std::vector<Figure> figures_to_fractalise;
 
     // Copy constructor
-    Figure figure;
-    figure.color = color;
-    figure.faces = std::vector<Face>(faces);
-    figure.points = std::vector<Vector3D>(points);
-    figure.diffuseReflection = std::vector<double>(diffuseReflection);
-    figure.fullAmbientReflection = std::vector<double>(fullAmbientReflection);
-    figure.specularReflection = std::vector<double>(specularReflection);
-    figure.reflectionCoefficient = reflectionCoefficient;
+    Figure figure = copyFigure(*this);
 
     figures_to_fractalise.push_back(figure);
     for(int n = 0; n < nr_iterations; n++) {
         for(const auto& fig:figures_to_fractalise) {
             for (int i = 0; i < fig.points.size(); i++) {
-                Figure fract_fig;
-                // Copy constructor
-                fract_fig.color = fig.color;
-                fract_fig.faces = std::vector<Face>(fig.faces);
-                fract_fig.points = std::vector<Vector3D>(fig.points);
-                fract_fig.diffuseReflection = std::vector<double>(fig.diffuseReflection);
-                fract_fig.fullAmbientReflection = std::vector<double>(fig.fullAmbientReflection);
-                fract_fig.specularReflection = std::vector<double>(fig.specularReflection);
-                fract_fig.reflectionCoefficient = fig.reflectionCoefficient;
-
+                Figure fract_fig = copyFigure(fig);
                 // Scale figure
                 fract_fig.scaleFigure(1 / scale);
                 // Calculate vector
@@ -280,10 +276,10 @@ void Figure::dodecahedron() {
 void Figure::icosahedron(){
     points.push_back(Vector3D::point(0,0, std::sqrt(5)/2));
     for(int l = 2; l < 7; l++){
-        points.push_back(Vector3D::point(std::cos(2*pi*(l-2)/5), std::sin(2*pi*(l-2)/5), 0.5));
+        points.push_back(Vector3D::point(std::cos(2*M_PI*(l-2)/5), std::sin(2*M_PI*(l-2)/5), 0.5));
     }
     for(int l = 7; l < 12; l++){
-        points.push_back(Vector3D::point(std::cos((pi/5)+((l-7)*2*pi/5)), std::sin((pi/5)+((l-7)*2*pi/5)), -0.5));
+        points.push_back(Vector3D::point(std::cos((M_PI/5)+((l-7)*2*M_PI/5)), std::sin((M_PI/5)+((l-7)*2*M_PI/5)), -0.5));
     }
     points.push_back(Vector3D::point(0,0, -std::sqrt(5)/2));
 

@@ -438,7 +438,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light>& lights){
+void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light>& lights, const Vector3D& eyeCamera){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -487,8 +487,9 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
         // Bereken n
         Vector3D n = w/w.length();
         n.normalise();
-        // Bereken totale diffuse component van alle lichten
+        // Bereken totale diffuse en specular component van alle lichten
         std::vector<double> fullDifCo = {0,0,0};
+        std::vector<double> fullSpecCo = {0,0,0};
         for(Light light:lights){
             // Go further if some components are not zero
             if(light.ldVector.length() != 0 && light.inf){
@@ -496,10 +497,11 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                 Vector3D l = -light.ldVector / light.ldVector.length();
                 l.normalise();
                 double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
-                if(cos_alpha < 0) continue;
-                fullDifCo[0] += diffuseRef[0]*light.diffuseLight[0]*cos_alpha;
-                fullDifCo[1] += diffuseRef[1]*light.diffuseLight[1]*cos_alpha;
-                fullDifCo[2] += diffuseRef[2]*light.diffuseLight[2]*cos_alpha;
+                if(cos_alpha > 0) {
+                    fullDifCo[0] += diffuseRef[0] * light.diffuseLight[0] * cos_alpha;
+                    fullDifCo[1] += diffuseRef[1] * light.diffuseLight[1] * cos_alpha;
+                    fullDifCo[2] += diffuseRef[2] * light.diffuseLight[2] * cos_alpha;
+                }
             }
         }
 
@@ -521,21 +523,60 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
 
             for (int x = x_r; x <= x_l; x++) {
                 if(buf[y_i][x] > Z){
-                    std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0], fullAmbientRef[1] + fullDifCo[1], fullAmbientRef[2] + fullDifCo[2]};
+                    std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0] + fullSpecCo[0], fullAmbientRef[1] + fullDifCo[1] + fullSpecCo[1],
+                                                          fullAmbientRef[2] + fullDifCo[2] + fullSpecCo[2]};
                     // TODO: andere belichtingen
                     for(Light light:lights){
-                        // Go further if some components are not zero
+                        // Bepaal positie in eye co
+                        Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
+                        // Specular inf light
+                        if(light.inf && !(light.specularLight[0] == 0 && light.specularLight[1] == 0 && light.specularLight[2] == 0)){
+                            Vector3D l = -light.ldVector / light.ldVector.length();
+                            l.normalise();
+                            double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
+                            Vector3D r = 2*n*cos_alpha - l;
+                            r.normalise();
+                            Vector3D cameraVector = eyeCamera - eyeCo;
+                            cameraVector.normalise();
+                            double cos_beta = Vector3D::dot(r, cameraVector);
+                            if (cos_beta > 0) {
+                                resulted_color[0] +=
+                                        specularRef[0] * light.specularLight[0] * std::pow(cos_beta, refCoeff);
+                                resulted_color[1] +=
+                                        specularRef[1] * light.specularLight[1] * std::pow(cos_beta, refCoeff);
+                                resulted_color[2] +=
+                                        specularRef[2] * light.specularLight[2] * std::pow(cos_beta, refCoeff);
+                            }
+                        }
+                        // Point light
                         if(light.location.length() != 0 && !light.inf){
-                            // Bepaal positie in eye co
-                            Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
                             // Bereken l
                             Vector3D l = light.location - eyeCo;
                             l.normalise();
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
-                            if(cos_alpha < 0 || cos_alpha < std::cos(light.spotAngle)) continue;
-                            resulted_color[0] += diffuseRef[0]*light.diffuseLight[0]*(1 - ((1 - cos_alpha)/(1 - std::cos(light.spotAngle))));
-                            resulted_color[1] += diffuseRef[1]*light.diffuseLight[1]*(1 - ((1 - cos_alpha)/(1 - std::cos(light.spotAngle))));
-                            resulted_color[2] += diffuseRef[2]*light.diffuseLight[2]*(1 - ((1 - cos_alpha)/(1 - std::cos(light.spotAngle))));
+                            Vector3D r = 2*n*cos_alpha - l;
+                            r.normalise();
+                            // Vector3D eyeCameraVector = Vector3D::point(0,0,0) - eyeCamera;
+                            // TODO: maak van eyeCamera een eyecameraVector
+                            Vector3D cameraVector = eyeCamera - eyeCo;
+                            cameraVector.normalise();
+                            double cos_beta = Vector3D::dot(r, cameraVector);
+                            if (cos_beta > 0) {
+                                resulted_color[0] +=
+                                        specularRef[0] * light.specularLight[0] * std::pow(cos_beta, refCoeff);
+                                resulted_color[1] +=
+                                        specularRef[1] * light.specularLight[1] * std::pow(cos_beta, refCoeff);
+                                resulted_color[2] +=
+                                        specularRef[2] * light.specularLight[2] * std::pow(cos_beta, refCoeff);
+                            }
+                            if(cos_alpha > 0 && cos_alpha > std::cos(light.spotAngle)) {
+                                resulted_color[0] += diffuseRef[0] * light.diffuseLight[0] *
+                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light.spotAngle))));
+                                resulted_color[1] += diffuseRef[1] * light.diffuseLight[1] *
+                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light.spotAngle))));
+                                resulted_color[2] += diffuseRef[2] * light.diffuseLight[2] *
+                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light.spotAngle))));
+                            }
                         }
                     }
 

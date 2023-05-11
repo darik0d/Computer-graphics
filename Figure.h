@@ -11,7 +11,7 @@
 class Vector3D;
 class Face;
 
-const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
+//const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
 class Figure
 {
 public:
@@ -32,6 +32,7 @@ public:
     void generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale) const;
     void scaleFigure(const double scale);
     void translate(const Vector3D &vector);
+    static Figure copyFigure(const Figure& fig);
 //    Figure(Figure& fig);
 };
 
