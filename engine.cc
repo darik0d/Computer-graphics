@@ -521,8 +521,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 to_add.diffuseLight = lightConfig["diffuseLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
                 to_add.specularLight = lightConfig["specularLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
                 std::vector<double> tusLd = lightConfig["direction"].as_double_tuple_or_default({0.0, 0.0, 0.0});
-                tusLd = lightConfig["location"].as_double_tuple_or_default({0.0, 0.0, 0.0});
                 to_add.ldVector = Vector3D::vector(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
+                tusLd = lightConfig["location"].as_double_tuple_or_default({0.0, 0.0, 0.0});
+                to_add.location = Vector3D::point(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
                 to_add.inf = lightConfig["infinity"].as_bool_or_default(true);
                 lights.push_back(to_add);
             }

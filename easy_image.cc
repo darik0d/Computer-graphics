@@ -525,11 +525,11 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                     // TODO: andere belichtingen
                     for(Light light:lights){
                         // Go further if some components are not zero
-                        if(light.ldVector.length() != 0 && !light.inf){
+                        if(light.location.length() != 0 && !light.inf){
                             // Bepaal positie in eye co
                             Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
                             // Bereken l
-                            Vector3D l = light.ldVector - eyeCo;
+                            Vector3D l = light.location - eyeCo;
                             //Vector3D l = -ld / ld.length();
                             l.normalise();
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
