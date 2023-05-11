@@ -525,6 +525,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 tusLd = lightConfig["location"].as_double_tuple_or_default({0.0, 0.0, 0.0});
                 to_add.location = Vector3D::point(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
                 to_add.inf = lightConfig["infinity"].as_bool_or_default(true);
+                double spotAngle = lightConfig["spotAngle"].as_double_or_default(90);
+                to_add.spotAngle = spotAngle*pi/180;
                 lights.push_back(to_add);
             }
         }

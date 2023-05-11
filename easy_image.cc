@@ -530,13 +530,12 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                             Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
                             // Bereken l
                             Vector3D l = light.location - eyeCo;
-                            //Vector3D l = -ld / ld.length();
                             l.normalise();
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
-                            if(cos_alpha < 0) continue;
-                            resulted_color[0] += diffuseRef[0]*light.diffuseLight[0]*cos_alpha;
-                            resulted_color[1] += diffuseRef[1]*light.diffuseLight[1]*cos_alpha;
-                            resulted_color[2] += diffuseRef[2]*light.diffuseLight[2]*cos_alpha;
+                            if(cos_alpha < 0 || cos_alpha < std::cos(light.spotAngle)) continue;
+                            resulted_color[0] += diffuseRef[0]*light.diffuseLight[0]*(1 - ((1 - cos_alpha)/(1 - std::cos(light.spotAngle))));
+                            resulted_color[1] += diffuseRef[1]*light.diffuseLight[1]*(1 - ((1 - cos_alpha)/(1 - std::cos(light.spotAngle))));
+                            resulted_color[2] += diffuseRef[2]*light.diffuseLight[2]*(1 - ((1 - cos_alpha)/(1 - std::cos(light.spotAngle))));
                         }
                     }
 
