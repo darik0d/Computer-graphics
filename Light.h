@@ -25,6 +25,10 @@ public:
     Vector3D location;
     //de hoek van een spotlicht
     double spotAngle;
+    ZBuffer shadowMask;
+    // Eye transformation
+    Matrix eye;
+    double d, dx, dy;
 };
 
 

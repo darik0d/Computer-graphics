@@ -503,6 +503,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         std::vector<Figure> all_projected_figures;
         // Eye transformation
         std::vector<double> eyevec = configuration["General"]["eye"];
+        bool shadowOn = configuration["General"]["shadowEnabled"].as_bool_or_default(false);
         Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
         Matrix eyeTransf = eyePointTrans(eye);
         // Get all lights
@@ -527,6 +528,12 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 to_add.inf = lightConfig["infinity"].as_bool_or_default(true);
                 double spotAngle = lightConfig["spotAngle"].as_double_or_default(90);
                 to_add.spotAngle = spotAngle*M_PI/180;
+                if(shadowOn) {
+                    int shadowSize = configuration["General"]["shadowMask"].as_int_or_die();
+                    to_add.shadowMask = ZBuffer(shadowSize, shadowSize);
+                    // add eyeTransform
+                    to_add.eye = eyePointTrans(Vector3D::point(tusLd[0], tusLd[1], tusLd[2]));
+                }
                 lights.push_back(to_add);
             }
         }
@@ -817,13 +824,14 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             double dy = imagey/2.0 - dcy;
             if(imagey < 1) imagey = 1;
             if(imagex < 1) imagex = 1;
+            if(shadowOn) to_return.fillShadowBuffers(all_projected_figures, lights, d, dx, dy);
             for(auto fig:all_projected_figures){
                 for(auto fac: fig.faces){
                     int A = fac.point_indexes[0];
                     int B = fac.point_indexes[1];
                     int C = fac.point_indexes[2];
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, shadowOn);
                 }
             }
         }
