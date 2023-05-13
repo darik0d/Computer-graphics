@@ -103,8 +103,8 @@ void utils::getDxDyD(const Lines2D &lines, const int size, double &dx, double &d
     dy = imagey/2.0 - dcy;
 }
 void utils::applyTransformation(std::vector<Figure> &figs, const Matrix &m){
-    for(auto fig: figs){
-        for(auto point: fig.points) point = point * m;
+    for(auto &fig: figs){
+        for(auto &point: fig.points) point = point * m;
     }
 }
 void utils::doProjection(const std::vector<Figure> & figures, Lines2D& to_return){

@@ -1,2 +1,1 @@
 TODO:
-- Gebruik deze dx dy d ipv van die van gewone afbeelding

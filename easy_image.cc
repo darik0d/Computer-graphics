@@ -453,16 +453,16 @@ void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::
                 int A = fac.point_indexes[0];
                 int B = fac.point_indexes[1];
                 int C = fac.point_indexes[2];
-                shadow_zbuf_triag(fig.points[A], fig.points[B], fig.points[C], d, dx, dy, light);
+                shadow_zbuf_triag(fig.points[A], fig.points[B], fig.points[C], light);
                 }
             }
     }
 }
-void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, Light & light) const{
+void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, Light & light) const{
     // Bereken points
-    Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
-    Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
-    Point2D c = Point2D(projecteerCo(C.x, C.z, d, dx), projecteerCo(C.y, C.z, d, dy));
+    Point2D a = Point2D(projecteerCo(A.x, A.z, light.d, light.dx), projecteerCo(A.y, A.z, light.d, light.dy));
+    Point2D b = Point2D(projecteerCo(B.x, B.z, light.d, light.dx), projecteerCo(B.y, B.z, light.d, light.dy));
+    Point2D c = Point2D(projecteerCo(C.x, C.z, light.d, light.dx), projecteerCo(C.y, C.z, light.d, light.dy));
     // Pixels tot driehoek
     double y_max = std::max(a.y, std::max(b.y, c.y));
     double y_min = std::min(a.y, std::min(b.y, c.y));
@@ -509,9 +509,9 @@ void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, doubl
         // if (k <= 0) return; // Backface culling; 34 sec ipv 43
         if (k == 0) return;
         // Bereken dzdx
-        double dzdx = w.x/(-d*k);
+        double dzdx = w.x/(-light.d*k);
         // Bereken dzdy
-        double dzdy = w.y/(-d*k);
+        double dzdy = w.y/(-light.d*k);
         // "Draw" everything line per line
         if(std::round(std::min(x_lab, std::min(x_lac, x_lbc))) != std::numeric_limits<double>::infinity() &&
            std::round(std::max(x_rab, std::max(x_rac, x_rbc))) != -std::numeric_limits<double>::infinity()) {
@@ -648,7 +648,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                         }
                         // Point light
                         if(shadowOn){
-                            if(!light.pointIsVisible(x, y_i, 1/Z, eyeTransf)) continue;
+                            if(!light.pointIsVisible(x, y_i, 1/Z, d, dx, dy, eyeTransf)) continue;
                         }
                         if(light.location.length() != 0 && !light.inf){
                             // Bereken l

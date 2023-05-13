@@ -31,7 +31,7 @@ public:
     // Nuttige waarden
     double d, dx, dy;
     // Do you see the point?
-    bool pointIsVisible(double x_ac, double y_ac, double z_e, const Matrix &eyeTransf) const;
+    bool pointIsVisible(double x_ac, double y_ac, double z_e, double eye_d, double eye_dx, double eye_dy, const Matrix &eyeTransf) const;
 };
 
 
