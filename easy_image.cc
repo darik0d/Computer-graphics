@@ -22,6 +22,7 @@
 #include "Light.h"
 #include "Figure.h"
 #include "Face.h"
+#include "utils.h"
 #include <math.h>
 #include <iostream>
 #include <sstream>
@@ -437,15 +438,19 @@ void img::EasyImage::draw_zbuf_triag_line(unsigned int x0, unsigned int y0, unsi
     }
 }
 void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::vector<Light> &lights, double d, double dx, double dy) const{
-    for(auto fig:figures){
-        for(auto fac: fig.faces){
-            int A = fac.point_indexes[0];
-            int B = fac.point_indexes[1];
-            int C = fac.point_indexes[2];
-            for(Light& light: lights){
+    for(Light& light: lights){
+        // Do copy of all figures
+        std::vector<Figure> lightFigures = std::vector(figures);
+        for(auto fig:figures){
+            // Apply transformation
+            utils::applyTransformation(fig, light.eye);
+            for(auto fac: fig.faces){
+                int A = fac.point_indexes[0];
+                int B = fac.point_indexes[1];
+                int C = fac.point_indexes[2];
                 shadow_zbuf_triag(fig.points[A], fig.points[B], fig.points[C], d, dx, dy, light);
+                }
             }
-        }
     }
 }
 void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, Light & light) const{
@@ -527,7 +532,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light>& lights, const Vector3D& eyeCamera, double shadowOn){
+void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, double shadowOn){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -614,7 +619,6 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                 if(buf[y_i][x] > Z){
                     std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0] + fullSpecCo[0], fullAmbientRef[1] + fullDifCo[1] + fullSpecCo[1],
                                                           fullAmbientRef[2] + fullDifCo[2] + fullSpecCo[2]};
-                    // TODO: andere belichtingen
                     for(Light light:lights){
                         // Bepaal positie in eye co
                         Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
@@ -638,6 +642,9 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                             }
                         }
                         // Point light
+                        if(shadowOn){
+                            if(!light.pointIsVisible(x, y_i, 1/Z, eyeTransf)) continue;
+                        }
                         if(light.location.length() != 0 && !light.inf){
                             // Bereken l
                             Vector3D l = light.location - eyeCo;
@@ -645,8 +652,6 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
                             Vector3D r = 2*n*cos_alpha - l;
                             r.normalise();
-                            // Vector3D eyeCameraVector = Vector3D::point(0,0,0) - eyeCamera;
-                            // TODO: maak van eyeCamera een eyecameraVector
                             Vector3D cameraVector = eyeCamera - eyeCo;
                             cameraVector.normalise();
                             double cos_beta = Vector3D::dot(r, cameraVector);

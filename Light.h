@@ -28,7 +28,10 @@ public:
     ZBuffer shadowMask;
     // Eye transformation
     Matrix eye;
+    // Nuttige waarden
     double d, dx, dy;
+    // Do you see the point?
+    bool pointIsVisible(double x_ac, double y_ac, double z_e, const Matrix &eyeTransf) const;
 };
 
 

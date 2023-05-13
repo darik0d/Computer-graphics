@@ -1,2 +1,3 @@
 TODO:
-- Light for backwards compability
+- Gebruik get dx dy d om waarden van licht te setten
+- Gebruik deze dx dy d ipv van die van gewone afbeelding

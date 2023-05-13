@@ -501,6 +501,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         Lines2D toDraw;
         std::vector<Light> lights; // Licht voor ZBuffering
         std::vector<Figure> all_projected_figures;
+        std::vector<Figure> all_not_projected_figures; // Useful for shadow stuff
         // Eye transformation
         std::vector<double> eyevec = configuration["General"]["eye"];
         bool shadowOn = configuration["General"]["shadowEnabled"].as_bool_or_default(false);
@@ -675,7 +676,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.points.push_back(Vector3D::point(0, 0, height));
                 std::vector<int> intsLastFace;
                 for (int ind = n - 1; ind >= 0; ind--) intsLastFace.push_back(ind);
-                figuur.faces.push_back(Face(intsLastFace));
+                figuur.faces.emplace_back(intsLastFace);
 
             }
             else if (typefig == "Sphere") {
@@ -786,6 +787,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 alle_figuren.push_back(figuur);
             }
             for (auto &fi: alle_figuren) {
+                // Insert in all_not_projected_figures (for shadowing)
+                all_not_projected_figures.push_back(fi);
                 // Use the finalTrans matrix
                 applyTransformation(fi, finalTrans);
                 // Add to all_projected_figures to reuse them for fractals
@@ -824,14 +827,14 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             double dy = imagey/2.0 - dcy;
             if(imagey < 1) imagey = 1;
             if(imagex < 1) imagex = 1;
-            if(shadowOn) to_return.fillShadowBuffers(all_projected_figures, lights, d, dx, dy);
+            if(shadowOn) to_return.fillShadowBuffers(all_not_projected_figures, lights, d, dx, dy);
             for(auto fig:all_projected_figures){
                 for(auto fac: fig.faces){
                     int A = fac.point_indexes[0];
                     int B = fac.point_indexes[1];
                     int C = fac.point_indexes[2];
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, shadowOn);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn);
                 }
             }
         }
