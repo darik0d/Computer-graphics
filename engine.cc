@@ -17,6 +17,7 @@
 #include "Figure.h"
 #include "Face.h"
 #include "Light.h"
+#include "utils.h"
 
 /*Classes, namespaces and typedefs*/
 bool test_is_on = false;

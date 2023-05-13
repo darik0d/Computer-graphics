@@ -28,6 +28,7 @@ public:
         z2 = z_2;
     }
 
+    ~Line2D() = default;
 };
 
 #endif //ENGINE_LINE2D_H

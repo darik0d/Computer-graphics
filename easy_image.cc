@@ -26,10 +26,12 @@
 #include <math.h>
 #include <iostream>
 #include <sstream>
+#include "Line2D.h"
 
 #ifndef le32toh
 #define le32toh(x) (x)
 #endif
+
 
 namespace
 {
@@ -441,9 +443,12 @@ void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::
     for(Light& light: lights){
         // Do copy of all figures
         std::vector<Figure> lightFigures = std::vector(figures);
-        for(auto fig:figures){
-            // Apply transformation
-            utils::applyTransformation(fig, light.eye);
+        utils::applyTransformation(lightFigures, light.eye);
+        Lines2D light_toDraw;
+        utils::doProjection(lightFigures, light_toDraw);
+        for(auto fig:lightFigures){
+            // Set dx, dy and d
+            utils::getDxDyD(light_toDraw, light.shadowMask.size(), light.dx, light.dy, light.d);
             for(auto fac: fig.faces){
                 int A = fac.point_indexes[0];
                 int B = fac.point_indexes[1];

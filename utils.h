@@ -17,10 +17,12 @@ typedef std::vector<Line2D> Lines2D;
 struct utils {
     static void applyTransformation(Figure &fig, const Matrix& finalTrans);
     static Lines2D doProjection(const Figure & figuur);
-    static void getDxDyD(const Lines2D &lines, const int size, double &dx, double &dy, double &d);
+    static void doProjection(const std::vector<Figure> & figures, Lines2D& to_return);
+    static void getDxDyD(const Lines2D &lines, int size, double &dx, double &dy, double &d);
     static std::pair<double,double> getMinimum(const Lines2D &lines);
     static std::pair<double,double> getMaximum(const Lines2D &lines);
     static Point2D doProjection(const Vector3D &point, const double d);
+    static void applyTransformation(std::vector<Figure> &figs, const Matrix &m);
 };
 
 
