@@ -439,16 +439,16 @@ void img::EasyImage::draw_zbuf_triag_line(unsigned int x0, unsigned int y0, unsi
         }
     }
 }
-void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::vector<Light> &lights, double d, double dx, double dy) const{
-    for(Light& light: lights){
+void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::vector<Light*> &lights, double d, double dx, double dy) const{
+    for(Light* light: lights){
         // Do copy of all figures
         std::vector<Figure> lightFigures = std::vector(figures);
-        utils::applyTransformation(lightFigures, light.eye);
+        utils::applyTransformation(lightFigures, light->eye);
         Lines2D light_toDraw;
         utils::doProjection(lightFigures, light_toDraw);
         for(auto fig:lightFigures){
             // Set dx, dy and d
-            utils::getDxDyD(light_toDraw, light.shadowMask.size(), light.dx, light.dy, light.d);
+            utils::getDxDyD(light_toDraw, light->shadowMask.size(), light->dx, light->dy, light->d);
             for(auto fac: fig.faces){
                 int A = fac.point_indexes[0];
                 int B = fac.point_indexes[1];
@@ -458,11 +458,11 @@ void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::
             }
     }
 }
-void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, Light & light) const{
+void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, Light* light) const{
     // Bereken points
-    Point2D a = Point2D(projecteerCo(A.x, A.z, light.d, light.dx), projecteerCo(A.y, A.z, light.d, light.dy));
-    Point2D b = Point2D(projecteerCo(B.x, B.z, light.d, light.dx), projecteerCo(B.y, B.z, light.d, light.dy));
-    Point2D c = Point2D(projecteerCo(C.x, C.z, light.d, light.dx), projecteerCo(C.y, C.z, light.d, light.dy));
+    Point2D a = Point2D(projecteerCo(A.x, A.z, light->d, light->dx), projecteerCo(A.y, A.z, light->d, light->dy));
+    Point2D b = Point2D(projecteerCo(B.x, B.z, light->d, light->dx), projecteerCo(B.y, B.z, light->d, light->dy));
+    Point2D c = Point2D(projecteerCo(C.x, C.z, light->d, light->dx), projecteerCo(C.y, C.z, light->d, light->dy));
     // Pixels tot driehoek
     double y_max = std::max(a.y, std::max(b.y, c.y));
     double y_min = std::min(a.y, std::min(b.y, c.y));
@@ -509,9 +509,9 @@ void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, Light
         // if (k <= 0) return; // Backface culling; 34 sec ipv 43
         if (k == 0) return;
         // Bereken dzdx
-        double dzdx = w.x/(-light.d*k);
+        double dzdx = w.x/(-light->d*k);
         // Bereken dzdy
-        double dzdy = w.y/(-light.d*k);
+        double dzdy = w.y/(-light->d*k);
         // "Draw" everything line per line
         if(std::round(std::min(x_lab, std::min(x_lac, x_lbc))) != std::numeric_limits<double>::infinity() &&
            std::round(std::max(x_rab, std::max(x_rac, x_rbc))) != -std::numeric_limits<double>::infinity()) {
@@ -522,8 +522,8 @@ void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, Light
 
             for (int x = x_r; x <= x_l; x++) {
                 // TODO: wat als shadowMask is kleiner dan deze waarden?
-                if(light.shadowMask[y_i][x] > Z){
-                    light.shadowMask[y_i][x] = Z;
+                if(light->shadowMask[y_i][x] > Z){
+                    light->shadowMask[y_i][x] = Z;
                 }else{
                     //std::cout << "";
                 }
@@ -537,7 +537,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, double shadowOn){
+void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, double shadowOn){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -589,17 +589,17 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
         // Bereken totale diffuse en specular component van alle lichten
         std::vector<double> fullDifCo = {0,0,0};
         std::vector<double> fullSpecCo = {0,0,0};
-        for(Light light:lights){
+        for(Light* light:lights){
             // Go further if some components are not zero
-            if(light.ldVector.length() != 0 && light.inf){
+            if(light->ldVector.length() != 0 && light->inf){
                 // Bereken l
-                Vector3D l = -light.ldVector / light.ldVector.length();
+                Vector3D l = -light->ldVector / light->ldVector.length();
                 l.normalise();
                 double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
                 if(cos_alpha > 0) {
-                    fullDifCo[0] += diffuseRef[0] * light.diffuseLight[0] * cos_alpha;
-                    fullDifCo[1] += diffuseRef[1] * light.diffuseLight[1] * cos_alpha;
-                    fullDifCo[2] += diffuseRef[2] * light.diffuseLight[2] * cos_alpha;
+                    fullDifCo[0] += diffuseRef[0] * light->diffuseLight[0] * cos_alpha;
+                    fullDifCo[1] += diffuseRef[1] * light->diffuseLight[1] * cos_alpha;
+                    fullDifCo[2] += diffuseRef[2] * light->diffuseLight[2] * cos_alpha;
                 }
             }
         }
@@ -624,12 +624,12 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                 if(buf[y_i][x] > Z){
                     std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0] + fullSpecCo[0], fullAmbientRef[1] + fullDifCo[1] + fullSpecCo[1],
                                                           fullAmbientRef[2] + fullDifCo[2] + fullSpecCo[2]};
-                    for(Light light:lights){
+                    for(Light* light:lights){
                         // Bepaal positie in eye co
                         Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
                         // Specular inf light
-                        if(light.inf && !(light.specularLight[0] == 0 && light.specularLight[1] == 0 && light.specularLight[2] == 0)){
-                            Vector3D l = -light.ldVector / light.ldVector.length();
+                        if(light->inf && !(light->specularLight[0] == 0 && light->specularLight[1] == 0 && light->specularLight[2] == 0)){
+                            Vector3D l = -light->ldVector / light->ldVector.length();
                             l.normalise();
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
                             Vector3D r = 2*n*cos_alpha - l;
@@ -639,20 +639,20 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                             double cos_beta = Vector3D::dot(r, cameraVector);
                             if (cos_beta > 0) {
                                 resulted_color[0] +=
-                                        specularRef[0] * light.specularLight[0] * std::pow(cos_beta, refCoeff);
+                                        specularRef[0] * light->specularLight[0] * std::pow(cos_beta, refCoeff);
                                 resulted_color[1] +=
-                                        specularRef[1] * light.specularLight[1] * std::pow(cos_beta, refCoeff);
+                                        specularRef[1] * light->specularLight[1] * std::pow(cos_beta, refCoeff);
                                 resulted_color[2] +=
-                                        specularRef[2] * light.specularLight[2] * std::pow(cos_beta, refCoeff);
+                                        specularRef[2] * light->specularLight[2] * std::pow(cos_beta, refCoeff);
                             }
                         }
                         // Point light
                         if(shadowOn){
-                            if(!light.pointIsVisible(x, y_i, 1/Z, d, dx, dy, eyeTransf)) continue;
+                            if(!light->pointIsVisible(x, y_i, 1/Z, d, dx, dy, eyeTransf)) continue;
                         }
-                        if(light.location.length() != 0 && !light.inf){
+                        if(light->location.length() != 0 && !light->inf){
                             // Bereken l
-                            Vector3D l = light.location - eyeCo;
+                            Vector3D l = light->location - eyeCo;
                             l.normalise();
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
                             Vector3D r = 2*n*cos_alpha - l;
@@ -662,19 +662,19 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
                             double cos_beta = Vector3D::dot(r, cameraVector);
                             if (cos_beta > 0) {
                                 resulted_color[0] +=
-                                        specularRef[0] * light.specularLight[0] * std::pow(cos_beta, refCoeff);
+                                        specularRef[0] * light->specularLight[0] * std::pow(cos_beta, refCoeff);
                                 resulted_color[1] +=
-                                        specularRef[1] * light.specularLight[1] * std::pow(cos_beta, refCoeff);
+                                        specularRef[1] * light->specularLight[1] * std::pow(cos_beta, refCoeff);
                                 resulted_color[2] +=
-                                        specularRef[2] * light.specularLight[2] * std::pow(cos_beta, refCoeff);
+                                        specularRef[2] * light->specularLight[2] * std::pow(cos_beta, refCoeff);
                             }
-                            if(cos_alpha > 0 && cos_alpha > std::cos(light.spotAngle)) {
-                                resulted_color[0] += diffuseRef[0] * light.diffuseLight[0] *
-                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light.spotAngle))));
-                                resulted_color[1] += diffuseRef[1] * light.diffuseLight[1] *
-                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light.spotAngle))));
-                                resulted_color[2] += diffuseRef[2] * light.diffuseLight[2] *
-                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light.spotAngle))));
+                            if(cos_alpha > 0 && cos_alpha > std::cos(light->spotAngle)) {
+                                resulted_color[0] += diffuseRef[0] * light->diffuseLight[0] *
+                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light->spotAngle))));
+                                resulted_color[1] += diffuseRef[1] * light->diffuseLight[1] *
+                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light->spotAngle))));
+                                resulted_color[2] += diffuseRef[2] * light->diffuseLight[2] *
+                                                     (1 - ((1 - cos_alpha) / (1 - std::cos(light->spotAngle))));
                             }
                         }
                     }
@@ -685,6 +685,7 @@ void img::EasyImage::draw_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, double 
 
                     bitmap[x*height + y_i] = vectorToColor2(resulted_color);
                     buf[y_i][x] = Z;
+                    //std::cout << "Pixel" <<std::endl;
                 }else{
                     //std::cout << "";
                 }

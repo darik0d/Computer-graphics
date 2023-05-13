@@ -500,7 +500,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
     else if(type == "Wireframe" || type == "ZBufferedWireframe" || type == "ZBuffering" || type == "LightedZBuffering"){
         int aantalf = configuration["General"]["nrFigures"];
         Lines2D toDraw;
-        std::vector<Light> lights; // Licht voor ZBuffering
+        std::vector<Light*> lights; // Licht voor ZBuffering
         std::vector<Figure> all_projected_figures;
         std::vector<Figure> all_not_projected_figures; // Useful for shadow stuff
         // Eye transformation
@@ -510,31 +510,31 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         Matrix eyeTransf = eyePointTrans(eye);
         // Get all lights
         if(type == "ZBuffering"){
-            Light to_add;
-            to_add.ambientLight = {1.0,1.0,1.0};
-            to_add.diffuseLight = {0.0,0.0,0.0};
-            to_add.specularLight = {0.0,0.0,0.0};
+            Light* to_add = new Light;
+            to_add->ambientLight = {1.0,1.0,1.0};
+            to_add->diffuseLight = {0.0,0.0,0.0};
+            to_add->specularLight = {0.0,0.0,0.0};
             lights.push_back(to_add);
         }else if(type == "LightedZBuffering"){
             int aantall = configuration["General"]["nrLights"];
             for(int numb = 0; numb < aantall; numb++){
                 auto lightConfig = configuration["Light" + std::to_string(numb)];
-                Light to_add;
-                to_add.ambientLight = lightConfig["ambientLight"];
-                to_add.diffuseLight = lightConfig["diffuseLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
-                to_add.specularLight = lightConfig["specularLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
+                Light* to_add = new Light;
+                to_add->ambientLight = lightConfig["ambientLight"];
+                to_add->diffuseLight = lightConfig["diffuseLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
+                to_add->specularLight = lightConfig["specularLight"].as_double_tuple_or_default({0.0, 0.0, 0.0});
                 std::vector<double> tusLd = lightConfig["direction"].as_double_tuple_or_default({0.0, 0.0, 0.0});
-                to_add.ldVector = Vector3D::vector(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
+                to_add->ldVector = Vector3D::vector(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
                 tusLd = lightConfig["location"].as_double_tuple_or_default({0.0, 0.0, 0.0});
-                to_add.location = Vector3D::point(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
-                to_add.inf = lightConfig["infinity"].as_bool_or_default(true);
+                to_add->location = Vector3D::point(tusLd[0], tusLd[1], tusLd[2])*eyeTransf;
+                to_add->inf = lightConfig["infinity"].as_bool_or_default(true);
                 double spotAngle = lightConfig["spotAngle"].as_double_or_default(90);
-                to_add.spotAngle = spotAngle*M_PI/180;
+                to_add->spotAngle = spotAngle*M_PI/180;
                 if(shadowOn) {
                     int shadowSize = configuration["General"]["shadowMask"].as_int_or_die();
-                    to_add.shadowMask = ZBuffer(shadowSize, shadowSize);
+                    to_add->shadowMask = ZBuffer(shadowSize, shadowSize);
                     // add eyeTransform
-                    to_add.eye = eyePointTrans(Vector3D::point(tusLd[0], tusLd[1], tusLd[2]));
+                    to_add->eye = eyePointTrans(Vector3D::point(tusLd[0], tusLd[1], tusLd[2]));
                 }
                 lights.push_back(to_add);
             }
@@ -566,10 +566,10 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             if(type == "LightedZBuffering"){
                 std::vector<double> ambientReflection = figConfig["ambientReflection"];
                 std::vector<double> resultaat = {0,0,0};
-                for(const Light& light:lights){
-                    resultaat[0] += light.ambientLight[0] * ambientReflection[0];
-                    resultaat[1] += light.ambientLight[1] * ambientReflection[1];
-                    resultaat[2] += light.ambientLight[2] * ambientReflection[2];
+                for(const Light* light:lights){
+                    resultaat[0] += light->ambientLight[0] * ambientReflection[0];
+                    resultaat[1] += light->ambientLight[1] * ambientReflection[1];
+                    resultaat[2] += light->ambientLight[2] * ambientReflection[2];
                 }
                 // if bigger than 1, set to 1
                 if(resultaat[0] > 1) resultaat[0] = 1;
@@ -838,6 +838,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                                               d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn);
                 }
             }
+            for(Light* light:lights) delete light;
         }
     }
 	return to_return;
