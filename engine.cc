@@ -788,8 +788,11 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 alle_figuren.push_back(figuur);
             }
             for (auto &fi: alle_figuren) {
+                // Copy figure
+                Figure fi_copy = fi;
+                applyTransformation(fi_copy, scale*X*Y*Z*T);
                 // Insert in all_not_projected_figures (for shadowing)
-                all_not_projected_figures.push_back(fi);
+                all_not_projected_figures.push_back(fi_copy);
                 // Use the finalTrans matrix
                 applyTransformation(fi, finalTrans);
                 // Add to all_projected_figures to reuse them for fractals

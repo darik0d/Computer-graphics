@@ -16,6 +16,10 @@ ZBuffer::ZBuffer(const int width, const int height){
         }
         this->push_back(newVec);
     }
+    min = posInf;
+    max = negInf;
 }
 
-ZBuffer::ZBuffer() {}
+ZBuffer::ZBuffer() {
+    min = posInf;
+    max = negInf;}

@@ -13,7 +13,8 @@ public:
 //Constructor: maakt een Z-Buffer van de correcte
 //grootte aan en initialiseert alle velden op +inf
     //std::vector<std::vector<double>> z_waarden;
-
+    double min;
+    double max;
     ZBuffer();
 
     ZBuffer(const int width, const int height);

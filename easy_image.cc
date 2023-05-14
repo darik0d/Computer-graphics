@@ -439,6 +439,28 @@ void img::EasyImage::draw_zbuf_triag_line(unsigned int x0, unsigned int y0, unsi
         }
     }
 }
+#include <vector>
+#include <memory>
+
+// TODO: embed this code to utils
+
+// Function to perform deep copy of MyClass
+std::unique_ptr<Figure> DeepCopy(const Figure& obj) {
+    return std::make_unique<Figure>(obj);
+}
+
+// Function to make deep copy of vector of pointers
+std::vector<std::unique_ptr<Figure>> DeepCopyVector(const std::vector<std::unique_ptr<Figure>>& vec) {
+    std::vector<std::unique_ptr<Figure>> copiedVec;
+    copiedVec.reserve(vec.size());
+
+    for (const auto& ptr : vec) {
+        copiedVec.push_back(DeepCopy(*ptr));
+    }
+
+    return copiedVec;
+}
+
 void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::vector<Light*> &lights, double d, double dx, double dy) const{
     for(Light* light: lights){
         // Do copy of all figures
@@ -446,10 +468,10 @@ void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::
         utils::applyTransformation(lightFigures, light->eye);
         Lines2D light_toDraw;
         utils::doProjection(lightFigures, light_toDraw);
-        for(auto fig:lightFigures){
-            // Set dx, dy and d
-            utils::getDxDyD(light_toDraw, light->shadowMask.size(), light->dx, light->dy, light->d);
-            for(auto fac: fig.faces){
+        // Set dx, dy and d
+        utils::getDxDyD(light_toDraw, light->shadowMask.size(), light->dx, light->dy, light->d);
+        for(const auto& fig:lightFigures){
+            for(const auto& fac: fig.faces){
                 int A = fac.point_indexes[0];
                 int B = fac.point_indexes[1];
                 int C = fac.point_indexes[2];
@@ -458,7 +480,7 @@ void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::
             }
     }
 }
-void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, Light* light) const{
+void img::EasyImage::shadow_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, Light* light) const{
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, light->d, light->dx), projecteerCo(A.y, A.z, light->d, light->dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, light->d, light->dx), projecteerCo(B.y, B.z, light->d, light->dy));
@@ -524,6 +546,8 @@ void img::EasyImage::shadow_zbuf_triag(Vector3D A, Vector3D B, Vector3D C, Light
                 // TODO: wat als shadowMask is kleiner dan deze waarden?
                 if(light->shadowMask[y_i][x] > Z){
                     light->shadowMask[y_i][x] = Z;
+                    if(Z > light->shadowMask.max) light->shadowMask.max = Z;
+                    if(Z < light->shadowMask.min) light->shadowMask.min = Z;
                 }else{
                     //std::cout << "";
                 }
@@ -537,7 +561,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, double shadowOn){
+void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, double shadowOn){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));

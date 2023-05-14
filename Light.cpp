@@ -9,8 +9,8 @@ bool Light::pointIsVisible(double x_ac, double y_ac, double z_e, double eye_d, d
     double x_lac = (-d*lightCo.x)/lightCo.z + dx;
     double y_lac = (-d*lightCo.y)/lightCo.z + dy;
     double een_z_l = 1/lightCo.z;
-//    if(y_lac > shadowMask.size() || x_lac > shadowMask.size()) return true;
-//    if(y_lac < 0 || x_lac < 0) return true;
+//    if(y_lac > shadowMask.size()-1 || x_lac > shadowMask.size()-1) return false;
+//    if(y_lac < 0 || x_lac < 0) return false;
     // Get all 1/z neighbours
     double een_z_a = shadowMask[std::ceil(y_lac)][std::floor(x_lac)];
     double een_z_b = shadowMask[std::ceil(y_lac)][std::ceil(x_lac)];
@@ -25,7 +25,6 @@ bool Light::pointIsVisible(double x_ac, double y_ac, double z_e, double eye_d, d
 
     double diepte = a_y*een_z_e + (1 - a_y)*een_z_f;
     //if(diepte == INFINITY || een_z_l == INFINITY) return false;
-    // TODO: ili nado sravnivat s gewone z waarde?
     if(std::abs(diepte - een_z_l) < std::pow(10, -5)) return true;
     return false;
 }
