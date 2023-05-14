@@ -44,6 +44,7 @@ Figure Figure::copyFigure(const Figure& fig){
     fract_fig.fullAmbientReflection = std::vector<double>(fig.fullAmbientReflection);
     fract_fig.specularReflection = std::vector<double>(fig.specularReflection);
     fract_fig.reflectionCoefficient = fig.reflectionCoefficient;
+    fract_fig.textureNrs = fig.textureNrs;
     return fract_fig;
 }
 void Figure::generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale) const{

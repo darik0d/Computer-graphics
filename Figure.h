@@ -20,6 +20,7 @@ public:
     std::vector<Vector3D> points;
     std::vector<Face> faces;
     img::Color color;
+    std::vector<int> textureNrs;
     std::vector<double> fullAmbientReflection;
     std::vector<double> diffuseReflection;
     std::vector<double> specularReflection;

@@ -18,6 +18,7 @@
 #include "Face.h"
 #include "Light.h"
 #include "utils.h"
+#include "Texture.h"
 
 /*Classes, namespaces and typedefs*/
 bool test_is_on = false;
@@ -498,13 +499,13 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
         to_return = draw2DLines(lijst, configuration["General"]["size"], vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
     }
     else if(type == "Wireframe" || type == "ZBufferedWireframe" || type == "ZBuffering" || type == "LightedZBuffering"){
-        int aantalf = configuration["General"]["nrFigures"];
+        int aantalf = configuration["General"]["nrFigures"]; // Number of figures
+        int aantalt = configuration["General"]["nrTextures"].as_int_or_default(0); // Number of textures
         Lines2D toDraw;
         std::vector<Light*> lights; // Licht voor ZBuffering
         std::vector<Figure> all_projected_figures;
         std::vector<Figure> all_not_projected_figures; // Useful for shadow stuff
-        // Eye transformation
-        std::vector<double> eyevec = configuration["General"]["eye"];
+        std::vector<double> eyevec = configuration["General"]["eye"]; // Eye transformation
         bool shadowOn = configuration["General"]["shadowEnabled"].as_bool_or_default(false);
         Vector3D eye = Vector3D::point(eyevec[0], eyevec[1], eyevec[2]);
         Matrix eyeTransf = eyePointTrans(eye);
@@ -539,7 +540,29 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 lights.push_back(to_add);
             }
         }
-
+        std::vector<Texture*> all_textures;
+        // Iterate over all textures
+        for(int numb = 0; numb < aantalt; numb++){
+            auto textureConfig = configuration["Texture" + std::to_string(numb)];
+            Texture* texture = new Texture;
+            texture->number = numb;
+            std::vector<double> a_vec = textureConfig["a"].as_double_tuple_or_die();
+            std::vector<double> b_vec = textureConfig["b"].as_double_tuple_or_die();
+            std::vector<double> p_vec = textureConfig["p"].as_double_tuple_or_die();
+            texture->a = Vector3D::vector(a_vec[0], a_vec[1], a_vec[2]);
+            texture->b = Vector3D::vector(b_vec[0], b_vec[1], b_vec[2]);
+            // TODO: or is it a vector?
+            texture->p = Vector3D::vector(p_vec[0], p_vec[1], p_vec[2]);
+            img::EasyImage* textureImage = new img::EasyImage;
+            std::ifstream fin(textureConfig["src"]);
+            fin >> *textureImage;
+            fin.close();
+            texture->image = textureImage;
+//            std::cout 	<< "Read a texture with width: " << textureImage.get_width()
+//                         << " and height: " << textureImage.get_height()
+//                         << std::endl;
+            all_textures.push_back(texture);
+        }
         // Iterate over all figures
         for(int numb = 0; numb < aantalf; numb++) {
 
@@ -557,12 +580,21 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             //Get all transformation matrices
             Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
             Figure figuur;
+            figuur.textureNrs = figConfig["textureNrs"].as_int_tuple_or_default({});
+//            img::EasyImage texture;
+//            std::ifstream fin(configuration["Texture" + std::to_string(0)]["src"]);
+//            fin >> texture;
+//            fin.close();
+//
+//            std::cout 	<< "Read a texture with width: " << texture.get_width()
+//                         << " and height: " << texture.get_height()
+//                         << std::endl;
+
             img::Color kleur;
             img::Color fullAmbRef;
             img::Color difRef = img::Color(0,0,0);
             img::Color specRef = img::Color(0,0,0);
             double refCoef;
-            // TODO: attributen van andere lichttypes
             if(type == "LightedZBuffering"){
                 std::vector<double> ambientReflection = figConfig["ambientReflection"];
                 std::vector<double> resultaat = {0,0,0};
@@ -832,16 +864,45 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             if(imagey < 1) imagey = 1;
             if(imagex < 1) imagex = 1;
             if(shadowOn) to_return.fillShadowBuffers(all_not_projected_figures, lights, d, dx, dy);
+            if(configuration["General"]["drawAxes"].as_bool_or_default(false)){
+                // Add axes
+                Figure x_as;
+                x_as.faces.push_back(Face({0,1,2}));
+                x_as.points = {Vector3D::point(-10,0,0), Vector3D::point(0, 0.3, 0), Vector3D::point(10, 0, 0)};
+                x_as.fullAmbientReflection = {1,0,0};
+                x_as.reflectionCoefficient = 0;
+                x_as.specularReflection = {0,0,0};
+                x_as.diffuseReflection = {0,0,0};
+                Figure y_as;
+                y_as.faces.push_back(Face({0,1,2}));
+                y_as.points = {Vector3D::point(0,-10,0), Vector3D::point(0, 0, 0.3), Vector3D::point(0, 10, 0)};
+                y_as.fullAmbientReflection = {0,1,0};
+                y_as.reflectionCoefficient = 0;
+                y_as.specularReflection = {0,0,0};
+                y_as.diffuseReflection = {0,0,0};
+                Figure z_as;
+                z_as.faces.push_back(Face({0,1,2}));
+                z_as.points = {Vector3D::point(0,0,-10), Vector3D::point(0, 0.3, 0), Vector3D::point(0, 0, 10)};
+                z_as.fullAmbientReflection = {0,0,1};
+                z_as.reflectionCoefficient = 0;
+                z_as.specularReflection = {0,0,0};
+                z_as.diffuseReflection = {0,0,0};
+                std::vector<Figure> as_vector = {x_as, y_as, z_as};
+                utils::applyTransformation(as_vector, eyeTransf);
+                all_projected_figures.insert(all_projected_figures.end(), as_vector.begin(), as_vector.end());
+            }
             for(auto fig:all_projected_figures){
                 for(auto fac: fig.faces){
                     int A = fac.point_indexes[0];
                     int B = fac.point_indexes[1];
                     int C = fac.point_indexes[2];
+                    // TODO: filter textures
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, all_textures);
                 }
             }
             for(Light* light:lights) delete light;
+            for(Texture* texture:all_textures) delete texture;
         }
     }
 	return to_return;

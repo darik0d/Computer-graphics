@@ -27,6 +27,7 @@
 #include <iostream>
 #include <sstream>
 #include "Line2D.h"
+#include "Texture.h"
 
 #ifndef le32toh
 #define le32toh(x) (x)
@@ -170,6 +171,7 @@ img::EasyImage::EasyImage(EasyImage const& img) :
 
 img::EasyImage::~EasyImage()
 {
+    std::cout << "The image is deleted" << std::endl;
 	bitmap.clear();
 }
 
@@ -561,7 +563,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, double shadowOn){
+void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -645,6 +647,9 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
             double Z = zg + (x_r-xg)*dzdx + (y_i-yg)*dzdy;
 
             for (int x = x_r; x <= x_l; x++) {
+                if(x < 0 || y_i < 0) continue; // TODO: For axes (fix it and remove)
+                if(y_i > buf.size()) continue;
+                if(x > buf[y_i].size()) continue;
                 if(buf[y_i][x] > Z){
                     std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0] + fullSpecCo[0], fullAmbientRef[1] + fullDifCo[1] + fullSpecCo[1],
                                                           fullAmbientRef[2] + fullDifCo[2] + fullSpecCo[2]};
@@ -702,7 +707,52 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                             }
                         }
                     }
-
+                    if(!textures.empty()){
+                        // Get world coos
+                        double x_e = -(x - dx)/(d*Z);
+                        double y_e = -(y_i - dy)/(d*Z);
+                        Vector3D worldCo = Vector3D::point(x_e, y_e, 1/Z)*Matrix::inv(eyeTransf);
+                        std::vector<double> texturefullAmbientRef = {0,0,0};
+                        bool black = false;
+                        for(Texture* texture: textures){
+                            // Bereken geprojecteerde P'
+//                            Vector3D texture_n = Vector3D::cross(texture->a, texture->b);
+//                            texture_n.normalise();
+//                            Vector3D extra_v = worldCo - texture->p;
+//                            Vector3D projection = Vector3D::cross(Vector3D::cross(extra_v, texture_n), texture_n);
+//                            Vector3D projectedPoint = worldCo - projection;
+//                            // Get uvm
+                            Vector3D uvw = texture->getUVW(worldCo);
+                            // Get color with uvm
+                            if(uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1) continue;
+                            uvw.x = uvw.x;
+                            uvw.y = uvw.y;
+                            int u_t = roundToInt(1 + (texture->image->width - 1)*uvw.x);
+                            int v_t = roundToInt(1 + (texture->image->height - 1)*uvw.y);
+//                            // TODO: overflow/underflow?
+//                            if(u_t < 0 || v_t < 0)continue;
+//                            if(u_t > texture->image->width) continue;
+//                            if(v_t > texture->image->height) continue;
+                            Color textureColor = texture->image->bitmap[u_t*height + v_t];
+                            // Remove it or not: that is the question
+                            if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) black = true;
+                            texturefullAmbientRef[0] += textureColor.red/255.0;
+                            texturefullAmbientRef[1] += textureColor.green/255.0;
+                            texturefullAmbientRef[2] += textureColor.blue/255.0;
+                        }
+                        if(!(texturefullAmbientRef[0] == 0 && texturefullAmbientRef[1] == 0 && texturefullAmbientRef[2] == 0) || black) {
+                            // Remove color gotten from ambient light
+                            resulted_color[0] -= fullAmbientRef[0];
+                            resulted_color[1] -= fullAmbientRef[1];
+                            resulted_color[2] -= fullAmbientRef[2];
+//                         Multiply with lights
+                            for (Light *light: lights) {
+                                resulted_color[0] += texturefullAmbientRef[0] * light->ambientLight[0];
+                                resulted_color[1] += texturefullAmbientRef[1] * light->ambientLight[1];
+                                resulted_color[2] += texturefullAmbientRef[2] * light->ambientLight[2];
+                            }
+                        }
+                    }
                     if(resulted_color[0] > 1) resulted_color[0] = 1;
                     if(resulted_color[1] > 1) resulted_color[1] = 1;
                     if(resulted_color[2] > 1) resulted_color[2] = 1;
