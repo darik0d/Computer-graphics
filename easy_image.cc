@@ -727,13 +727,14 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                             if(uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1) continue;
                             uvw.x = uvw.x;
                             uvw.y = uvw.y;
-                            int u_t = roundToInt(1 + (texture->image->width - 1)*uvw.x);
-                            int v_t = roundToInt(1 + (texture->image->height - 1)*uvw.y);
+                            int u_t = roundToInt((texture->image->width-1)*uvw.x);
+                            int v_t = roundToInt((texture->image->height-1)*uvw.y);
 //                            // TODO: overflow/underflow?
 //                            if(u_t < 0 || v_t < 0)continue;
 //                            if(u_t > texture->image->width) continue;
 //                            if(v_t > texture->image->height) continue;
-                            Color textureColor = texture->image->bitmap[u_t*height + v_t];
+                            //Color textureColor = texture->image->bitmap[u_t*height + v_t];
+                            Color textureColor = (*(texture->image))(u_t, v_t);
                             // Remove it or not: that is the question
                             if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) black = true;
                             texturefullAmbientRef[0] += textureColor.red/255.0;
