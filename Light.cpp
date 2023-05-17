@@ -25,6 +25,7 @@ bool Light::pointIsVisible(double x_ac, double y_ac, double z_e, double eye_d, d
 
     double diepte = a_y*een_z_e + (1 - a_y)*een_z_f;
     //if(diepte == INFINITY || een_z_l == INFINITY) return false;
+    if(diepte > een_z_l) return true;
     if(std::abs(diepte - een_z_l) < std::pow(10, -5)) return true;
     return false;
 }
