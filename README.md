@@ -31,7 +31,7 @@ X: Niet werkend of niet geïmplementeerd
 |   | Diffuus licht (puntbron)  | V      |
 |   | Speculair licht           | V      |
 | 8 | Schaduw                   | V      |
-|   | Texture mapping           |        |
+|   | Texture mapping           | -      |
 | 9 | Bollen en cylinders       |        |
 |   | UV-coordinaten            |        |
 |   | Cube mapping              |        |
@@ -40,6 +40,8 @@ Geïmplementeerde vorm van texture mapping: ...
 
 ## Gekende problemen 
 Er is iets mis met z-buffering met lijnen
+Schaduwen: zie verbetering in mail
+
 ## Niet-gequoteerde functionaliteit
 ...
 

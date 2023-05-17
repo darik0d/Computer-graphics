@@ -893,12 +893,15 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             for(auto fig:all_projected_figures){
                 for(auto fac: fig.faces){
+                    std::vector<Texture*> fig_textures;
                     int A = fac.point_indexes[0];
                     int B = fac.point_indexes[1];
                     int C = fac.point_indexes[2];
-                    // TODO: filter textures
+                    for(int i: fig.textureNrs){
+                        fig_textures.push_back(all_textures[i]);
+                    }
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, all_textures);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures);
                 }
             }
             for(Light* light:lights) delete light;
