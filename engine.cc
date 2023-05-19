@@ -105,6 +105,7 @@ std::vector<Face> triangulate(const Face& face){
             triangulatedFace.map_Ka = face.map_Ka;
             triangulatedFace.map_Kd = face.map_Kd;
             triangulatedFace.map_Ks = face.map_Ks;
+            triangulatedFace.norm = face.norm;
         }
         to_return.push_back(triangulatedFace);
     }
@@ -586,7 +587,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             if(typefig == "obj"){
                 std::string source = figConfig["src"].as_string_or_die();
                 // Parse figures of the obj
-                figuur = Figure::parseObj(source, all_textures);
+                figuur = Figure::parseObj(source, all_textures, eyeTransf);
             }
             figuur.textureNrs = figConfig["textureNrs"].as_int_tuple_or_default({});
 
@@ -910,7 +911,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         fig_textures.push_back(nullptr);
                     }
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fac.uv);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fac.uv, fac.norm);
                 }
             }
             for(Light* light:lights) delete light;

@@ -387,7 +387,7 @@ void Figure::icosahedron(){
     faces.push_back(f20);
 }
 
-Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_textures) {
+Figure Figure::parseObj(const std::string &src, std::vector<Texture *> &vector, Matrix eyeTransf) {
     // Get the object
     obj::OBJFile obj_parser;
     std::ifstream input_stream(src);
@@ -421,7 +421,7 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
         if(library[material_name]["map_Ka"].as_string_if_exists(tex_map)){
             // Create texture and add the image
             Texture* texture = new Texture;
-            texture->number = all_textures.size();
+            texture->number = vector.size();
             texture->a = Vector3D::vector(0, 0, 0);
             texture->b = Vector3D::vector(0, 0, 0);
             texture->p = Vector3D::vector(0, 0, 0);
@@ -430,14 +430,14 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
             fin >> *textureImage;
             fin.close();
             texture->image = textureImage;
-            all_textures.push_back(texture);
+            vector.push_back(texture);
             // Add texture number to face
             map_Ka = texture->number;
         }
         if(library[material_name]["map_Kd"].as_string_if_exists(tex_map)){
             // Create texture and add the image
             Texture* texture = new Texture;
-            texture->number = all_textures.size();
+            texture->number = vector.size();
             texture->a = Vector3D::vector(0, 0, 0);
             texture->b = Vector3D::vector(0, 0, 0);
             texture->p = Vector3D::vector(0, 0, 0);
@@ -446,14 +446,14 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
             fin >> *textureImage;
             fin.close();
             texture->image = textureImage;
-            all_textures.push_back(texture);
+            vector.push_back(texture);
             // Add texture number to face
             map_Kd = texture->number;
         }
         if(library[material_name]["map_Ks"].as_string_if_exists(tex_map)){
             // Create texture and add the image
             Texture* texture = new Texture;
-            texture->number = all_textures.size();
+            texture->number = vector.size();
             texture->a = Vector3D::vector(0, 0, 0);
             texture->b = Vector3D::vector(0, 0, 0);
             texture->p = Vector3D::vector(0, 0, 0);
@@ -462,7 +462,7 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
             fin >> *textureImage;
             fin.close();
             texture->image = textureImage;
-            all_textures.push_back(texture);
+            vector.push_back(texture);
             // Add texture number to face
             map_Ks = texture->number;
         }
@@ -483,6 +483,8 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
     std::vector<obj::Polygon> polygons = object.get_polygons();
     // Get all uv coordinates
     std::vector<std::vector<double>> allUVs = object.get_texture_coordinates();
+    // Get all normal vectors' coordinates
+    std::vector<std::vector<double>> allNorms = object.get_vertex_normals();
 
     // Transform polygons in conventional faces
     for(obj::Polygon polygon: polygons){
@@ -490,7 +492,7 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
         for(int &index:indexes){
             index--;
         }
-        // TODO: uv, texturen, reflecties, normale vectoren
+        // TODO: meerdere texturen, reflecties
         Face face = Face(indexes);
         // Get uv's of the face
         if(polygon.has_texture_indexes()){
@@ -503,9 +505,19 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
                 face.uv.push_back(allUVs[index]);
             }
         }
+        // Get normal vector's of the face
+        if(polygon.has_normal_indexes()){
+            std::vector<int> norm_indexes = polygon.get_normal_indexes();
+            for(int &index:norm_indexes){
+                // TODO: Or is it better to do with new?
+                index--;
+                Vector3D pointNorm = Vector3D::vector(allNorms[index][0], allNorms[index][1], allNorms[index][2]);
+                pointNorm *= eyeTransf;
+                face.norm.push_back(&pointNorm);
+            }
+        }
         figure.faces.push_back(face);
     }
 
-    // Face kan nu ook een textuur bewaren
     return figure;
 }

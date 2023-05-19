@@ -563,7 +563,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures, const std::vector<std::vector<double> >& uv){
+void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures, const std::vector<std::vector<double> >& uv, std::vector<Vector3D* > norm){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -653,6 +653,8 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                 if(buf[y_i][x] > Z){
                     std::vector<double> resulted_color = {fullAmbientRef[0] + fullDifCo[0] + fullSpecCo[0], fullAmbientRef[1] + fullDifCo[1] + fullSpecCo[1],
                                                           fullAmbientRef[2] + fullDifCo[2] + fullSpecCo[2]};
+                    double x_e = -(x - dx)/(d*Z);
+                    double y_e = -(y_i - dy)/(d*Z);
                     for(Light* light:lights){
                         // Bepaal positie in eye co
                         Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
@@ -683,6 +685,10 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                             // Bereken l
                             Vector3D l = light->location - eyeCo;
                             l.normalise();
+//                            if(!norm.empty()){
+//                                n = Face::getNorm(A, B, C, norm[0], norm[1], norm[2], Vector3D::point(x_e, y_e, 1/Z));
+//                                n.normalise();
+//                            }
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
                             Vector3D r = 2*n*cos_alpha - l;
                             r.normalise();
@@ -710,8 +716,6 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                     if(!textures.empty()){
                         // TODO: nog andere texturen
                         // Get world coos
-                        double x_e = -(x - dx)/(d*Z);
-                        double y_e = -(y_i - dy)/(d*Z);
                         if(!uv.empty()){
                             // Build matrix
                             Matrix to_inverse;
