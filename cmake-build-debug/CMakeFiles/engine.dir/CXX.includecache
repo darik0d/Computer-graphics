@@ -20,6 +20,10 @@ iomanip
 iostream
 -
 
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.cpp
+Face.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.h
+
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.h
 iostream
 -
@@ -48,6 +52,12 @@ vector
 easy_image.h
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/easy_image.h
 
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Light.cpp
+cmath
+-
+Light.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Light.h
+
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/Light.h
 easy_image.h
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/easy_image.h
@@ -62,6 +72,12 @@ easy_image.h
 
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/Point2D.h
 iostream
+-
+
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Texture.cpp
+Texture.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Texture.h
+math.h
 -
 
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/Texture.h

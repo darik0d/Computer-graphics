@@ -1,5 +1,2 @@
 TODO:
-1. Inlezen van objecten
-2. Maak een figuur per een driehoek
-3. Bewaar uv bij elk punt
-4.
+1. Triangulate: set correct uv numbers by each point

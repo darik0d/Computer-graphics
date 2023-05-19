@@ -15,6 +15,10 @@ public:
         point_indexes = inds;
     }
     std::vector<int> point_indexes;
+    std::vector<std::vector<double> > uv;
+    int map_Ka = -1;
+    int map_Kd = -1;
+    int map_Ks = -1;
 };
 
 

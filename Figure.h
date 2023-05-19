@@ -34,7 +34,7 @@ public:
     void scaleFigure(const double scale);
     void translate(const Vector3D &vector);
     static Figure copyFigure(const Figure& fig);
-    static Figure parseObj(const std::string& src);
+    static Figure parseObj(const std::string &src, std::vector<Texture *>& vector);
 //    Figure(Figure& fig);
 };
 

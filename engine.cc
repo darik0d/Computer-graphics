@@ -99,7 +99,11 @@ std::vector<Face> triangulate(const Face& face){
     std::vector<Face> to_return;
     int n = face.point_indexes.size();
     for(int i = 1; i < n - 1; i++){
-        to_return.push_back(Face({face.point_indexes[0], face.point_indexes[i], face.point_indexes[i + 1]}));
+        Face triangulatedFace = Face({face.point_indexes[0], face.point_indexes[i], face.point_indexes[i + 1]});
+        if(!face.uv.empty()){
+            triangulatedFace.uv = {face.uv[0], face.uv[i], face.uv[i+1]};
+        }
+        to_return.push_back(triangulatedFace);
     }
     return to_return;
 }
@@ -579,17 +583,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             if(typefig == "obj"){
                 std::string source = figConfig["src"].as_string_or_die();
                 // Parse figures of the obj
-                figuur = Figure::parseObj(source);
+                figuur = Figure::parseObj(source, all_textures);
             }
             figuur.textureNrs = figConfig["textureNrs"].as_int_tuple_or_default({});
-//            img::EasyImage texture;
-//            std::ifstream fin(configuration["Texture" + std::to_string(0)]["src"]);
-//            fin >> texture;
-//            fin.close();
-//
-//            std::cout 	<< "Read a texture with width: " << texture.get_width()
-//                         << " and height: " << texture.get_height()
-//                         << std::endl;
 
             img::Color kleur;
             img::Color fullAmbRef;
