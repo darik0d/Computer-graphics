@@ -685,10 +685,10 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                             // Bereken l
                             Vector3D l = light->location - eyeCo;
                             l.normalise();
-//                            if(!norm.empty()){
-//                                n = Face::getNorm(A, B, C, norm[0], norm[1], norm[2], Vector3D::point(x_e, y_e, 1/Z));
-//                                n.normalise();
-//                            }
+                            if(!norm.empty()){
+                                n = Face::getNorm(A, B, C, norm[0], norm[1], norm[2], Vector3D::point(x_e, y_e, 1/Z));
+                                n.normalise();
+                            }
                             double cos_alpha = n.x * l.x + n.y * l.y + n.z * l.z;
                             Vector3D r = 2*n*cos_alpha - l;
                             r.normalise();
@@ -761,11 +761,6 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                                 uvw.y = uvw.y;
                                 int u_t = roundToInt((texture->image->width-1)*uvw.x);
                                 int v_t = roundToInt((texture->image->height-1)*uvw.y);
-    //                            // TODO: overflow/underflow?
-    //                            if(u_t < 0 || v_t < 0)continue;
-    //                            if(u_t > texture->image->width) continue;
-    //                            if(v_t > texture->image->height) continue;
-                                //Color textureColor = texture->image->bitmap[u_t*height + v_t];
                                 Color textureColor = (*(texture->image))(u_t, v_t);
                                 // Remove it or not: that is the question
                                 if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) {

@@ -912,6 +912,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     }
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
                                               d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fac.uv, fac.norm);
+                    for(Vector3D* norm: fac.norm){
+                        delete norm;
+                    }
                 }
             }
             for(Light* light:lights) delete light;

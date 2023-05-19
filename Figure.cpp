@@ -511,9 +511,10 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *> &vector, 
             for(int &index:norm_indexes){
                 // TODO: Or is it better to do with new?
                 index--;
-                Vector3D pointNorm = Vector3D::vector(allNorms[index][0], allNorms[index][1], allNorms[index][2]);
-                pointNorm *= eyeTransf;
-                face.norm.push_back(&pointNorm);
+                Vector3D* pointNorm = new Vector3D;
+                *pointNorm = Vector3D::vector(allNorms[index][0], allNorms[index][1], allNorms[index][2]);
+                *pointNorm *= eyeTransf;
+                face.norm.push_back(pointNorm);
             }
         }
         figure.faces.push_back(face);
