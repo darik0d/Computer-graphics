@@ -399,71 +399,73 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *>& all_text
     std::string mtl_file = object.get_mtllib_file_name();
     // Get material name
     std::string material_name = object.get_mtl_name();
-    // Parse mtl file
-    obj::MTLLibrary library;
-
-    std::ifstream mtl_input_stream(mtl_file);
-    mtl_input_stream >> library;
-    mtl_input_stream.close();
-
-    // TODO: do something met reflections
-    // Gebruik naam van materiaaleigenschap als “entry”naam
-    std::vector<double> amb = library[material_name]["Ka"].as_double_tuple_or_die();
-
-    double m = library[material_name]["Ns"].as_double_or_default(1.0);
-
-    // Read all textures
-    std::string tex_map;
     int map_Ka = -1;
     int map_Kd = -1;
     int map_Ks = -1;
-    if(library[material_name]["map_Ka"].as_string_if_exists(tex_map)){
-        // Create texture and add the image
-        Texture* texture = new Texture;
-        texture->number = all_textures.size();
-        texture->a = Vector3D::vector(0, 0, 0);
-        texture->b = Vector3D::vector(0, 0, 0);
-        texture->p = Vector3D::vector(0, 0, 0);
-        img::EasyImage* textureImage = new img::EasyImage;
-        std::ifstream fin(tex_map);
-        fin >> *textureImage;
-        fin.close();
-        texture->image = textureImage;
-        all_textures.push_back(texture);
-        // Add texture number to face
-        map_Ka = texture->number;
-    }
-    if(library[material_name]["map_Kd"].as_string_if_exists(tex_map)){
-        // Create texture and add the image
-        Texture* texture = new Texture;
-        texture->number = all_textures.size();
-        texture->a = Vector3D::vector(0, 0, 0);
-        texture->b = Vector3D::vector(0, 0, 0);
-        texture->p = Vector3D::vector(0, 0, 0);
-        img::EasyImage* textureImage = new img::EasyImage;
-        std::ifstream fin(tex_map);
-        fin >> *textureImage;
-        fin.close();
-        texture->image = textureImage;
-        all_textures.push_back(texture);
-        // Add texture number to face
-        map_Kd = texture->number;
-    }
-    if(library[material_name]["map_Ks"].as_string_if_exists(tex_map)){
-        // Create texture and add the image
-        Texture* texture = new Texture;
-        texture->number = all_textures.size();
-        texture->a = Vector3D::vector(0, 0, 0);
-        texture->b = Vector3D::vector(0, 0, 0);
-        texture->p = Vector3D::vector(0, 0, 0);
-        img::EasyImage* textureImage = new img::EasyImage;
-        std::ifstream fin(tex_map);
-        fin >> *textureImage;
-        fin.close();
-        texture->image = textureImage;
-        all_textures.push_back(texture);
-        // Add texture number to face
-        map_Ks = texture->number;
+    if(material_name != ""){
+        // Parse mtl file
+        obj::MTLLibrary library;
+
+        std::ifstream mtl_input_stream(mtl_file);
+        mtl_input_stream >> library;
+        mtl_input_stream.close();
+
+        // TODO: do something met reflections
+        // Gebruik naam van materiaaleigenschap als “entry”naam
+        std::vector<double> amb = library[material_name]["Ka"].as_double_tuple_or_die();
+
+        double m = library[material_name]["Ns"].as_double_or_default(1.0);
+
+        // Read all textures
+        std::string tex_map;
+        if(library[material_name]["map_Ka"].as_string_if_exists(tex_map)){
+            // Create texture and add the image
+            Texture* texture = new Texture;
+            texture->number = all_textures.size();
+            texture->a = Vector3D::vector(0, 0, 0);
+            texture->b = Vector3D::vector(0, 0, 0);
+            texture->p = Vector3D::vector(0, 0, 0);
+            img::EasyImage* textureImage = new img::EasyImage;
+            std::ifstream fin(tex_map);
+            fin >> *textureImage;
+            fin.close();
+            texture->image = textureImage;
+            all_textures.push_back(texture);
+            // Add texture number to face
+            map_Ka = texture->number;
+        }
+        if(library[material_name]["map_Kd"].as_string_if_exists(tex_map)){
+            // Create texture and add the image
+            Texture* texture = new Texture;
+            texture->number = all_textures.size();
+            texture->a = Vector3D::vector(0, 0, 0);
+            texture->b = Vector3D::vector(0, 0, 0);
+            texture->p = Vector3D::vector(0, 0, 0);
+            img::EasyImage* textureImage = new img::EasyImage;
+            std::ifstream fin(tex_map);
+            fin >> *textureImage;
+            fin.close();
+            texture->image = textureImage;
+            all_textures.push_back(texture);
+            // Add texture number to face
+            map_Kd = texture->number;
+        }
+        if(library[material_name]["map_Ks"].as_string_if_exists(tex_map)){
+            // Create texture and add the image
+            Texture* texture = new Texture;
+            texture->number = all_textures.size();
+            texture->a = Vector3D::vector(0, 0, 0);
+            texture->b = Vector3D::vector(0, 0, 0);
+            texture->p = Vector3D::vector(0, 0, 0);
+            img::EasyImage* textureImage = new img::EasyImage;
+            std::ifstream fin(tex_map);
+            fin >> *textureImage;
+            fin.close();
+            texture->image = textureImage;
+            all_textures.push_back(texture);
+            // Add texture number to face
+            map_Ks = texture->number;
+        }
     }
 
     // Create new figure
