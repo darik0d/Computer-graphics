@@ -84,6 +84,7 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/vector"/>
 					<Add directory="/usr/include/c++/10"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
 					<Add directory="/usr/include/c++/10/backward"/>
@@ -106,6 +107,7 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/vector"/>
 					<Add directory="/usr/include/c++/10"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
 					<Add directory="/usr/include/c++/10/backward"/>
@@ -122,6 +124,42 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.cpp">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Figure.cpp">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Figure.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Light.cpp">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Light.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Line2D.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Point2D.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Texture.cpp">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Texture.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/ZBuffer.cpp">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/ZBuffer.h">
+			<Option target="engine"/>
+		</Unit>
 		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/easy_image.cc">
 			<Option target="engine"/>
 		</Unit>
@@ -141,6 +179,18 @@
 			<Option target="engine"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/l_parser.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/obj_parser.cc">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/obj_parser.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/utils.cpp">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/utils.h">
 			<Option target="engine"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/CMakeLists.txt">

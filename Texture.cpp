@@ -7,7 +7,7 @@
 
 Texture::~Texture() {
     delete image;
-    std::cout << "The texture is destroyed!" << std::endl;
+    //std::cout << "The texture is destroyed!" << std::endl;
 }
 Vector3D Texture::getUVW(const Vector3D& xyz) const{
     Vector3D c = Vector3D::cross(a, b);

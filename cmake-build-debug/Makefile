@@ -188,6 +188,141 @@ engine/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/build
 .PHONY : engine/fast
 
+Face.o: Face.cpp.o
+
+.PHONY : Face.o
+
+# target to build an object file
+Face.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Face.cpp.o
+.PHONY : Face.cpp.o
+
+Face.i: Face.cpp.i
+
+.PHONY : Face.i
+
+# target to preprocess a source file
+Face.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Face.cpp.i
+.PHONY : Face.cpp.i
+
+Face.s: Face.cpp.s
+
+.PHONY : Face.s
+
+# target to generate assembly for a file
+Face.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Face.cpp.s
+.PHONY : Face.cpp.s
+
+Figure.o: Figure.cpp.o
+
+.PHONY : Figure.o
+
+# target to build an object file
+Figure.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Figure.cpp.o
+.PHONY : Figure.cpp.o
+
+Figure.i: Figure.cpp.i
+
+.PHONY : Figure.i
+
+# target to preprocess a source file
+Figure.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Figure.cpp.i
+.PHONY : Figure.cpp.i
+
+Figure.s: Figure.cpp.s
+
+.PHONY : Figure.s
+
+# target to generate assembly for a file
+Figure.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Figure.cpp.s
+.PHONY : Figure.cpp.s
+
+Light.o: Light.cpp.o
+
+.PHONY : Light.o
+
+# target to build an object file
+Light.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Light.cpp.o
+.PHONY : Light.cpp.o
+
+Light.i: Light.cpp.i
+
+.PHONY : Light.i
+
+# target to preprocess a source file
+Light.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Light.cpp.i
+.PHONY : Light.cpp.i
+
+Light.s: Light.cpp.s
+
+.PHONY : Light.s
+
+# target to generate assembly for a file
+Light.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Light.cpp.s
+.PHONY : Light.cpp.s
+
+Texture.o: Texture.cpp.o
+
+.PHONY : Texture.o
+
+# target to build an object file
+Texture.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Texture.cpp.o
+.PHONY : Texture.cpp.o
+
+Texture.i: Texture.cpp.i
+
+.PHONY : Texture.i
+
+# target to preprocess a source file
+Texture.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Texture.cpp.i
+.PHONY : Texture.cpp.i
+
+Texture.s: Texture.cpp.s
+
+.PHONY : Texture.s
+
+# target to generate assembly for a file
+Texture.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Texture.cpp.s
+.PHONY : Texture.cpp.s
+
+ZBuffer.o: ZBuffer.cpp.o
+
+.PHONY : ZBuffer.o
+
+# target to build an object file
+ZBuffer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/ZBuffer.cpp.o
+.PHONY : ZBuffer.cpp.o
+
+ZBuffer.i: ZBuffer.cpp.i
+
+.PHONY : ZBuffer.i
+
+# target to preprocess a source file
+ZBuffer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/ZBuffer.cpp.i
+.PHONY : ZBuffer.cpp.i
+
+ZBuffer.s: ZBuffer.cpp.s
+
+.PHONY : ZBuffer.s
+
+# target to generate assembly for a file
+ZBuffer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/ZBuffer.cpp.s
+.PHONY : ZBuffer.cpp.s
+
 easy_image.o: easy_image.cc.o
 
 .PHONY : easy_image.o
@@ -296,6 +431,60 @@ l_parser.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/l_parser.cc.s
 .PHONY : l_parser.cc.s
 
+obj_parser.o: obj_parser.cc.o
+
+.PHONY : obj_parser.o
+
+# target to build an object file
+obj_parser.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/obj_parser.cc.o
+.PHONY : obj_parser.cc.o
+
+obj_parser.i: obj_parser.cc.i
+
+.PHONY : obj_parser.i
+
+# target to preprocess a source file
+obj_parser.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/obj_parser.cc.i
+.PHONY : obj_parser.cc.i
+
+obj_parser.s: obj_parser.cc.s
+
+.PHONY : obj_parser.s
+
+# target to generate assembly for a file
+obj_parser.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/obj_parser.cc.s
+.PHONY : obj_parser.cc.s
+
+utils.o: utils.cpp.o
+
+.PHONY : utils.o
+
+# target to build an object file
+utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/utils.cpp.o
+.PHONY : utils.cpp.o
+
+utils.i: utils.cpp.i
+
+.PHONY : utils.i
+
+# target to preprocess a source file
+utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/utils.cpp.i
+.PHONY : utils.cpp.i
+
+utils.s: utils.cpp.s
+
+.PHONY : utils.s
+
+# target to generate assembly for a file
+utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/utils.cpp.s
+.PHONY : utils.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -309,6 +498,21 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... engine"
+	@echo "... Face.o"
+	@echo "... Face.i"
+	@echo "... Face.s"
+	@echo "... Figure.o"
+	@echo "... Figure.i"
+	@echo "... Figure.s"
+	@echo "... Light.o"
+	@echo "... Light.i"
+	@echo "... Light.s"
+	@echo "... Texture.o"
+	@echo "... Texture.i"
+	@echo "... Texture.s"
+	@echo "... ZBuffer.o"
+	@echo "... ZBuffer.i"
+	@echo "... ZBuffer.s"
 	@echo "... easy_image.o"
 	@echo "... easy_image.i"
 	@echo "... easy_image.s"
@@ -321,6 +525,12 @@ help:
 	@echo "... l_parser.o"
 	@echo "... l_parser.i"
 	@echo "... l_parser.s"
+	@echo "... obj_parser.o"
+	@echo "... obj_parser.i"
+	@echo "... obj_parser.s"
+	@echo "... utils.o"
+	@echo "... utils.i"
+	@echo "... utils.s"
 .PHONY : help
 
 

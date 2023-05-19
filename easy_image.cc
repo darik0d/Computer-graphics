@@ -715,12 +715,6 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                         std::vector<double> texturefullAmbientRef = {0,0,0};
                         bool black = false;
                         for(Texture* texture: textures){
-                            // Bereken geprojecteerde P'
-//                            Vector3D texture_n = Vector3D::cross(texture->a, texture->b);
-//                            texture_n.normalise();
-//                            Vector3D extra_v = worldCo - texture->p;
-//                            Vector3D projection = Vector3D::cross(Vector3D::cross(extra_v, texture_n), texture_n);
-//                            Vector3D projectedPoint = worldCo - projection;
 //                            // Get uvm
                             Vector3D uvw = texture->getUVW(worldCo);
                             // Get color with uvm
@@ -736,7 +730,9 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                             //Color textureColor = texture->image->bitmap[u_t*height + v_t];
                             Color textureColor = (*(texture->image))(u_t, v_t);
                             // Remove it or not: that is the question
-                            if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) black = true;
+                            if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) {
+                                black = true;
+                            }
                             texturefullAmbientRef[0] += textureColor.red/255.0;
                             texturefullAmbientRef[1] += textureColor.green/255.0;
                             texturefullAmbientRef[2] += textureColor.blue/255.0;
@@ -753,6 +749,7 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                                 resulted_color[2] += texturefullAmbientRef[2] * light->ambientLight[2];
                             }
                         }
+                        black = false;
                     }
                     if(resulted_color[0] > 1) resulted_color[0] = 1;
                     if(resulted_color[1] > 1) resulted_color[1] = 1;

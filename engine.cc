@@ -551,16 +551,12 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             std::vector<double> p_vec = textureConfig["p"].as_double_tuple_or_die();
             texture->a = Vector3D::vector(a_vec[0], a_vec[1], a_vec[2]);
             texture->b = Vector3D::vector(b_vec[0], b_vec[1], b_vec[2]);
-            // TODO: or is it a vector?
             texture->p = Vector3D::vector(p_vec[0], p_vec[1], p_vec[2]);
             img::EasyImage* textureImage = new img::EasyImage;
             std::ifstream fin(textureConfig["src"]);
             fin >> *textureImage;
             fin.close();
             texture->image = textureImage;
-//            std::cout 	<< "Read a texture with width: " << textureImage.get_width()
-//                         << " and height: " << textureImage.get_height()
-//                         << std::endl;
             all_textures.push_back(texture);
         }
         // Iterate over all figures
@@ -580,6 +576,11 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             //Get all transformation matrices
             Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
             Figure figuur;
+            if(typefig == "obj"){
+                std::string source = figConfig["src"].as_string_or_die();
+                // Parse figures of the obj
+                figuur = Figure::parseObj(source);
+            }
             figuur.textureNrs = figConfig["textureNrs"].as_int_tuple_or_default({});
 //            img::EasyImage texture;
 //            std::ifstream fin(configuration["Texture" + std::to_string(0)]["src"]);

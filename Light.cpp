@@ -31,5 +31,5 @@ bool Light::pointIsVisible(double x_ac, double y_ac, double z_e, double eye_d, d
 }
 
 Light::~Light() {
-    std::cout << "The light is destroyed!" << std::endl;
+    //std::cout << "The light is destroyed!" << std::endl;
 }

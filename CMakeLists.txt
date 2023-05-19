@@ -19,7 +19,7 @@ set(engine_sources
 	easy_image.cc
 	engine.cc
 	ini_configuration.cc l_parser.cc
-        ZBuffer.cpp ZBuffer.h Point2D.h Figure.cpp Figure.h Face.cpp Face.h Light.h Light.cpp utils.cpp utils.h Line2D.h Texture.cpp Texture.h)
+        ZBuffer.cpp ZBuffer.h Point2D.h Figure.cpp Figure.h Face.cpp Face.h Light.h Light.cpp utils.cpp utils.h Line2D.h Texture.cpp Texture.h obj_parser.h obj_parser.cc)
 
 ############################################################
 # Create an executable

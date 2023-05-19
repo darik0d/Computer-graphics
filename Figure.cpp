@@ -6,6 +6,8 @@
 #include "Face.h"
 #include "vector3d.h"
 #include <cmath>
+#include <fstream>
+#include "obj_parser.h"
 #define _USE_MATH_DEFINES
 
 Figure::Figure() {}
@@ -382,4 +384,37 @@ void Figure::icosahedron(){
     faces.push_back(f18);
     faces.push_back(f19);
     faces.push_back(f20);
+}
+
+Figure Figure::parseObj(const std::string& src){
+    // Get the object
+    obj::OBJFile obj_parser;
+    std::ifstream input_stream(src);
+    input_stream >> obj_parser;
+    input_stream.close();
+    obj::ObjectGroup object = obj_parser.get_object();
+    // Create new figure
+    Figure figure;
+    // Get points coordinates
+    std::vector<std::vector<double>> ObjPoints =  object.get_vertexes();
+    // Set points
+    for(std::vector<double> coos: ObjPoints){
+        Vector3D point = Vector3D::point(coos[0], coos[1], coos[2]);
+        figure.points.push_back(point);
+    }
+    // Get reflection parameters
+    // Get polygons (aka super faces)
+    std::vector<obj::Polygon> polygons = object.get_polygons();
+    // Transform polygons in conventional faces
+    for(obj::Polygon polygon: polygons){
+        std::vector<int> indexes = polygon.get_indexes();
+        for(int &index:indexes){
+            index--;
+        }
+        // TODO: uv, texturen, reflecties, normale vectoren
+        Face face = Face(indexes);
+        figure.faces.push_back(face);
+    }
+    // Face kan nu ook een textuur bewaren
+    return figure;
 }
