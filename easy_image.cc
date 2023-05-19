@@ -563,7 +563,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures){
+void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures, const std::vector<std::vector<double> >& uv){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -708,48 +708,83 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                         }
                     }
                     if(!textures.empty()){
+                        // TODO: nog andere texturen
                         // Get world coos
                         double x_e = -(x - dx)/(d*Z);
                         double y_e = -(y_i - dy)/(d*Z);
-                        Vector3D worldCo = Vector3D::point(x_e, y_e, 1/Z)*Matrix::inv(eyeTransf);
-                        std::vector<double> texturefullAmbientRef = {0,0,0};
-                        bool black = false;
-                        for(Texture* texture: textures){
-//                            // Get uvm
-                            Vector3D uvw = texture->getUVW(worldCo);
-                            // Get color with uvm
-                            if(uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1) continue;
-                            uvw.x = uvw.x;
-                            uvw.y = uvw.y;
-                            int u_t = roundToInt((texture->image->width-1)*uvw.x);
-                            int v_t = roundToInt((texture->image->height-1)*uvw.y);
-//                            // TODO: overflow/underflow?
-//                            if(u_t < 0 || v_t < 0)continue;
-//                            if(u_t > texture->image->width) continue;
-//                            if(v_t > texture->image->height) continue;
-                            //Color textureColor = texture->image->bitmap[u_t*height + v_t];
-                            Color textureColor = (*(texture->image))(u_t, v_t);
-                            // Remove it or not: that is the question
-                            if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) {
-                                black = true;
-                            }
-                            texturefullAmbientRef[0] += textureColor.red/255.0;
-                            texturefullAmbientRef[1] += textureColor.green/255.0;
-                            texturefullAmbientRef[2] += textureColor.blue/255.0;
-                        }
-                        if(!(texturefullAmbientRef[0] == 0 && texturefullAmbientRef[1] == 0 && texturefullAmbientRef[2] == 0) || black) {
-                            // Remove color gotten from ambient light
+                        if(!uv.empty()){
+                            // Build matrix
+                            Matrix to_inverse;
+                            to_inverse(1,1) =  A.x;
+                            to_inverse(1,2) =  A.y;
+                            to_inverse(1,3) =  A.z;
+                            to_inverse(2,1) =  B.x;
+                            to_inverse(2,2) =  B.y;
+                            to_inverse(2,3) =  B.z;
+                            to_inverse(3,1) =  C.x;
+                            to_inverse(3,2) =  C.y;
+                            to_inverse(3,3) =  C.z;
+                            Matrix inverted = Matrix::inv(to_inverse);
+                            // Get 1-p-q, p, q
+                            Vector3D coefs = Vector3D::point(x_e, y_e, 1/Z)*inverted;
+                            double texture_u = coefs.x*uv[0][0] + coefs.y*uv[1][0]+ coefs.z*uv[2][0];
+                            double texture_v = coefs.x*uv[0][1] + coefs.y*uv[1][1]+ coefs.z*uv[2][1];
+                            int u_t = std::abs(roundToInt((textures[0]->image->width-1)*(std::fmod(texture_u,1))));
+                            int v_t = std::abs(roundToInt((textures[0]->image->height-1)*(std::fmod(texture_v, 1))));
+                            Color textureColor = (*(textures[0]->image))(u_t, v_t);
+                            std::vector<double> texturefullAmbientRef = {0,0,0};
                             resulted_color[0] -= fullAmbientRef[0];
                             resulted_color[1] -= fullAmbientRef[1];
                             resulted_color[2] -= fullAmbientRef[2];
-//                         Multiply with lights
+                            texturefullAmbientRef[0] += textureColor.red/255.0;
+                            texturefullAmbientRef[1] += textureColor.green/255.0;
+                            texturefullAmbientRef[2] += textureColor.blue/255.0;
                             for (Light *light: lights) {
                                 resulted_color[0] += texturefullAmbientRef[0] * light->ambientLight[0];
                                 resulted_color[1] += texturefullAmbientRef[1] * light->ambientLight[1];
                                 resulted_color[2] += texturefullAmbientRef[2] * light->ambientLight[2];
                             }
+                        }else{
+                            Vector3D worldCo = Vector3D::point(x_e, y_e, 1/Z)*Matrix::inv(eyeTransf);
+                            std::vector<double> texturefullAmbientRef = {0,0,0};
+                            bool black = false;
+                            for(Texture* texture: textures){
+    //                            // Get uvm
+                                Vector3D uvw = texture->getUVW(worldCo);
+                                // Get color with uvm
+                                if(uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1) continue;
+                                uvw.x = uvw.x;
+                                uvw.y = uvw.y;
+                                int u_t = roundToInt((texture->image->width-1)*uvw.x);
+                                int v_t = roundToInt((texture->image->height-1)*uvw.y);
+    //                            // TODO: overflow/underflow?
+    //                            if(u_t < 0 || v_t < 0)continue;
+    //                            if(u_t > texture->image->width) continue;
+    //                            if(v_t > texture->image->height) continue;
+                                //Color textureColor = texture->image->bitmap[u_t*height + v_t];
+                                Color textureColor = (*(texture->image))(u_t, v_t);
+                                // Remove it or not: that is the question
+                                if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) {
+                                    black = true;
+                                }
+                                texturefullAmbientRef[0] += textureColor.red/255.0;
+                                texturefullAmbientRef[1] += textureColor.green/255.0;
+                                texturefullAmbientRef[2] += textureColor.blue/255.0;
+                            }
+                            if(!(texturefullAmbientRef[0] == 0 && texturefullAmbientRef[1] == 0 && texturefullAmbientRef[2] == 0) || black) {
+                                // Remove color gotten from ambient light
+                                resulted_color[0] -= fullAmbientRef[0];
+                                resulted_color[1] -= fullAmbientRef[1];
+                                resulted_color[2] -= fullAmbientRef[2];
+    //                         Multiply with lights
+                                for (Light *light: lights) {
+                                    resulted_color[0] += texturefullAmbientRef[0] * light->ambientLight[0];
+                                    resulted_color[1] += texturefullAmbientRef[1] * light->ambientLight[1];
+                                    resulted_color[2] += texturefullAmbientRef[2] * light->ambientLight[2];
+                                }
+                            }
+                            black = false;
                         }
-                        black = false;
                     }
                     if(resulted_color[0] > 1) resulted_color[0] = 1;
                     if(resulted_color[1] > 1) resulted_color[1] = 1;

@@ -9,6 +9,7 @@ CMakeFiles/engine.dir/Figure.cpp.o: ../Face.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../Figure.cpp
 CMakeFiles/engine.dir/Figure.cpp.o: ../Figure.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../Point2D.h
+CMakeFiles/engine.dir/Figure.cpp.o: ../Texture.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../ZBuffer.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../easy_image.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../obj_parser.h

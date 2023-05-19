@@ -1,2 +1,2 @@
 TODO:
-1. Triangulate: set correct uv numbers by each point
+1. Do so that you set full ambient reflexion for figure from object (create figure, then lights)

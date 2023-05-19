@@ -43,6 +43,8 @@ fstream
 -
 obj_parser.h
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/obj_parser.h
+Texture.h
+/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Texture.h
 
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/Figure.h
 iostream

@@ -102,6 +102,9 @@ std::vector<Face> triangulate(const Face& face){
         Face triangulatedFace = Face({face.point_indexes[0], face.point_indexes[i], face.point_indexes[i + 1]});
         if(!face.uv.empty()){
             triangulatedFace.uv = {face.uv[0], face.uv[i], face.uv[i+1]};
+            triangulatedFace.map_Ka = face.map_Ka;
+            triangulatedFace.map_Kd = face.map_Kd;
+            triangulatedFace.map_Ks = face.map_Ks;
         }
         to_return.push_back(triangulatedFace);
     }
@@ -894,11 +897,20 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     int A = fac.point_indexes[0];
                     int B = fac.point_indexes[1];
                     int C = fac.point_indexes[2];
+                    // Texture mapping van willekeurige oppervlakken
                     for(int i: fig.textureNrs){
                         fig_textures.push_back(all_textures[i]);
                     }
+                    // Input van texture coordinaten
+                    // TODO: map_kd and map_ks
+                    if(fac.map_Ka != -1){
+                        fig_textures.clear();
+                        fig_textures.push_back(all_textures[fac.map_Ka]);
+                        fig_textures.push_back(nullptr);
+                        fig_textures.push_back(nullptr);
+                    }
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fac.uv);
                 }
             }
             for(Light* light:lights) delete light;
