@@ -563,7 +563,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures, const std::vector<std::vector<double> >& uv, std::vector<Vector3D* > norm){
+void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures, const std::vector<Texture*>& fig_cubemap_textures, const std::vector<std::vector<double> >& uv, std::vector<Vector3D* > norm){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));

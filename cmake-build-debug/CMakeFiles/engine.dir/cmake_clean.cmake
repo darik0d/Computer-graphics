@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/engine.dir/CubeMapSide.cpp.o"
   "CMakeFiles/engine.dir/Face.cpp.o"
   "CMakeFiles/engine.dir/Figure.cpp.o"
   "CMakeFiles/engine.dir/Light.cpp.o"

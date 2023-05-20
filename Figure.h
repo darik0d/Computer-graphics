@@ -21,6 +21,7 @@ public:
     std::vector<Face> faces;
     img::Color color;
     std::vector<int> textureNrs;
+    int cubeMapNr = -1;
     std::vector<double> fullAmbientReflection;
     std::vector<double> diffuseReflection;
     std::vector<double> specularReflection;

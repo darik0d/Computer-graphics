@@ -188,6 +188,33 @@ engine/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/build
 .PHONY : engine/fast
 
+CubeMapSide.o: CubeMapSide.cpp.o
+
+.PHONY : CubeMapSide.o
+
+# target to build an object file
+CubeMapSide.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/CubeMapSide.cpp.o
+.PHONY : CubeMapSide.cpp.o
+
+CubeMapSide.i: CubeMapSide.cpp.i
+
+.PHONY : CubeMapSide.i
+
+# target to preprocess a source file
+CubeMapSide.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/CubeMapSide.cpp.i
+.PHONY : CubeMapSide.cpp.i
+
+CubeMapSide.s: CubeMapSide.cpp.s
+
+.PHONY : CubeMapSide.s
+
+# target to generate assembly for a file
+CubeMapSide.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/CubeMapSide.cpp.s
+.PHONY : CubeMapSide.cpp.s
+
 Face.o: Face.cpp.o
 
 .PHONY : Face.o
@@ -498,6 +525,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... engine"
+	@echo "... CubeMapSide.o"
+	@echo "... CubeMapSide.i"
+	@echo "... CubeMapSide.s"
 	@echo "... Face.o"
 	@echo "... Face.i"
 	@echo "... Face.s"

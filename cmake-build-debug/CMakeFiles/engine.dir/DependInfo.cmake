@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/CubeMapSide.cpp" "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/engine.dir/CubeMapSide.cpp.o"
   "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.cpp" "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/engine.dir/Face.cpp.o"
   "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Figure.cpp" "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/engine.dir/Figure.cpp.o"
   "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Light.cpp" "/mnt/c/Users/dasha/CLionProjects/Computer-graphics/cmake-build-debug/CMakeFiles/engine.dir/Light.cpp.o"

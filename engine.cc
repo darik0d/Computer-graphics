@@ -549,6 +549,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
         }
         std::vector<Texture*> all_textures;
+        std::vector<std::vector<Texture*>> all_cubemap_textures;
         // Iterate over all textures
         for(int numb = 0; numb < aantalt; numb++){
             auto textureConfig = configuration["Texture" + std::to_string(numb)];
@@ -591,6 +592,12 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             img::Color difRef = img::Color(0,0,0);
             img::Color specRef = img::Color(0,0,0);
             double refCoef;
+            bool cubeMapOn = figConfig["cubeMapOn"].as_bool_or_default(false);
+
+            if(cubeMapOn){
+                std::string cubeMapPath = figConfig["cubeMap"].as_string_or_die();
+            }
+
 
             if(typefig.find("Fractal") != std::string::npos){
                 typefig = typefig.substr(typefig.find("Fractal") + 7, typefig.size()-7);
@@ -793,6 +800,26 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur = draw3DLSystem(l_systeem, configuration);
                 figuur.color = kleur;
             }
+            // Add cubeMap
+            if(cubeMapOn){
+                std::vector<Texture*> figureCubeMap;
+                // TODO: if find bmp in name => cube map from one image
+                std::string cubeMapPath = figConfig["cubeMap"].as_string_or_die();
+                // Add 6 new textures to the all cub-map textures in the sequence
+                // top-left-front-right-back-bottom
+
+                for(std::string sideName: {"/top.bmp", "/left.bmp", "/front.bmp", "/right.bmp", "/back.bmp", "/bottom.bmp"}){
+                    Texture* side = new Texture;
+                    img::EasyImage* sideImage = new img::EasyImage;
+                    std::ifstream fin(cubeMapPath + sideName);
+                    fin >> *sideImage;
+                    fin.close();
+                    side->image = sideImage;
+                    figureCubeMap.push_back(side);
+                }
+                figuur.cubeMapNr = all_cubemap_textures.size();
+                all_cubemap_textures.push_back(figureCubeMap);
+            }
             if (type == "ZBuffering" || type == "LightedZBuffering") {
                 std::vector<Face> faces;
                 // Triangulate all faces of figure
@@ -903,6 +930,11 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     for(int i: fig.textureNrs){
                         fig_textures.push_back(all_textures[i]);
                     }
+                    // Set cubeMap
+                    std::vector<Texture*> fig_cubemap_textures;
+                    if(fig.cubeMapNr != -1){
+                        fig_cubemap_textures = all_cubemap_textures[fig.cubeMapNr];
+                    }
                     // Input van texture coordinaten
                     // TODO: map_kd and map_ks
                     if(fac.map_Ka != -1){
@@ -912,7 +944,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         fig_textures.push_back(nullptr);
                     }
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
-                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fac.uv, fac.norm);
+                                              d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient,
+                                              lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fig_cubemap_textures, fac.uv, fac.norm);
                     // TODO: begrijpen waarom het met het oor misgaat + waarom dan dubbele delete?
                     //                    for(Vector3D* norm: fac.norm){
 //                        delete norm;
