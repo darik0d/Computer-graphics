@@ -584,11 +584,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             //Get all transformation matrices
             Matrix finalTrans = scale * X * Y * Z * T * eyeTransf;
             Figure figuur;
-            if(typefig == "obj"){
-                std::string source = figConfig["src"].as_string_or_die();
-                // Parse figures of the obj
-                figuur = Figure::parseObj(source, all_textures, eyeTransf);
-            }
             figuur.textureNrs = figConfig["textureNrs"].as_int_tuple_or_default({});
 
             img::Color kleur;
@@ -596,8 +591,18 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             img::Color difRef = img::Color(0,0,0);
             img::Color specRef = img::Color(0,0,0);
             double refCoef;
+
+            if(typefig.find("Fractal") != std::string::npos){
+                typefig = typefig.substr(typefig.find("Fractal") + 7, typefig.size()-7);
+            }
+            if(typefig == "obj"){
+                std::string source = figConfig["src"].as_string_or_die();
+                bool normalOn = figConfig["normalOn"].as_bool_or_default(false);
+                // Parse figures of the obj
+                figuur = Figure::parseObj(source, all_textures, eyeTransf, normalOn);
+            }
             if(type == "LightedZBuffering"){
-                std::vector<double> ambientReflection = figConfig["ambientReflection"];
+                std::vector<double> ambientReflection = figConfig["ambientReflection"].as_double_tuple_or_die();
                 std::vector<double> resultaat = {0,0,0};
                 for(const Light* light:lights){
                     resultaat[0] += light->ambientLight[0] * ambientReflection[0];
@@ -617,10 +622,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             else{
                 kleur = vectorToColor(figConfig["color"]);
-            }
-
-            if(typefig.find("Fractal") != std::string::npos){
-                typefig = typefig.substr(typefig.find("Fractal") + 7, typefig.size()-7);
             }
             if (typefig == "LineDrawing") {
                 int aantalp = figConfig["nrPoints"];
@@ -912,9 +913,10 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     }
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
                                               d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient, lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fac.uv, fac.norm);
-                    for(Vector3D* norm: fac.norm){
-                        delete norm;
-                    }
+                    // TODO: begrijpen waarom het met het oor misgaat + waarom dan dubbele delete?
+                    //                    for(Vector3D* norm: fac.norm){
+//                        delete norm;
+//                    }
                 }
             }
             for(Light* light:lights) delete light;

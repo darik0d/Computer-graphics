@@ -26,22 +26,6 @@ iostream
 vector
 -
 
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Figure.cpp
-Figure.h
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Figure.h
-Face.h
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.h
-vector3d.h
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/vector3d.h
-cmath
--
-fstream
--
-obj_parser.h
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/obj_parser.h
-Texture.h
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Texture.h
-
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/Figure.h
 iostream
 -
@@ -146,18 +130,6 @@ string
 set
 -
 exception
--
-
-/mnt/c/Users/dasha/CLionProjects/Computer-graphics/obj_parser.h
-iostream
--
-stdexcept
--
-string
--
-unordered_map
--
-vector
 -
 
 /mnt/c/Users/dasha/CLionProjects/Computer-graphics/utils.h

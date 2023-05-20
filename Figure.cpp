@@ -387,7 +387,7 @@ void Figure::icosahedron(){
     faces.push_back(f20);
 }
 
-Figure Figure::parseObj(const std::string &src, std::vector<Texture *> &vector, Matrix eyeTransf) {
+Figure Figure::parseObj(const std::string &src, std::vector<Texture *> &vector, Matrix eyeTransf, bool normalOn) {
     // Get the object
     obj::OBJFile obj_parser;
     std::ifstream input_stream(src);
@@ -505,16 +505,18 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *> &vector, 
                 face.uv.push_back(allUVs[index]);
             }
         }
-        // Get normal vector's of the face
-        if(polygon.has_normal_indexes()){
-            std::vector<int> norm_indexes = polygon.get_normal_indexes();
-            for(int &index:norm_indexes){
-                // TODO: Or is it better to do with new?
-                index--;
-                Vector3D* pointNorm = new Vector3D;
-                *pointNorm = Vector3D::vector(allNorms[index][0], allNorms[index][1], allNorms[index][2]);
-                *pointNorm *= eyeTransf;
-                face.norm.push_back(pointNorm);
+        if(normalOn){
+            // Get normal vector's of the face
+            if(polygon.has_normal_indexes()){
+                std::vector<int> norm_indexes = polygon.get_normal_indexes();
+                for(int &index:norm_indexes){
+                    // TODO: Or is it better to do with new?
+                    index--;
+                    Vector3D* pointNorm = new Vector3D;
+                    *pointNorm = Vector3D::vector(allNorms[index][0], allNorms[index][1], allNorms[index][2]);
+                    *pointNorm *= eyeTransf;
+                    face.norm.push_back(pointNorm);
+                }
             }
         }
         figure.faces.push_back(face);
