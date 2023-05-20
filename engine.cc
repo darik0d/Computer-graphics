@@ -830,6 +830,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.faces = faces;
                 //alle_figuren.push_back(figuur);
             }
+            // TODO: remove it?
+            figuur.color = kleur;
             std::string typefig_full = figConfig["type"];
             // Fractalen
             if (typefig_full.find("Fractal") != std::string::npos) {

@@ -124,12 +124,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/CubeMapSide.cpp">
-			<Option target="engine"/>
-		</Unit>
-		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/CubeMapSide.h">
-			<Option target="engine"/>
-		</Unit>
 		<Unit filename="/mnt/c/Users/dasha/CLionProjects/Computer-graphics/Face.cpp">
 			<Option target="engine"/>
 		</Unit>

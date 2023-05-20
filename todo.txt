@@ -1,9 +1,9 @@
 TODO:
 0. Rexlections from file
-1. Add custom normal vectors in in other light (ex infinity)
+1. Add custom normal vectors in other light (ex infinity)
 2. Read complexe textures (aka mario)
 3. Cube mapping: background
 4. Fix 3d lijnen
-5. Cube-map: hoe input van images
+
 6. Cube-mapping: size of the box
 7. If type of texture: cubemap, force cube mapping
