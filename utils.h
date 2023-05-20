@@ -23,6 +23,7 @@ struct utils {
     static std::pair<double,double> getMaximum(const Lines2D &lines);
     static Point2D doProjection(const Vector3D &point, const double d);
     static void applyTransformation(std::vector<Figure> &figs, const Matrix &m);
+    static double getCubeSizeRadius(const std::vector<Figure> & all_projected_figures);
 };
 
 

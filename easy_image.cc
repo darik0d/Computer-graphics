@@ -563,7 +563,7 @@ img::Color vectorToColor2(std::vector<double> kleur){
     img::Color to_return = img::Color(kleur[0]*255, kleur[1]*255, kleur[2]*255);
     return to_return;
 }
-void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures, const std::vector<Texture*>& fig_cubemap_textures, const std::vector<std::vector<double> >& uv, std::vector<Vector3D* > norm){
+void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& fullAmbientRef, std::vector<double>& diffuseRef, std::vector<double>& specularRef, double& refCoeff, const std::vector<Light*>& lights, const Vector3D& eyeCamera, const Matrix &eyeTransf, bool shadowOn, const std::vector<Texture*>& textures, const std::vector<Texture*>& fig_cubemap_textures, const std::vector<std::vector<double> >& uv, std::vector<Vector3D* > norm, const double& cubeSize){
     // Bereken points
     Point2D a = Point2D(projecteerCo(A.x, A.z, d, dx), projecteerCo(A.y, A.z, d, dy));
     Point2D b = Point2D(projecteerCo(B.x, B.z, d, dx), projecteerCo(B.y, B.z, d, dy));
@@ -647,7 +647,7 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
             double Z = zg + (x_r-xg)*dzdx + (y_i-yg)*dzdy;
 
             for (int x = x_r; x <= x_l; x++) {
-                if(x < 0 || y_i < 0) continue; // TODO: For axes (fix it and remove)
+                if(x < 0 || y_i < 0) continue;
                 if(y_i > buf.size()) continue;
                 if(x > buf[y_i].size()) continue;
                 if(buf[y_i][x] > Z){
@@ -713,6 +713,7 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                             }
                         }
                     }
+                    // Textuurcoordinaten of textuur op een willekeurige vlak
                     if(!textures.empty()){
                         // TODO: nog andere texturen
                         // Get world coos
@@ -784,6 +785,67 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                             }
                             black = false;
                         }
+                    }
+                    else if(cubeSize != -1){
+                        Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
+                        std::vector<double> ts;
+                        double t_top = (cubeSize - eyeCo.z)/n.z;
+                        ts.push_back(t_top);
+                        double t_left = (-cubeSize - eyeCo.y)/n.y;
+                        ts.push_back(t_left);
+                        double t_front = (-cubeSize - eyeCo.x)/n.x;
+                        ts.push_back(t_front);
+                        double t_right = (cubeSize - eyeCo.y)/n.y;
+                        ts.push_back(t_right);
+                        double t_back = (cubeSize - eyeCo.x)/n.x;
+                        ts.push_back(t_back);
+                        double t_bottom = (-cubeSize - eyeCo.z)/n.z;
+                        ts.push_back(t_bottom);
+                        int cubemap_side_index = -1;
+                        int iterative_index = -1;
+                        double prev_t = *std::max_element(ts.begin(), ts.end());
+                        for(double candidate_t: ts){
+                            iterative_index++;
+                            if(candidate_t < 0) continue;
+                            if(candidate_t < prev_t) {
+                                prev_t = candidate_t;
+                                cubemap_side_index = iterative_index;
+                            }
+                        }
+                        Texture* texture = fig_cubemap_textures[cubemap_side_index];
+                        //Vector3D worldCo = Vector3D::point(x_e, y_e, 1/Z)*Matrix::inv(eyeTransf);
+                        std::vector<double> texturefullAmbientRef = {0,0,0};
+                        bool black = false;
+                        //                            // Get uvm
+                        Vector3D uvw = texture->getUVW(eyeCo);
+                        // Get color with uvm
+                        //if(uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1) continue;
+                        uvw.x = uvw.x;
+                        uvw.y = uvw.y;
+                        int u_t = roundToInt((texture->image->width-1)*uvw.x);
+                        int v_t = roundToInt((texture->image->height-1)*uvw.y);
+                        Color textureColor = (*(texture->image))(u_t, v_t);
+                        // Remove it or not: that is the question
+                        if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) {
+                            black = true;
+                        }
+                        texturefullAmbientRef[0] += textureColor.red/255.0;
+                        texturefullAmbientRef[1] += textureColor.green/255.0;
+                        texturefullAmbientRef[2] += textureColor.blue/255.0;
+
+                        if(!(texturefullAmbientRef[0] == 0 && texturefullAmbientRef[1] == 0 && texturefullAmbientRef[2] == 0) || black) {
+                            // Remove color gotten from ambient light
+                            resulted_color[0] -= fullAmbientRef[0];
+                            resulted_color[1] -= fullAmbientRef[1];
+                            resulted_color[2] -= fullAmbientRef[2];
+                            //                         Multiply with lights
+                            for (Light *light: lights) {
+                                resulted_color[0] += texturefullAmbientRef[0] * light->ambientLight[0];
+                                resulted_color[1] += texturefullAmbientRef[1] * light->ambientLight[1];
+                                resulted_color[2] += texturefullAmbientRef[2] * light->ambientLight[2];
+                            }
+                        }
+                        black = false;
                     }
                     if(resulted_color[0] > 1) resulted_color[0] = 1;
                     if(resulted_color[1] > 1) resulted_color[1] = 1;

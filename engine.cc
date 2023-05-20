@@ -922,6 +922,37 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 utils::applyTransformation(as_vector, eyeTransf);
                 all_projected_figures.insert(all_projected_figures.end(), as_vector.begin(), as_vector.end());
             }
+            double cubeSize = -1;
+            if(!all_cubemap_textures.empty()) {
+                cubeSize = utils::getCubeSizeRadius(all_projected_figures);
+                // Set all cube maps' a, b and p
+                for(std::vector<Texture*> cubemaps: all_cubemap_textures){
+                    // Top
+                    cubemaps[0]->p = Vector3D::vector(-cubeSize, -cubeSize, cubeSize);
+                    cubemaps[0]->a = Vector3D::vector(0, 2*cubeSize, 0);
+                    cubemaps[0]->b = Vector3D::vector(2*cubeSize, 0, 0);
+                    // Left
+                    cubemaps[1]->p = Vector3D::vector(cubeSize, -cubeSize, -cubeSize);
+                    cubemaps[1]->a = Vector3D::vector(-2*cubeSize, 0, 0);
+                    cubemaps[1]->b = Vector3D::vector(0, 0, 2*cubeSize);
+                    // Front
+                    cubemaps[2]->p = Vector3D::vector(-cubeSize, -cubeSize, -cubeSize);
+                    cubemaps[2]->a = Vector3D::vector(0, 2*cubeSize, 0);
+                    cubemaps[2]->b = Vector3D::vector(0, 0, 2*cubeSize);
+                    // Right
+                    cubemaps[3]->p = Vector3D::vector(-cubeSize, cubeSize, -cubeSize);
+                    cubemaps[3]->a = Vector3D::vector(2*cubeSize, 0, 0);
+                    cubemaps[3]->b = Vector3D::vector(0, 0, 2*cubeSize);
+                    // Back
+                    cubemaps[4]->p = Vector3D::vector(cubeSize, cubeSize, -cubeSize);
+                    cubemaps[4]->a = Vector3D::vector(0, -2*cubeSize, 0);
+                    cubemaps[4]->b = Vector3D::vector(0, 0, 2*cubeSize);
+                    // Bottom
+                    cubemaps[5]->p = Vector3D::vector(cubeSize, -cubeSize, -cubeSize);
+                    cubemaps[5]->a = Vector3D::vector(0, 2*cubeSize, 0);
+                    cubemaps[5]->b = Vector3D::vector(-2*cubeSize, 0, 0);
+                }
+            }
             for(auto fig:all_projected_figures){
                 for(auto fac: fig.faces){
                     std::vector<Texture*> fig_textures;
@@ -947,7 +978,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     }
                     to_return.draw_zbuf_triag(fig.points[A], fig.points[B], fig.points[C],
                                               d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient,
-                                              lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fig_cubemap_textures, fac.uv, fac.norm);
+                                              lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fig_cubemap_textures, fac.uv, fac.norm, cubeSize);
                     // TODO: begrijpen waarom het met het oor misgaat + waarom dan dubbele delete?
                     //                    for(Vector3D* norm: fac.norm){
 //                        delete norm;
@@ -956,6 +987,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             for(Light* light:lights) delete light;
             for(Texture* texture:all_textures) delete texture;
+            for(const std::vector<Texture*>& texturemap:all_cubemap_textures) {
+                for(Texture* texture: texturemap) delete texture;
+            }
         }
     }
 	return to_return;
