@@ -796,8 +796,15 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 std::ifstream input_stream(figConfig["inputfile"]);
                 input_stream >> l_systeem;
                 input_stream.close();
+                Figure backup = figuur;
                 figuur = draw3DLSystem(l_systeem, configuration);
                 figuur.color = kleur;
+                figuur.fullAmbientReflection = backup.fullAmbientReflection;
+                figuur.cubeMapNr = backup.cubeMapNr;
+                figuur.diffuseReflection = backup.diffuseReflection;
+                figuur.specularReflection = backup.specularReflection;
+                figuur.textureNrs = backup.textureNrs;
+                figuur.reflectionCoefficient = backup.reflectionCoefficient;
             }
             // Add cubeMap
             if(cubeMapOn){
@@ -818,16 +825,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 }
                 figuur.cubeMapNr = all_cubemap_textures.size();
                 all_cubemap_textures.push_back(figureCubeMap);
-            }
-            if (type == "ZBuffering" || type == "LightedZBuffering") {
-                std::vector<Face> faces;
-                // Triangulate all faces of figure
-                for (const auto &f: figuur.faces) {
-                    std::vector<Face> to_add = triangulate(f);
-                    faces.insert(faces.end(), to_add.begin(), to_add.end());
-                }
-                figuur.faces = faces;
-                //alle_figuren.push_back(figuur);
             }
             // TODO: remove it?
             figuur.color = kleur;
@@ -860,6 +857,16 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     all_thick_figures.insert(all_thick_figures.end(), resultingFigures.begin(), resultingFigures.end());
                 }
                 alle_figuren = all_thick_figures;
+            }
+            if ((type == "ZBuffering" || type == "LightedZBuffering") && typefig != "3DLSystem") {
+                std::vector<Face> faces;
+                // Triangulate all faces of figure
+                for (const auto &f: figuur.faces) {
+                    std::vector<Face> to_add = triangulate(f);
+                    faces.insert(faces.end(), to_add.begin(), to_add.end());
+                }
+                figuur.faces = faces;
+                //alle_figuren.push_back(figuur);
             }
             for (auto &fi: alle_figuren) {
                 // Copy figure
