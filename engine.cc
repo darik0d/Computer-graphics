@@ -137,13 +137,13 @@ img::EasyImage draw3DLines(const Lines2D &lines, const int size, img::Color back
     // Bereken d
     double d = 0.95*imagex/x_range;
     // Bereken DCx
-    double dcx = d*(x_min+x_max)/2;
+    double dcx = d*(x_min+x_max)/2.0;
     // Bereken DCy
-    double dcy = d*(y_min+y_max)/2;
+    double dcy = d*(y_min+y_max)/2.0;
     //dx
-    double dx = imagex/2 - dcx;
+    double dx = imagex/2.0 - dcx;
     //dy
-    double dy = imagey/2 - dcy;
+    double dy = imagey/2.0 - dcy;
     if(imagey < 1) imagey = 1;
     if(imagex < 1) imagex = 1;
     img::EasyImage to_return(imagex, imagey, background_color);
@@ -154,8 +154,8 @@ img::EasyImage draw3DLines(const Lines2D &lines, const int size, img::Color back
         lijn.b.x = d*lijn.b.x + dx;
         lijn.b.y = d*lijn.b.y + dy;
         if(lijn.a.x != lijn.b.x || lijn.a.y != lijn.b.y){
-            to_return.draw_zbuf_line(roundToInt(lijn.a.x), roundToInt(lijn.a.y), roundToInt(lijn.a.z), roundToInt(lijn.b.x),
-                                     roundToInt(lijn.b.y), lijn.b.z, lijn.color);
+            to_return.draw_zbuf_line(lijn.a.x, lijn.a.y, lijn.a.z, lijn.b.x,
+                                     lijn.b.y, lijn.b.z, lijn.color);
         }
     }
     return to_return;
