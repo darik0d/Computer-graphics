@@ -3,10 +3,7 @@ TODO:
 1. Add custom normal vectors in other light (ex infinity)
 2. Read complexe textures (aka mario)
 3. Cube mapping: background
-4. Fix 3d lijnen
 
 6. Cube mapping: andere formule voor c
 7. Doe wat het boek zegt (dwz:
 1) Geef andere vaste waarden voor vlakken
-2)
-)

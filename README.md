@@ -19,7 +19,7 @@ X: Niet werkend of niet geïmplementeerd
 |   | Bol                       | V      |
 |   | Torus                     | V      |
 |   | 3D L-systemen             | V      |
-| 4 | Z-buffering (lijnen)      | -      |
+| 4 | Z-buffering (lijnen)      | V      |
 | 5 | Triangulatie              | V      |
 |   | Z-buffering (driehoeken)  | V      |
 | 6 | 3D fractalen              | V      |
@@ -33,14 +33,14 @@ X: Niet werkend of niet geïmplementeerd
 | 8 | Schaduw                   | V      |
 |   | Texture mapping           | V      |
 | 9 | Bollen en cylinders       |        |
-|   | UV-coordinaten            |        |
-|   | Cube mapping              |        |
+|   | UV-coordinaten            | V      |
+|   | Cube mapping              | V      |
 
 Geïmplementeerde vorm van texture mapping: ...
 
 ## Gekende problemen 
-Er is iets mis met z-buffering met lijnen
-Schaduwen: zie verbetering in mail
+Er is iets mis met z-buffering met lijnen: gefixt?
+Schaduwen: zie verbetering in mail (gefixt?)
 
 ## Niet-gequoteerde functionaliteit
 ...

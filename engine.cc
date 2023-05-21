@@ -459,9 +459,6 @@ Point2D doProjection(const Vector3D &point, const double d){
     to_return.z = point.z;
     return to_return;
 }
-Vector3D findMiddle(Vector3D a, Vector3D b){
-    return Vector3D::point((a.x+b.x)/2, (a.y+b.y)/2, (a.z+b.z)/2);
-}
 Lines2D doProjection(const Figure & figuur){
     Lines2D to_return;
         std::vector<Point2D> currentPoints;
@@ -598,7 +595,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 std::string cubeMapPath = figConfig["cubeMap"].as_string_or_die();
             }
 
-
+            if(typefig.find("Thick") != std::string::npos){
+                typefig = typefig.substr(typefig.find("Thick") + 5, typefig.size()-5);
+            }
             if(typefig.find("Fractal") != std::string::npos){
                 typefig = typefig.substr(typefig.find("Fractal") + 7, typefig.size()-7);
             }
@@ -734,10 +733,10 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         Vector3D A = figuur.points[face.point_indexes[0]];
                         Vector3D B = figuur.points[face.point_indexes[1]];
                         Vector3D C = figuur.points[face.point_indexes[2]];
-                        Vector3D D = findMiddle(A, B);
+                        Vector3D D = utils::findMiddle(A, B);
                         // ??? Swap E and F
-                        Vector3D E = findMiddle(B, C);
-                        Vector3D F = findMiddle(C, A);
+                        Vector3D E = utils::findMiddle(B, C);
+                        Vector3D F = utils::findMiddle(C, A);
                         int indexA = newPoints.size();
                         int indexB = newPoints.size() + 1;
                         int indexC = newPoints.size() + 2;
@@ -849,6 +848,18 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             }
             else{
                 alle_figuren.push_back(figuur);
+            }
+            // Thick drawings
+            if(typefig_full.find("Thick") != std::string::npos){
+                int m = figConfig["m"].as_int_or_die();
+                int n = figConfig["n"].as_int_or_die();
+                double radius = figConfig["radius"].as_double_or_die();
+                std::vector<Figure> all_thick_figures;
+                for(const Figure& figure:alle_figuren){
+                    std::vector<Figure> resultingFigures = utils::generateThickFigure(figure, radius, n, m);
+                    all_thick_figures.insert(all_thick_figures.end(), resultingFigures.begin(), resultingFigures.end());
+                }
+                alle_figuren = all_thick_figures;
             }
             for (auto &fi: alle_figuren) {
                 // Copy figure

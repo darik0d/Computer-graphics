@@ -31,11 +31,15 @@ public:
     void octahedron();
     void icosahedron();
     void dodecahedron();
+    void sphere(int n);
+    void cylinderZonderVlakken(int n, double height);
+    static std::vector<Figure> generateThickFigure(const Figure& to_enlarge, const double r, const int n, const int m);
     void generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale) const;
     void scaleFigure(const double scale);
     void translate(const Vector3D &vector);
     static Figure copyFigure(const Figure& fig);
     static Figure parseObj(const std::string &src, std::vector<Texture *> &vector, Matrix eyeTransf, bool normalOn);
+    void herschaalPuntenBal(Vector3D& punt);
 //    Figure(Figure& fig);
 };
 

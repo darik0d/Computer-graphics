@@ -9,6 +9,7 @@
 #include <fstream>
 #include "obj_parser.h"
 #include "Texture.h"
+#include "utils.h"
 #define _USE_MATH_DEFINES
 
 Figure::Figure() {}
@@ -524,4 +525,62 @@ Figure Figure::parseObj(const std::string &src, std::vector<Texture *> &vector, 
     }
 
     return figure;
+}
+void Figure::cylinderZonderVlakken(int n, double height){
+    for (int ind = 0; ind < n; ind++) {
+        points.push_back(Vector3D::point(std::cos(2 * M_PI * ind / n), std::sin(2 * M_PI * ind / n), 0));
+        faces.push_back(Face({ind, (ind + 1) % n, n + (ind + 1) % (n), n + ind}));
+    }
+    for (int ind = 0; ind < n; ind++) {
+        points.push_back(
+                Vector3D::point(std::cos(2 * M_PI * ind / n), std::sin(2 * M_PI * ind / n), height));
+    }
+}
+void Figure::sphere(int n){
+    icosahedron();
+    while (n > 0) {
+        std::vector<Face> newFaces;
+        std::vector<Vector3D> newPoints;
+        // Collect newFaces and newPoints
+        for (auto face: faces) {
+            Vector3D A = points[face.point_indexes[0]];
+            Vector3D B = points[face.point_indexes[1]];
+            Vector3D C = points[face.point_indexes[2]];
+            Vector3D D = utils::findMiddle(A, B);
+            // ??? Swap E and F
+            Vector3D E = utils::findMiddle(B, C);
+            Vector3D F = utils::findMiddle(C, A);
+            int indexA = newPoints.size();
+            int indexB = newPoints.size() + 1;
+            int indexC = newPoints.size() + 2;
+            int indexD = newPoints.size() + 3;
+            int indexE = newPoints.size() + 4;
+            int indexF = newPoints.size() + 5;
+            for (auto letter: {A, B, C, D, E, F}) newPoints.push_back(letter);
+            std::vector<std::vector<Vector3D>> driehoeken = {{A, D, F},
+                                                             {B, E, D},
+                                                             {C, F, E},
+                                                             {D, E, F}};
+            Face f1 = Face({indexA, indexD, indexF});
+            Face f2 = Face({indexB, indexE, indexD});
+            Face f3 = Face({indexC, indexF, indexE});
+            Face f4 = Face({indexD, indexE, indexF});
+            for (const auto& f: {f1, f2, f3, f4}) {
+                newFaces.push_back(f);
+            }
+        }
+        // Use the finalTrans matrix
+
+        faces = newFaces;
+        points = newPoints;
+        n--;
+    }
+    // Herschaal alle punten
+    for (auto &p: points) herschaalPuntenBal(p);
+}
+void Figure::herschaalPuntenBal(Vector3D& punt){
+    double r = std::sqrt(std::pow(punt.x, 2) + std::pow(punt.y, 2) + std::pow(punt.z, 2));
+    punt.x /= r;
+    punt.y /= r;
+    punt.z /= r;
 }

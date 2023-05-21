@@ -14,6 +14,7 @@ CMakeFiles/engine.dir/Figure.cpp.o: ../Texture.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../ZBuffer.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../easy_image.h
 CMakeFiles/engine.dir/Figure.cpp.o: ../obj_parser.h
+CMakeFiles/engine.dir/Figure.cpp.o: ../utils.h
 
 CMakeFiles/engine.dir/Light.cpp.o: ../vector/vector3d.h
 CMakeFiles/engine.dir/Light.cpp.o: ../Light.cpp

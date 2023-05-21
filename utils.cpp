@@ -141,3 +141,27 @@ double utils::getCubeSizeRadius(const std::vector<Figure> & all_projected_figure
     c = 3;
     return c;
 }
+Vector3D utils::findMiddle(Vector3D a, Vector3D b){
+    return Vector3D::point((a.x+b.x)/2, (a.y+b.y)/2, (a.z+b.z)/2);
+}
+
+std::vector<Figure> utils::generateThickFigure(const Figure& to_enlarge, const double r, const int n, const int m){
+    std::vector<Figure> to_return;
+    // Generate points
+    for(const Vector3D& fig_point: to_enlarge.points){
+        // Genereer bal
+        Figure bol = Figure::copyFigure(to_enlarge); // Copier alle parameters
+        // Verwijder alle punten en vlakken
+        bol.faces.clear();
+        bol.points.clear();
+        bol.sphere(m);
+        // TODO: wat moet ik doen met r?
+        bol.scaleFigure(r);
+        // Verplaats met p
+        bol.translate(fig_point - Vector3D::point(0,0,0));
+        to_return.push_back(bol);
+    }
+    // Generate cylinders
+//    for()
+    return to_return;
+}
