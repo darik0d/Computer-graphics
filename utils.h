@@ -26,6 +26,12 @@ struct utils {
     static double getCubeSizeRadius(const std::vector<Figure> & all_projected_figures);
     static Vector3D findMiddle(Vector3D a, Vector3D b);
     static std::vector<Figure> generateThickFigure(const Figure& to_enlarge, const double r, const int n, const int m);
+    static void toPolar(const Vector3D &point, double &theta, double &phi, double &r);
+    static double to_radialen(double graden);
+    static double to_degrees(double graden);
+    static Matrix rotateX(const double angle);
+    static Matrix rotateY(const double cangle);
+    static Matrix rotateZ(const double cangle);
 };
 
 

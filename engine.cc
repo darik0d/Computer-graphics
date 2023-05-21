@@ -877,6 +877,10 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 toDraw.insert(toDraw.end(), to_add.begin(), to_add.end());
             }
         }
+        if(toDraw.empty()) {
+            std::cout << "Ik heb geen idee hoe ik dat moet tekenen" << std::endl;
+            return to_return;
+        }
         // Nu moeten we alle figuren tekenen
         if(type == "ZBufferedWireframe") to_return = draw3DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);
         else if (type == "Wireframe") to_return = draw2DLines(toDraw, size, vectorToColor(configuration["General"]["backgroundcolor"]), configuration);

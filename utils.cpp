@@ -155,13 +155,79 @@ std::vector<Figure> utils::generateThickFigure(const Figure& to_enlarge, const d
         bol.faces.clear();
         bol.points.clear();
         bol.sphere(m);
-        // TODO: wat moet ik doen met r?
         bol.scaleFigure(r);
         // Verplaats met p
         bol.translate(fig_point - Vector3D::point(0,0,0));
         to_return.push_back(bol);
     }
     // Generate cylinders
-//    for()
+    for(Face face: to_enlarge.faces){
+        for(int i = 0; i < face.point_indexes.size(); i++){
+            Vector3D first = to_enlarge.points[face.point_indexes[i]];
+            Vector3D second = to_enlarge.points[face.point_indexes[(i + 1) % (face.point_indexes.size())]];
+            Figure cylinder = Figure::copyFigure(to_enlarge);
+            cylinder.faces.clear();
+            cylinder.points.clear();
+            double height = (second - first).length()/r;
+            cylinder.cylinderZonderVlakken(n, height);
+            cylinder.scaleFigure(r);
+            // En nu nog punten verplaatsen...
+            Vector3D P_r = Vector3D::point(0,0,0) + (second-first);
+            double theta, phi, r_pol;
+            toPolar(P_r, theta, phi, r_pol);
+            theta = to_degrees(theta);
+            phi = to_degrees(phi);
+            Matrix Y = rotateY(phi);
+            Matrix Z = rotateZ(theta);
+            applyTransformation(cylinder, Y);
+            applyTransformation(cylinder, Z);
+            cylinder.translate(first - Vector3D::point(0,0,0));
+            to_return.push_back(cylinder);
+        }
+    }
     return to_return;
+}
+void utils::toPolar(const Vector3D &point, double &theta, double &phi, double &r){
+    theta = std::atan2(point.y, point.x);
+    r = std::sqrt(std::pow(point.x, 2) + pow(point.y, 2) + pow(point.z, 2));
+    //if(r != 0) phi = std::acos(r);
+    if(r != 0) phi = std::acos((point.z)/r);
+    else phi = 0;
+}
+
+Matrix utils::rotateX(const double angle){
+    Matrix to_return;
+    double cangle = to_radialen(angle);
+    to_return(1,1) = 1;
+    to_return(2,2) = std::cos(cangle);
+    to_return(3,3) = std::cos(cangle);
+    to_return(2,3) = std::sin(cangle);
+    to_return(3,2) = -std::sin(cangle);
+    return to_return;
+}
+Matrix utils::rotateY(const double cangle){
+    Matrix to_return;
+    double angle = to_radialen(cangle);
+    to_return(1,1) = std::cos(angle);
+    to_return(1,3) = -std::sin(angle);
+    to_return(3,1) = std::sin(angle);
+    to_return(3,3) = std::cos(angle);
+    return to_return;
+}
+Matrix utils::rotateZ(const double cangle){
+    Matrix to_return;
+    double angle = to_radialen(cangle);
+    to_return(1,1) = std::cos(angle);
+    to_return(2,1) = -std::sin(angle);
+    to_return(1,2) = std::sin(angle);
+    to_return(2,2) = std::cos(angle);
+    return to_return;
+}
+
+double utils::to_radialen(double graden){
+    return graden*M_PI/180;
+}
+
+double utils::to_degrees(double graden){
+    return graden*180/M_PI;
 }
