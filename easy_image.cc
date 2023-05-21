@@ -789,17 +789,17 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                     else if(cubeSize != -1){
                         Vector3D eyeCo = Vector3D::vector(- (x - dx)/(Z*d), - (y_i - dy)/(Z*d), 1/Z);
                         std::vector<double> ts;
-                        double t_top = (cubeSize - eyeCo.z)/n.z;
+                        double t_top = (cubeSize - eyeCo.y)/n.y;
                         ts.push_back(t_top);
-                        double t_left = (-cubeSize - eyeCo.y)/n.y;
+                        double t_left = (-cubeSize - eyeCo.x)/n.x;
                         ts.push_back(t_left);
-                        double t_front = (-cubeSize - eyeCo.x)/n.x;
+                        double t_front = (-cubeSize - eyeCo.z)/n.z;
                         ts.push_back(t_front);
-                        double t_right = (cubeSize - eyeCo.y)/n.y;
+                        double t_right = (cubeSize - eyeCo.x)/n.x;
                         ts.push_back(t_right);
-                        double t_back = (cubeSize - eyeCo.x)/n.x;
+                        double t_back = (cubeSize - eyeCo.z)/n.z;
                         ts.push_back(t_back);
-                        double t_bottom = (-cubeSize - eyeCo.z)/n.z;
+                        double t_bottom = (-cubeSize - eyeCo.y)/n.y;
                         ts.push_back(t_bottom);
                         int cubemap_side_index = -1;
                         int iterative_index = -1;
@@ -822,8 +822,8 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                         //if(uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1) continue;
                         uvw.x = uvw.x;
                         uvw.y = uvw.y;
-                        int u_t = roundToInt((texture->image->width-1)*uvw.x);
-                        int v_t = roundToInt((texture->image->height-1)*uvw.y);
+                        int u_t = std::abs(roundToInt((texture->image->width-1)*(std::fmod(uvw.x,1))));
+                        int v_t = std::abs(roundToInt((texture->image->height-1)*(std::fmod(uvw.y, 1))));
                         Color textureColor = (*(texture->image))(u_t, v_t);
                         // Remove it or not: that is the question
                         if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) {

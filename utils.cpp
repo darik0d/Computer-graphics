@@ -114,12 +114,12 @@ void utils::doProjection(const std::vector<Figure> & figures, Lines2D& to_return
     }
 }
 double utils::getCubeSizeRadius(const std::vector<Figure> & all_projected_figures){
-    double x_min = -1;
-    double y_min = -1;
-    double z_min = -1;
-    double x_max = 1;
-    double y_max = 1;
-    double z_max = 1;
+    double x_min = 100;
+    double y_min = 100;
+    double z_min = 100;
+    double x_max = -100;
+    double y_max = -100;
+    double z_max = -100;
     for(const Figure& figure:all_projected_figures){
         for(const Vector3D& point: figure.points){
             if(x_min > point.x) x_min = point.x;
@@ -138,5 +138,6 @@ double utils::getCubeSizeRadius(const std::vector<Figure> & all_projected_figure
     z_max = std::abs(z_max);
     double c = std::max(std::max(std::max(x_min,x_max),y_min),std::max(std::max(y_max,z_min),z_max));
     //c /= 0.95;
+    c = 3;
     return c;
 }
