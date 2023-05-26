@@ -32,15 +32,14 @@ X: Niet werkend of niet geïmplementeerd
 |   | Speculair licht           | V      |
 | 8 | Schaduw                   | V      |
 |   | Texture mapping           | V      |
-| 9 | Bollen en cylinders       |        |
+| 9 | Bollen en cylinders       | V      |
 |   | UV-coordinaten            | V      |
-|   | Cube mapping              | V      |
+|   | Cube mapping              | -      |
 
 Geïmplementeerde vorm van texture mapping: ...
 
 ## Gekende problemen 
-Er is iets mis met z-buffering met lijnen: gefixt?
-Schaduwen: zie verbetering in mail (gefixt?)
+- Cube mapping: Texturen worden geprojecteerd, maar het moment van overgang van de ene naar de andere is zichtbaar.
 
 ## Niet-gequoteerde functionaliteit
 ...

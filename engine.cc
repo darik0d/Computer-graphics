@@ -669,6 +669,14 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                 figuur.icosahedron();
                 figuur.color = kleur;
             }
+            else if (typefig == "BuckyBall") {
+                figuur.buckyBall();
+                figuur.color = kleur;
+            }
+            else if (typefig == "MengerSponge"){
+                figuur.mengerSponge();
+                figuur.color = kleur;
+            }
             else if (typefig == "Dodecahedron") {
                 figuur.dodecahedron();
                 figuur.color = kleur;
@@ -829,6 +837,16 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             // TODO: remove it?
             figuur.color = kleur;
             std::string typefig_full = figConfig["type"];
+            if ((type == "ZBuffering" || type == "LightedZBuffering") && typefig != "3DLSystem" && typefig_full.find("Thick") == std::string::npos) {
+                std::vector<Face> faces;
+                // Triangulate all faces of figure
+                for (const auto &f: figuur.faces) {
+                    std::vector<Face> to_add = triangulate(f);
+                    faces.insert(faces.end(), to_add.begin(), to_add.end());
+                }
+                figuur.faces = faces;
+                //alle_figuren.push_back(figuur);
+            }
             // Fractalen
             if (typefig_full.find("Fractal") != std::string::npos) {
                 int nrIteration = figConfig["nrIterations"];
@@ -846,6 +864,16 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             else{
                 alle_figuren.push_back(figuur);
             }
+            if ((type == "ZBuffering" || type == "LightedZBuffering") && typefig != "3DLSystem" && typefig_full.find("Thick") != std::string::npos) {
+                std::vector<Face> faces;
+                // Triangulate all faces of figure
+                for (const auto &f: figuur.faces) {
+                    std::vector<Face> to_add = triangulate(f);
+                    faces.insert(faces.end(), to_add.begin(), to_add.end());
+                }
+                figuur.faces = faces;
+                //alle_figuren.push_back(figuur);
+            }
             // Thick drawings
             if(typefig_full.find("Thick") != std::string::npos){
                 int m = figConfig["m"].as_int_or_die();
@@ -857,16 +885,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                     all_thick_figures.insert(all_thick_figures.end(), resultingFigures.begin(), resultingFigures.end());
                 }
                 alle_figuren = all_thick_figures;
-            }
-            if ((type == "ZBuffering" || type == "LightedZBuffering") && typefig != "3DLSystem") {
-                std::vector<Face> faces;
-                // Triangulate all faces of figure
-                for (const auto &f: figuur.faces) {
-                    std::vector<Face> to_add = triangulate(f);
-                    faces.insert(faces.end(), to_add.begin(), to_add.end());
-                }
-                figuur.faces = faces;
-                //alle_figuren.push_back(figuur);
             }
             for (auto &fi: alle_figuren) {
                 // Copy figure

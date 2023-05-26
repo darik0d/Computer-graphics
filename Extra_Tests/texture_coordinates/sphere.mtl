@@ -1,0 +1,9 @@
+newmtl sphere
+Ka 1.0 1.0 1.0
+Kd 1.0 1.0 1.0
+Ks 0.1 0.1 0.1
+Ns 1000
+Ni 1.5
+d 1.0
+illum 0
+map_Ka sphere_texture.bmp

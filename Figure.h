@@ -32,6 +32,8 @@ public:
     void icosahedron();
     void dodecahedron();
     void sphere(int n);
+    void buckyBall();
+    void mengerSponge();
     void cylinderZonderVlakken(int n, double height);
     static std::vector<Figure> generateThickFigure(const Figure& to_enlarge, const double r, const int n, const int m);
     void generateFractal(std::vector<Figure> & fractal, const int nr_iterations, const double scale) const;

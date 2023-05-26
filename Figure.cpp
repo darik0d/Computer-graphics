@@ -584,3 +584,11 @@ void Figure::herschaalPuntenBal(Vector3D& punt){
     punt.y /= r;
     punt.z /= r;
 }
+
+void Figure::buckyBall() {
+    icosahedron();
+}
+
+void Figure::mengerSponge(){
+    cube();
+}
