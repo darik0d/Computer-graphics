@@ -470,7 +470,7 @@ std::vector<std::unique_ptr<Figure>> DeepCopyVector(const std::vector<std::uniqu
 void img::EasyImage::fillShadowBuffers(const std::vector<Figure>& figures, std::vector<Light*> &lights, double d, double dx, double dy) const{
     for(Light* light: lights){
         // Do copy of all figures
-        std::vector<Figure> lightFigures = std::vector(figures);
+        std::vector<Figure> lightFigures = std::vector<Figure>(figures);
         utils::applyTransformation(lightFigures, light->eye);
         Lines2D light_toDraw;
         utils::doProjection(lightFigures, light_toDraw);
@@ -816,18 +816,15 @@ void img::EasyImage::draw_zbuf_triag(const Vector3D& A, const Vector3D& B, const
                                 cubemap_side_index = iterative_index;
                             }
                         }
+                        if(cubemap_side_index == -1) cubemap_side_index = 0;
                         Texture* texture = fig_cubemap_textures[cubemap_side_index];
                         //Vector3D worldCo = Vector3D::point(x_e, y_e, 1/Z)*Matrix::inv(eyeTransf);
                         std::vector<double> texturefullAmbientRef = {0,0,0};
                         bool black = false;
-                        //                            // Get uvm
                         Vector3D uvw = texture->getUVW(eyeCo);
                         // Get color with uvm
-                        //if(uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1) continue;
-                        uvw.x = uvw.x;
-                        uvw.y = uvw.y;
-                        int u_t = std::abs(roundToInt((texture->image->width-1)*(std::fmod(uvw.x,1))));
-                        int v_t = std::abs(roundToInt((texture->image->height-1)*(std::fmod(uvw.y, 1))));
+                        int u_t = std::abs(roundToInt((texture->image->width-1)*(std::fmod(uvw.x,1.0))));
+                        int v_t = std::abs(roundToInt((texture->image->height-1)*(std::fmod(uvw.y, 1.0))));
                         Color textureColor = (*(texture->image))(u_t, v_t);
                         // Remove it or not: that is the question
                         if(textureColor.red == 0 && textureColor.green == 0 && textureColor.blue == 0) {

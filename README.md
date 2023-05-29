@@ -34,9 +34,9 @@ X: Niet werkend of niet geïmplementeerd
 |   | Texture mapping           | V      |
 | 9 | Bollen en cylinders       | V      |
 |   | UV-coordinaten            | V      |
-|   | Cube mapping              | -      |
+|   | Cube mapping              | V      |
 
-Geïmplementeerde vorm van texture mapping: ...
+Geïmplementeerde vorm van texture mapping: willekeurige oppervlakken
 
 ## Gekende problemen 
 - Cube mapping: Texturen worden geprojecteerd, maar het moment van overgang van de ene naar de andere is zichtbaar.

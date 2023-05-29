@@ -114,12 +114,12 @@ void utils::doProjection(const std::vector<Figure> & figures, Lines2D& to_return
     }
 }
 double utils::getCubeSizeRadius(const std::vector<Figure> & all_projected_figures){
-    double x_min = 100;
-    double y_min = 100;
-    double z_min = 100;
-    double x_max = -100;
-    double y_max = -100;
-    double z_max = -100;
+    double x_min = std::numeric_limits<double>::infinity();
+    double y_min = std::numeric_limits<double>::infinity();
+    double z_min = std::numeric_limits<double>::infinity();
+    double x_max = -std::numeric_limits<double>::infinity();
+    double y_max = -std::numeric_limits<double>::infinity();
+    double z_max = -std::numeric_limits<double>::infinity();
     for(const Figure& figure:all_projected_figures){
         for(const Vector3D& point: figure.points){
             if(x_min > point.x) x_min = point.x;
@@ -137,9 +137,25 @@ double utils::getCubeSizeRadius(const std::vector<Figure> & all_projected_figure
     y_max = std::abs(y_max);
     z_max = std::abs(z_max);
     double c = std::max(std::max(std::max(x_min,x_max),y_min),std::max(std::max(y_max,z_min),z_max));
-    //c /= 0.95;
-    c = 3;
     return c;
+}
+void utils::getExtrema(const std::vector<Figure> & all_projected_figures, double& x_min, double& x_max, double& y_min, double& y_max, double& z_min, double& z_max){
+    x_min = std::numeric_limits<double>::infinity();
+    y_min = std::numeric_limits<double>::infinity();
+    z_min = std::numeric_limits<double>::infinity();
+    x_max = -std::numeric_limits<double>::infinity();
+    y_max = -std::numeric_limits<double>::infinity();
+    z_max = -std::numeric_limits<double>::infinity();
+    for(const Figure& figure:all_projected_figures){
+        for(const Vector3D& point: figure.points){
+            if(x_min > point.x) x_min = point.x;
+            if(y_min > point.y) y_min = point.y;
+            if(z_min > point.z) z_min = point.z;
+            if(x_max < point.x) x_max = point.x;
+            if(y_max < point.y) y_max = point.y;
+            if(z_max < point.z) z_max = point.z;
+        }
+    }
 }
 Vector3D utils::findMiddle(Vector3D a, Vector3D b){
     return Vector3D::point((a.x+b.x)/2, (a.y+b.y)/2, (a.z+b.z)/2);

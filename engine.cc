@@ -965,32 +965,60 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
             double cubeSize = -1;
             if(!all_cubemap_textures.empty()) {
                 cubeSize = utils::getCubeSizeRadius(all_projected_figures);
+                double cx_min, cx_max, cy_min, cy_max, cz_min, cz_max;
+                utils::getExtrema(all_projected_figures, cx_min, cx_max, cy_min, cy_max, cz_min, cz_max);
                 // Set all cube maps' a, b and p
+//                for(std::vector<Texture*> cubemaps: all_cubemap_textures){
+//                    // Top
+//                    cubemaps[0]->p = Vector3D::vector(-cubeSize, cubeSize, -cubeSize);
+//                    cubemaps[0]->a = Vector3D::vector(2*cubeSize, 0, 0);
+//                    cubemaps[0]->b = Vector3D::vector(0, 0, 2*cubeSize);
+//                    // Left
+//                    cubemaps[1]->p = Vector3D::vector(-cubeSize, -cubeSize, cubeSize);
+//                    cubemaps[1]->a = Vector3D::vector(0, 0, -2*cubeSize);
+//                    cubemaps[1]->b = Vector3D::vector(0, 2*cubeSize, 0);
+//                    // Front
+//                    cubemaps[2]->p = Vector3D::vector(-cubeSize, -cubeSize, -cubeSize);
+//                    cubemaps[2]->a = Vector3D::vector(2*cubeSize,0, 0);
+//                    cubemaps[2]->b = Vector3D::vector(0, 2*cubeSize, 0);
+//                    // Right
+//                    cubemaps[3]->p = Vector3D::vector(cubeSize, -cubeSize, -cubeSize);
+//                    cubemaps[3]->a = Vector3D::vector(0, 0, 2*cubeSize);
+//                    cubemaps[3]->b = Vector3D::vector(0, 2*cubeSize, 0);
+//                    // Back
+//                    cubemaps[4]->p = Vector3D::vector(cubeSize, -cubeSize, cubeSize);
+//                    cubemaps[4]->a = Vector3D::vector(-2*cubeSize, 0, 0);
+//                    cubemaps[4]->b = Vector3D::vector(0, 2*cubeSize, 0);
+//                    // Bottom
+//                    cubemaps[5]->p = Vector3D::vector(-cubeSize, -cubeSize, cubeSize);
+//                    cubemaps[5]->a = Vector3D::vector(2*cubeSize, 0, 0);
+//                    cubemaps[5]->b = Vector3D::vector(0, 0, -2*cubeSize);
+//                }
                 for(std::vector<Texture*> cubemaps: all_cubemap_textures){
                     // Top
-                    cubemaps[0]->p = Vector3D::vector(-cubeSize, cubeSize, -cubeSize);
-                    cubemaps[0]->a = Vector3D::vector(2*cubeSize, 0, 0);
-                    cubemaps[0]->b = Vector3D::vector(0, 0, 2*cubeSize);
+                    cubemaps[0]->p = Vector3D::vector(cx_min, cy_max, cz_min);
+                    cubemaps[0]->a = Vector3D::vector(cx_max - cx_min, 0, 0);
+                    cubemaps[0]->b = Vector3D::vector(0, 0, cz_max - cz_min);
                     // Left
-                    cubemaps[1]->p = Vector3D::vector(-cubeSize, -cubeSize, cubeSize);
-                    cubemaps[1]->a = Vector3D::vector(0, 0, -2*cubeSize);
-                    cubemaps[1]->b = Vector3D::vector(0, 2*cubeSize, 0);
+                    cubemaps[1]->p = Vector3D::vector(cx_min, cy_min, cz_max);
+                    cubemaps[1]->a = Vector3D::vector(0, 0, -1*(cz_max - cz_min));
+                    cubemaps[1]->b = Vector3D::vector(0, cy_max - cy_min, 0);
                     // Front
-                    cubemaps[2]->p = Vector3D::vector(-cubeSize, -cubeSize, -cubeSize);
-                    cubemaps[2]->a = Vector3D::vector(2*cubeSize,0, 0);
-                    cubemaps[2]->b = Vector3D::vector(0, 2*cubeSize, 0);
+                    cubemaps[2]->p = Vector3D::vector(cx_min, cy_min, cz_min);
+                    cubemaps[2]->a = Vector3D::vector(cx_max - cx_min, 0, 0);
+                    cubemaps[2]->b = Vector3D::vector(0, cy_max - cy_min, 0);
                     // Right
-                    cubemaps[3]->p = Vector3D::vector(cubeSize, -cubeSize, -cubeSize);
-                    cubemaps[3]->a = Vector3D::vector(0, 0, 2*cubeSize);
-                    cubemaps[3]->b = Vector3D::vector(0, 2*cubeSize, 0);
+                    cubemaps[3]->p = Vector3D::vector(cx_max, cy_min, cz_min);
+                    cubemaps[3]->a = Vector3D::vector(0, 0, cz_max - cz_min);
+                    cubemaps[3]->b = Vector3D::vector(0, cy_max - cy_min, 0);
                     // Back
-                    cubemaps[4]->p = Vector3D::vector(cubeSize, -cubeSize, cubeSize);
-                    cubemaps[4]->a = Vector3D::vector(-2*cubeSize, 0, 0);
-                    cubemaps[4]->b = Vector3D::vector(0, 2*cubeSize, 0);
+                    cubemaps[4]->p = Vector3D::vector(cx_max, cy_min, cz_max);
+                    cubemaps[4]->a = Vector3D::vector(-1*(cx_max - cx_min), 0, 0);
+                    cubemaps[4]->b = Vector3D::vector(0, cy_max - cy_min, 0);
                     // Bottom
-                    cubemaps[5]->p = Vector3D::vector(-cubeSize, -cubeSize, cubeSize);
-                    cubemaps[5]->a = Vector3D::vector(2*cubeSize, 0, 0);
-                    cubemaps[5]->b = Vector3D::vector(0, 0, -2*cubeSize);
+                    cubemaps[5]->p = Vector3D::vector(cx_min, cy_min, cz_max);
+                    cubemaps[5]->a = Vector3D::vector(cx_max - cx_min, 0, 0);
+                    cubemaps[5]->b = Vector3D::vector(0, 0, -1*(cz_max - cz_min));
                 }
             }
             for(auto fig:all_projected_figures){
@@ -1009,7 +1037,6 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                         fig_cubemap_textures = all_cubemap_textures[fig.cubeMapNr];
                     }
                     // Input van texture coordinaten
-                    // TODO: map_kd and map_ks
                     if(fac.map_Ka != -1){
                         fig_textures.clear();
                         fig_textures.push_back(all_textures[fac.map_Ka]);
