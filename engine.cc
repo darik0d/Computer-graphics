@@ -100,13 +100,13 @@ std::vector<Face> triangulate(const Face& face){
     int n = face.point_indexes.size();
     for(int i = 1; i < n - 1; i++){
         Face triangulatedFace = Face({face.point_indexes[0], face.point_indexes[i], face.point_indexes[i + 1]});
-        if(!face.uv.empty()){
-            triangulatedFace.uv = {face.uv[0], face.uv[i], face.uv[i+1]};
+        if(!face.uv.empty()) {
+            triangulatedFace.uv = {face.uv[0], face.uv[i], face.uv[i + 1]};
             triangulatedFace.map_Ka = face.map_Ka;
             triangulatedFace.map_Kd = face.map_Kd;
             triangulatedFace.map_Ks = face.map_Ks;
-            triangulatedFace.norm = face.norm;
         }
+        if(!face.norm.empty()) triangulatedFace.norm = face.norm;
         to_return.push_back(triangulatedFace);
     }
     return to_return;
@@ -1047,9 +1047,9 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
                                               d, dx, dy, fig.fullAmbientReflection, fig.diffuseReflection, fig.specularReflection, fig.reflectionCoefficient,
                                               lights, eye*eyeTransf, eyeTransf, shadowOn, fig_textures, fig_cubemap_textures, fac.uv, fac.norm, cubeSize);
                     // TODO: begrijpen waarom het met het oor misgaat + waarom dan dubbele delete?
-                    //                    for(Vector3D* norm: fac.norm){
-//                        delete norm;
-//                    }
+                    for(Vector3D* norm: fac.norm){
+                        delete norm;
+                    }
                 }
             }
             for(Light* light:lights) delete light;
